@@ -30,7 +30,6 @@ body {
   background: var(--surface); color: var(--text);
   padding: 28px; border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-  transition: background 0.3s, color 0.3s;
 }
 h1, h2, h3 { color: var(--text); margin-top: 0; }
 .header {
@@ -50,7 +49,7 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
   border: none; border-radius: 5px; cursor: pointer; margin: 0;
 }
 .small-btn:hover { background: var(--sb-hover); }
-.login-form, .order-form, .settings-form {
+.login-form, .order-form {
   display: flex; flex-direction: column; gap: 14px; max-width: 380px;
 }
 label { display: block; font-weight: 600; }
@@ -96,9 +95,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 .admin-section { margin-bottom: 24px; }
 .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 .btn-row button { margin-bottom: 0; }
-.settings-row {
-  display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
-}
+.settings-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
 .settings-row label { flex: 1; min-width: 200px; }
 .settings-row button { margin-bottom: 0; white-space: nowrap; }
 </style>
@@ -109,7 +106,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 <div id="login-screen" class="container">
   <div class="header">
     <h1>Вход</h1>
-    <button class="theme-btn" id="theme-toggle-login">🌙</button>
+    <button class="theme-btn" id="theme-toggle-login" type="button">🌙</button>
   </div>
 
   <div id="start-warning" class="start-warning hidden">
@@ -134,8 +131,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
     <h1>Приём заказов</h1>
     <div class="user-info">
       <span id="current-user"></span>
-      <button id="logout-btn" class="small-btn">Выйти</button>
-      <button class="theme-btn" id="theme-toggle-app">🌙</button>
+      <button id="logout-btn" class="small-btn" type="button">Выйти</button>
+      <button class="theme-btn" id="theme-toggle-app" type="button">🌙</button>
     </div>
   </div>
 
@@ -201,14 +198,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
     <div class="admin-section">
       <h3>Действия</h3>
       <div class="btn-row">
-        <button id="export-excel">Итоги → Excel</button>
-        <button id="clear-orders" class="danger-btn">Очистить все заказы</button>
+        <button id="export-excel" type="button">Итоги → Excel</button>
+        <button id="clear-orders" class="danger-btn" type="button">Очистить все заказы</button>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script>
 // ──────────────────────────────────────────────
 //  НАСТРОЙКИ
@@ -227,10 +223,7 @@ const USERS = {
 };
 
 // ──────────────────────────────────────────────
-//  Безопасное хранилище.
-//  Если браузер блокирует localStorage (приватный
-//  режим, открытие файла на телефоне) — используем
-//  память, чтобы сайт не падал.
+//  Безопасное хранилище
 // ──────────────────────────────────────────────
 
 const storage = (() => {
@@ -337,6 +330,34 @@ function toggleTheme() {
 
 themeToggleLogin.addEventListener('click', toggleTheme);
 themeToggleApp.addEventListener('click', toggleTheme);
+
+// ──────────────────────────────────────────────
+//  Ленивая загрузка библиотеки Excel.
+//  Раньше она тормозила загрузку всей страницы,
+//  теперь качается только при нажатии «Итоги».
+// ──────────────────────────────────────────────
+
+function loadXlsxLib() {
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) { resolve(); return; }
+
+    const urls = [
+      'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    ];
+
+    let i = 0;
+    const tryNext = () => {
+      if (i >= urls.length) { reject(); return; }
+      const s = document.createElement('script');
+      s.src = urls[i++];
+      s.onload = resolve;
+      s.onerror = () => { s.remove(); tryNext(); };
+      document.head.appendChild(s);
+    };
+    tryNext();
+  });
+}
 
 // ──────────────────────────────────────────────
 //  Утилиты
@@ -571,7 +592,6 @@ function deleteItem(idx) {
 //  События
 // ──────────────────────────────────────────────
 
-// Вход — теперь через отправку формы, работает и по Enter
 loginForm.addEventListener('submit', e => {
   e.preventDefault();
 
@@ -633,7 +653,7 @@ saveBtn.addEventListener('click', () => {
   }
 
   const product = productSelect.value;
-  const kg = parseFloat(kgInput.value.replace(',', '.'));
+  const kg = parseFloat((kgInput.value || '').replace(',', '.'));
 
   if (!product || isNaN(kg) || kg <= 0) {
     alert('Выберите товар и укажите количество больше 0');
@@ -726,34 +746,46 @@ exportBtn.addEventListener('click', () => {
     return;
   }
 
-  const matrixData = orderEntries.map(order => {
-    const row = { 'Заказчик': order.user, 'Дата': order.editedAt || order.date };
-    PRODUCTS.forEach(p => {
-      const item = (order.items || []).find(i => i.product === p);
-      row[p] = item ? item.kg : '';
+  exportBtn.disabled = true;
+  exportBtn.textContent = 'Загрузка библиотеки...';
+
+  loadXlsxLib().then(() => {
+    exportBtn.disabled = false;
+    exportBtn.textContent = 'Итоги → Excel';
+
+    const matrixData = orderEntries.map(order => {
+      const row = { 'Заказчик': order.user, 'Дата': order.editedAt || order.date };
+      PRODUCTS.forEach(p => {
+        const item = (order.items || []).find(i => i.product === p);
+        row[p] = item ? item.kg : '';
+      });
+      return row;
     });
-    return row;
-  });
 
-  const summary = {};
-  orderEntries.forEach(order => {
-    (order.items || []).forEach(item => {
-      if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
-      summary[item.product].totalKg += item.kg;
-      summary[item.product].users += 1;
+    const summary = {};
+    orderEntries.forEach(order => {
+      (order.items || []).forEach(item => {
+        if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
+        summary[item.product].totalKg += item.kg;
+        summary[item.product].users += 1;
+      });
     });
+
+    const summaryData = Object.entries(summary).map(([product, s]) => ({
+      'Товар': product,
+      'Всего, кг': s.totalKg.toFixed(2),
+      'Заказчиков': s.users,
+    }));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Сводка');
+    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+  }).catch(() => {
+    exportBtn.disabled = false;
+    exportBtn.textContent = 'Итоги → Excel';
+    alert('Не удалось загрузить библиотеку Excel. Проверьте интернет и попробуйте ещё раз.');
   });
-
-  const summaryData = Object.entries(summary).map(([product, s]) => ({
-    'Товар': product,
-    'Всего, кг': s.totalKg.toFixed(2),
-    'Заказчиков': s.users,
-  }));
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Сводка');
-  XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
 });
 
 // ── Очистка заказов (админ) ──
