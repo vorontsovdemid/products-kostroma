@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Заказы на товар</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Приём заказов</h1>
+
+      <!-- Форма заказа -->
+      <div class="order-form">
+        <label>Товар:
+          <input type="text" id="product" placeholder="Название товара" required />
+        </label>
+        <label>Количество (кг):
+          <input type="number" id="kg" step="0.01" min="0" placeholder="кг" required />
+        </label>
+        <button type="button" id="add-order">Добавить заказ</button>
+      </div>
+
+      <!-- Список текущих заказов -->
+      <h2>Текущие заказы</h2>
+      <ul id="orders-list"></ul>
+
+      <!-- Кнопка итогов -->
+      <button id="export-excel">Итоги → Excel</button>
+    </div>
+
+    <!-- Подключаем библиотеку для Excel (SheetJS) -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
