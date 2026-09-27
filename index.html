@@ -72,6 +72,7 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
   display: flex; flex-direction: column; gap: 12px; max-width: 380px;
 }
 label { display: block; font-weight: 600; }
+.hint { font-weight: 400; font-size: 13px; color: var(--note); }
 input, select {
   width: 100%; padding: 9px;
   border: 1px solid var(--input-border); border-radius: 5px;
@@ -213,6 +214,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     <div id="order-form-section" class="order-form">
       <h2 id="form-title">Добавить товар в заказ</h2>
       <label>Товар:
+        <span class="hint"> (цена за прошлый раз)</span><br />
         <select id="product"></select>
       </label>
       <label>Количество (кг):
@@ -600,7 +602,7 @@ function fillProducts() {
     opt.value = p;
     const price = prices[p];
     if (price > 0) {
-      opt.textContent = p + ' — ' + fmtRub(price) + ' руб/кг (цена за прошлый раз)';
+      opt.textContent = p + ' — ' + fmtRub(price) + ' руб/кг';
     } else {
       opt.textContent = p;
     }
@@ -626,7 +628,7 @@ function renderPrices() {
   markupInput.value = markup > 0 ? markup : '';
 }
 
-// Таблица «Мой заказ» (пользователь) — цены подписаны как «за прошлый раз»
+// Таблица «Мой заказ» (пользователь)
 function renderOrders() {
   if (!currentUser) return;
   if (currentUser.role === 'admin') { renderAdminOrders(); return; }
@@ -675,7 +677,6 @@ function renderOrders() {
     ordersBody.appendChild(tr);
   });
 
-  // ИТОГО — только сумма по ценам, без упоминания наценки
   const footTr = document.createElement('tr');
   footTr.innerHTML =
     '<td>ИТОГО</td><td></td><td></td>' +
