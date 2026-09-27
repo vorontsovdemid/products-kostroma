@@ -21,18 +21,30 @@
   --sb-hover: #64748b; --tfoot-bg: #0f172a; --tfoot-text: #e0e0e0;
   --nav-bg: #1e293b; --nav-active: #3b82f6;
 }
+
+/* ── ФОН ВСЕЙ СТРАНИЦЫ: каланча ── */
 body {
   font-family: Arial, sans-serif;
-  background: var(--bg); color: var(--text);
+  color: var(--text);
   padding: 12px; margin: 0;
-  transition: background 0.3s, color 0.3s;
+
+  background-image: url('bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: var(--bg);
+  min-height: 100vh;
 }
+
+/* ── Центральный блок: обычный, непрозрачный ── */
 .container {
   max-width: 900px; margin: 0 auto;
   background: var(--surface); color: var(--text);
   padding: 20px; border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
+
 h1, h2, h3 { color: var(--text); margin-top: 0; }
 .header {
   display: flex; justify-content: space-between;
