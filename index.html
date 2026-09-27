@@ -3,129 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заказ продуктов</title>
+    <title>Заказ продуктов | Кострома</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 15px; }
-        h1 { text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        select, input { width: 100%; padding: 10px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #45a049; }
-        #status { margin-top: 20px; text-align: center; font-weight: bold; }
-        .success { color: green; }
-        .error { color: red; }
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: var(--card);
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Важно для отступов */
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .price-display {
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button.submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button.submit-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #status {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 1.2rem;
+        }
+
+        .success { color: var(--success); }
+        .error { color: var(--danger); }
+        .loading { color: var(--primary); }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <h1>Оформление заказа</h1>
+    <div class="container">
+        <h1>🛒 Заказ продуктов</h1>
 
-    <div class="form-group">
-        <label for="productSelect">Выберите товар:</label>
-        <select id="productSelect">
-            <option value="">Загрузка товаров...</option>
-        </select>
+        <div class="form-group">
+            <label for="productSelect">Выберите товар</label>
+            <select id="productSelect" required>
+                <option value="" disabled selected>Загрузка товаров...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quantityInput">Количество (кг)</label>
+            <input type="number" id="quantityInput" value="1" min="0.1" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Итоговая стоимость</label>
+            <input type="text" id="totalPriceDisplay" class="price-display" readonly value="0 ₽">
+        </div>
+
+        <button type="button" class="submit-btn" id="orderBtn" onclick="sendOrder()">
+            Оформить заказ
+        </button>
+
+        <div id="status"></div>
     </div>
-
-    <div class="form-group">
-        <label for="quantityInput">Количество (кг):</label>
-        <input type="number" id="quantityInput" value="1" min="1">
-    </div>
-
-    <div class="form-group">
-        <label for="totalPriceDisplay">Итоговая стоимость:</label>
-        <input type="text" id="totalPriceDisplay" readonly style="background-color: #f0f0f0;">
-    </div>
-
-    <button onclick="sendOrder()">Оформить заказ</button>
-
-    <div id="status"></div>
 
     <script>
-        // 1. ВСТАВЛЯЕМ СЮДА ТВОЙ URL (без слэша в конце)
-        const DB_URL = 'https://orders-kostroma-default-rtdb.europe-west1.firebaseio.com';
+        // ВАЖНО: Здесь жестко прописан твой URL, чтобы избежать ошибок подстановки
+        const DB_URL = 'https://orders-kostroma-default-rtdb.firebaseio.com';
 
         const productSelect = document.getElementById('productSelect');
         const quantityInput = document.getElementById('quantityInput');
         const totalPriceDisplay = document.getElementById('totalPriceDisplay');
         const statusDiv = document.getElementById('status');
+        const orderBtn = document.getElementById('orderBtn');
 
-        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadProducts);
 
-        // Функция загрузки товаров из Firebase
         async function loadProducts() {
+            setStatus('Загрузка товаров...', 'loading');
+            orderBtn.disabled = true; // Блокируем кнопку во время загрузки
+
             try {
+                // Формируем правильный URL для получения JSON из Firebase
                 const response = await fetch(`\${DB_URL}/products.json`);
                 
-                if (!response.ok) throw new Error('Не удалось получить данные');
-                
+                if (!response.ok) {
+                    throw new Error(`Ошибка сети: \${response.status}`);
+                }
+
                 const data = await response.json();
 
-                if (!data) {
-                    productSelect.innerHTML = '<option value="">Нет товаров в базе</option>';
-                    updateTotal();
+                if (!data || Object.keys(data).length === 0) {
+                    productSelect.innerHTML = '<option value="" disabled>В базе нет товаров</option>';
+                    setStatus('Товары не найдены. Проверьте узел "products" в Firebase.', 'error');
                     return;
                 }
 
-                productSelect.innerHTML = '<option value="">Выберите товар</option>';
+                // Очищаем и заполняем селектор
+                productSelect.innerHTML = '<option value="" disabled selected>Выберите товар</option>';
                 
-                // Преобразуем объект в массив и заполняем список
                 Object.keys(data).forEach(key => {
                     const product = data[key];
                     const option = document.createElement('option');
                     option.value = key;
-                    option.textContent = `${product.name} (${product.price} ₽/кг)`;
+                    option.textContent = `${product.name} — ${product.price} ₽/кг`;
                     option.dataset.price = product.price;
                     productSelect.appendChild(option);
                 });
 
-                // Пересчитываем цену при выборе товара
+                // Навешиваем слушатели событий
                 productSelect.addEventListener('change', updateTotal);
                 quantityInput.addEventListener('input', updateTotal);
 
-                updateTotal();
-                statusDiv.textContent = 'Товары загружены';
-                statusDiv.className = 'success';
-
+                updateTotal(); // Считаем сразу
+                setStatus('Товары загружены. Можно оформлять заказ.', 'success');
+                
             } catch (error) {
-                console.error('Ошибка:', error);
-                productSelect.innerHTML = '<option value="">Ошибка загрузки</option>';
-                statusDiv.textContent = 'Ошибка: проверьте консоль (F12) и правила доступа в Firebase';
-                statusDiv.className = 'error';
+                console.error('Ошибка загрузки:', error);
+                setStatus('Ошибка: не удалось получить данные. Проверьте консоль (F12).', 'error');
+            } finally {
+                orderBtn.disabled = false; // Разблокируем кнопку
             }
         }
 
-        // Функция пересчета итоговой цены
         function updateTotal() {
             const selectedOption = productSelect.options[productSelect.selectedIndex];
             const price = parseFloat(selectedOption.dataset.price) || 0;
             const quantity = parseFloat(quantityInput.value) || 0;
             const total = price * quantity;
-            totalPriceDisplay.value = total > 0 ? `\${total.toFixed(2)} ₽` : '';
+
+            if (total > 0) {
+                totalPriceDisplay.value = `\${total.toLocaleString('ru-RU')} ₽`;
+            } else {
+                totalPriceDisplay.value = '0 ₽';
+            }
         }
 
-        // Функция отправки заказа в Firebase
         async function sendOrder() {
             const selectedOption = productSelect.options[productSelect.selectedIndex];
             const productId = selectedOption.value;
-            const productName = selectedOption.textContent.split(' (');
+            const productName = selectedOption.textContent.split(' —');
             const quantity = parseFloat(quantityInput.value);
             const pricePerKg = parseFloat(selectedOption.dataset.price);
             const total = quantity * pricePerKg;
 
             if (!productId || quantity <= 0) {
-                statusDiv.textContent = 'Пожалуйста, выберите товар и укажите количество';
-                statusDiv.className = 'error';
+                setStatus('Пожалуйста, выберите товар и укажите корректное количество.', 'error');
                 return;
             }
 
-            statusDiv.textContent = 'Отправка заказа...';
-            statusDiv.className = 'success';
+            // Блокируем кнопку и меняем текст на "Отправка..."
+            orderBtn.disabled = true;
+            orderBtn.innerHTML = '<span class="spinner"></span> Отправка заказа...';
+            setStatus('', ''); // Очищаем статус
 
             try {
-                // Генерируем уникальный ID заказа (можно использовать Date.now())
                 const orderId = Date.now().toString();
                 
                 const orderData = {
@@ -134,34 +253,40 @@
                     quantity_kg: quantity,
                     price_per_kg: pricePerKg,
                     total_price: total,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    status: 'new'
                 };
 
-                // Отправляем POST запрос для создания нового заказа (push)
                 const response = await fetch(`\${DB_URL}/orders.json`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
 
                 if (response.ok) {
-                    statusDiv.textContent = 'Заказ успешно оформлен!';
-                    statusDiv.className = 'success';
+                    setStatus('✅ Заказ успешно оформлен!', 'success');
+                    
                     // Сброс формы
                     productSelect.value = '';
                     quantityInput.value = '1';
-                    totalPriceDisplay.value = '';
+                    totalPriceDisplay.value = '0 ₽';
                     updateTotal();
                 } else {
-                    throw new Error('Ошибка сети');
+                    throw new Error('Ошибка сервера Firebase');
                 }
             } catch (error) {
                 console.error('Ошибка отправки:', error);
-                statusDiv.textContent = 'Не удалось отправить заказ. Проверьте консоль.';
-                statusDiv.className = 'error';
+                setStatus('❌ Не удалось отправить заказ. Проверьте правила доступа в Firebase.', 'error');
+            } finally {
+                // Возвращаем кнопку в исходное состояние
+                orderBtn.disabled = false;
+                orderBtn.innerHTML = 'Оформить заказ';
             }
+        }
+
+        function setStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = type || '';
         }
     </script>
 </body>
