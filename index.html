@@ -22,13 +22,13 @@
 body {
   font-family: Arial, sans-serif;
   background: var(--bg); color: var(--text);
-  padding: 20px; margin: 0;
+  padding: 12px; margin: 0;
   transition: background 0.3s, color 0.3s;
 }
 .container {
   max-width: 820px; margin: 0 auto;
   background: var(--surface); color: var(--text);
-  padding: 28px; border-radius: 10px;
+  padding: 20px; border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
 h1, h2, h3 { color: var(--text); margin-top: 0; }
@@ -36,7 +36,7 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
   display: flex; justify-content: space-between;
   align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;
 }
-.user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.user-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .theme-btn {
   padding: 6px 12px; font-size: 18px;
   background: var(--sb-bg); color: #fff;
@@ -44,13 +44,13 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
 }
 .theme-btn:hover { background: var(--sb-hover); }
 .small-btn {
-  padding: 5px 12px; font-size: 13px;
+  padding: 5px 10px; font-size: 13px;
   background: var(--sb-bg); color: #fff;
   border: none; border-radius: 5px; cursor: pointer; margin: 0;
 }
 .small-btn:hover { background: var(--sb-hover); }
 .login-form, .order-form {
-  display: flex; flex-direction: column; gap: 14px; max-width: 380px;
+  display: flex; flex-direction: column; gap: 12px; max-width: 380px;
 }
 label { display: block; font-weight: 600; }
 input, select {
@@ -60,44 +60,66 @@ input, select {
   background: var(--surface); color: var(--text);
 }
 button {
-  padding: 10px 18px; background: var(--primary); color: #fff;
+  padding: 10px 16px; background: var(--primary); color: #fff;
   border: none; border-radius: 5px; cursor: pointer;
-  font-size: 15px; margin-bottom: 10px;
+  font-size: 15px; margin-bottom: 8px;
 }
 button:hover { background: var(--primary-hover); }
 button:disabled { background: #ccc; cursor: not-allowed; color: #888; }
 .danger-btn { background: var(--danger); }
 .danger-btn:hover { background: var(--danger-hover); }
-.form-buttons { display: flex; gap: 10px; align-items: center; }
+.form-buttons { display: flex; gap: 8px; align-items: center; }
 .error { color: var(--danger); font-size: 14px; min-height: 20px; }
 .note { color: var(--note); font-size: 13px; }
 
 .start-warning {
-  color: var(--danger); font-size: 26px; font-weight: 700;
-  text-align: center; margin: 20px 0; padding: 24px;
+  color: var(--danger); font-size: 24px; font-weight: 700;
+  text-align: center; margin: 20px 0; padding: 24px 16px;
   border: 3px solid var(--danger); border-radius: 10px;
-  background: var(--dl-bg); letter-spacing: 1px; line-height: 1.5;
+  background: var(--dl-bg); line-height: 1.5;
 }
 
 .deadline-box {
-  margin: 16px 0; padding: 12px 16px;
+  margin: 14px 0; padding: 12px 16px;
   border: 2px solid var(--danger); border-radius: 8px;
   background: var(--dl-bg); color: var(--danger);
-  font-weight: 700; font-size: 16px; text-align: center;
+  font-weight: 700; font-size: 15px; text-align: center;
 }
 
-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; }
-th { background: var(--th-bg); }
+/* Таблица с прокруткой */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 12px;
+}
+table { width: 100%; border-collapse: collapse; min-width: 400px; }
+th, td {
+  border: 1px solid var(--border); padding: 8px 10px; text-align: left;
+  word-break: break-word;
+}
+th { background: var(--th-bg); white-space: nowrap; }
 tr:nth-child(even) { background: var(--even-row); }
-hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 .hidden { display: none; }
-.admin-section { margin-bottom: 24px; }
-.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.admin-section { margin-bottom: 20px; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
 .btn-row button { margin-bottom: 0; }
-.settings-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-.settings-row label { flex: 1; min-width: 200px; }
+.settings-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.settings-row label { flex: 1; min-width: 180px; }
 .settings-row button { margin-bottom: 0; white-space: nowrap; }
+
+@media (max-width: 520px) {
+  body { padding: 8px; }
+  .container { padding: 16px; border-radius: 8px; }
+  h1 { font-size: 20px; }
+  h2 { font-size: 17px; }
+  h3 { font-size: 15px; }
+  th, td { padding: 6px 8px; font-size: 14px; }
+  .start-warning { font-size: 20px; padding: 18px 12px; }
+  .deadline-box { font-size: 13px; padding: 10px 12px; }
+  button { padding: 9px 14px; font-size: 14px; }
+}
 </style>
 </head>
 <body>
@@ -156,18 +178,20 @@ hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
   </div>
 
   <h2 id="orders-title">Мой заказ</h2>
-  <table id="orders-table">
-    <thead>
-      <tr>
-        <th>Товар</th>
-        <th>Кг</th>
-        <th id="th-user">Заказчик</th>
-        <th id="th-date">Дата</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="orders-body"></tbody>
-  </table>
+  <div class="table-wrap">
+    <table id="orders-table">
+      <thead>
+        <tr>
+          <th>Товар</th>
+          <th>Кг</th>
+          <th id="th-user">Заказчик</th>
+          <th id="th-date">Дата</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="orders-body"></tbody>
+    </table>
+  </div>
 
   <div id="admin-panel" class="hidden">
     <hr />
@@ -332,34 +356,6 @@ themeToggleLogin.addEventListener('click', toggleTheme);
 themeToggleApp.addEventListener('click', toggleTheme);
 
 // ──────────────────────────────────────────────
-//  Ленивая загрузка библиотеки Excel.
-//  Раньше она тормозила загрузку всей страницы,
-//  теперь качается только при нажатии «Итоги».
-// ──────────────────────────────────────────────
-
-function loadXlsxLib() {
-  return new Promise((resolve, reject) => {
-    if (window.XLSX) { resolve(); return; }
-
-    const urls = [
-      'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
-    ];
-
-    let i = 0;
-    const tryNext = () => {
-      if (i >= urls.length) { reject(); return; }
-      const s = document.createElement('script');
-      s.src = urls[i++];
-      s.onload = resolve;
-      s.onerror = () => { s.remove(); tryNext(); };
-      document.head.appendChild(s);
-    };
-    tryNext();
-  });
-}
-
-// ──────────────────────────────────────────────
 //  Утилиты
 // ──────────────────────────────────────────────
 
@@ -388,6 +384,12 @@ function formatCountdown(ms) {
 function toLocalInputValue(date) {
   const off = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - off).toISOString().slice(0, 16);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 function renderDeadline() {
@@ -484,11 +486,12 @@ function renderOrders() {
 
     rows.forEach(r => {
       const tr = document.createElement('tr');
+      const tdUser = '<td>' + escapeHtml(r.user) + '</td>';
+      const tdDate = '<td>' + escapeHtml(r.date) + '</td>';
       tr.innerHTML =
-        '<td>' + r.product + '</td>' +
+        '<td>' + escapeHtml(r.product) + '</td>' +
         '<td>' + r.kg + '</td>' +
-        '<td>' + r.user + '</td>' +
-        '<td>' + r.date + '</td>' +
+        tdUser + tdDate +
         '<td></td>';
       ordersBody.appendChild(tr);
     });
@@ -509,7 +512,7 @@ function renderOrders() {
     items.forEach((item, idx) => {
       const tr = document.createElement('tr');
       tr.innerHTML =
-        '<td>' + item.product + '</td>' +
+        '<td>' + escapeHtml(item.product) + '</td>' +
         '<td>' + item.kg + '</td>' +
         '<td></td>';
 
@@ -586,6 +589,142 @@ function deleteItem(idx) {
 
   saveOrders();
   renderOrders();
+}
+
+// ──────────────────────────────────────────────
+//  Экспорт: сначала пробуем XLSX-библиотеку,
+//  если не вышло — генерируем CSV (открывается
+//  в Excel без библиотек).
+// ──────────────────────────────────────────────
+
+function loadXlsxLib() {
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) { resolve(); return; }
+
+    const urls = [
+      'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    ];
+
+    let i = 0;
+    const tryNext = () => {
+      if (i >= urls.length) { reject(); return; }
+      const s = document.createElement('script');
+      s.src = urls[i++];
+      s.onload = resolve;
+      s.onerror = () => { s.remove(); tryNext(); };
+      document.head.appendChild(s);
+    };
+    tryNext();
+  });
+}
+
+function downloadFile(content, filename, mime) {
+  const blob = new Blob(['\uFEFF' + content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 200);
+}
+
+function exportToCsv() {
+  const orderEntries = Object.values(orders);
+  if (orderEntries.length === 0) {
+    alert('Нет заказов для выгрузки');
+    return;
+  }
+
+  // Лист 1: матрица
+  const header = ['Заказчик', 'Дата'].concat(PRODUCTS);
+  const lines = [header.join(';')];
+
+  orderEntries.forEach(order => {
+    const row = [
+      '"' + order.user + '"',
+      '"' + (order.editedAt || order.date) + '"'
+    ];
+    PRODUCTS.forEach(p => {
+      const item = (order.items || []).find(i => i.product === p);
+      row.push(item ? String(item.kg).replace('.', ',') : '');
+    });
+    lines.push(row.join(';'));
+  });
+
+  // Пустая строка-разделитель
+  lines.push('');
+
+  // Сводка
+  lines.push('СВОДКА');
+  lines.push('Товар;Всего, кг;Заказчиков');
+  const summary = {};
+  orderEntries.forEach(order => {
+    (order.items || []).forEach(item => {
+      if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
+      summary[item.product].totalKg += item.kg;
+      summary[item.product].users += 1;
+    });
+  });
+  Object.entries(summary).forEach(([product, s]) => {
+    lines.push('"' + product + '";' + s.totalKg.toFixed(2).replace('.', ',') + ';' + s.users);
+  });
+
+  const csv = lines.join('\n');
+  const dateStr = new Date().toISOString().slice(0, 10);
+  downloadFile(csv, 'itogi_' + dateStr + '.csv', 'text/csv;charset=utf-8');
+}
+
+function exportToExcel() {
+  const orderEntries = Object.values(orders);
+  if (orderEntries.length === 0) {
+    alert('Нет заказов для выгрузки');
+    return;
+  }
+
+  exportBtn.disabled = true;
+  const oldText = exportBtn.textContent;
+  exportBtn.textContent = 'Загрузка...';
+
+  loadXlsxLib().then(() => {
+    const matrixData = orderEntries.map(order => {
+      const row = { 'Заказчик': order.user, 'Дата': order.editedAt || order.date };
+      PRODUCTS.forEach(p => {
+        const item = (order.items || []).find(i => i.product === p);
+        row[p] = item ? item.kg : '';
+      });
+      return row;
+    });
+
+    const summary = {};
+    orderEntries.forEach(order => {
+      (order.items || []).forEach(item => {
+        if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
+        summary[item.product].totalKg += item.kg;
+        summary[item.product].users += 1;
+      });
+    });
+
+    const summaryData = Object.entries(summary).map(([product, s]) => ({
+      'Товар': product,
+      'Всего, кг': s.totalKg.toFixed(2),
+      'Заказчиков': s.users,
+    }));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Сводка');
+    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+
+    exportBtn.disabled = false;
+    exportBtn.textContent = oldText;
+  }).catch(() => {
+    // Не удалось загрузить библиотеку — выгружаем CSV
+    exportToCsv();
+    exportBtn.disabled = false;
+    exportBtn.textContent = oldText;
+  });
 }
 
 // ──────────────────────────────────────────────
@@ -693,8 +832,6 @@ saveBtn.addEventListener('click', () => {
 
 cancelEditBtn.addEventListener('click', resetForm);
 
-// ── Время начала (админ) ──
-
 setStartBtn.addEventListener('click', () => {
   if (!startInput.value) {
     alert('Выберите дату и время');
@@ -713,8 +850,6 @@ clearStartBtn.addEventListener('click', () => {
   renderStartWarning();
   alert('Ограничение на начало заказов снято.');
 });
-
-// ── Дедлайн (админ) ──
 
 setDeadlineBtn.addEventListener('click', () => {
   if (!deadlineInput.value) {
@@ -737,58 +872,7 @@ clearDeadlineBtn.addEventListener('click', () => {
   alert('Дедлайн снят.');
 });
 
-// ── Экспорт в Excel (админ) ──
-
-exportBtn.addEventListener('click', () => {
-  const orderEntries = Object.values(orders);
-  if (orderEntries.length === 0) {
-    alert('Нет заказов для выгрузки');
-    return;
-  }
-
-  exportBtn.disabled = true;
-  exportBtn.textContent = 'Загрузка библиотеки...';
-
-  loadXlsxLib().then(() => {
-    exportBtn.disabled = false;
-    exportBtn.textContent = 'Итоги → Excel';
-
-    const matrixData = orderEntries.map(order => {
-      const row = { 'Заказчик': order.user, 'Дата': order.editedAt || order.date };
-      PRODUCTS.forEach(p => {
-        const item = (order.items || []).find(i => i.product === p);
-        row[p] = item ? item.kg : '';
-      });
-      return row;
-    });
-
-    const summary = {};
-    orderEntries.forEach(order => {
-      (order.items || []).forEach(item => {
-        if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
-        summary[item.product].totalKg += item.kg;
-        summary[item.product].users += 1;
-      });
-    });
-
-    const summaryData = Object.entries(summary).map(([product, s]) => ({
-      'Товар': product,
-      'Всего, кг': s.totalKg.toFixed(2),
-      'Заказчиков': s.users,
-    }));
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Сводка');
-    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-  }).catch(() => {
-    exportBtn.disabled = false;
-    exportBtn.textContent = 'Итоги → Excel';
-    alert('Не удалось загрузить библиотеку Excel. Проверьте интернет и попробуйте ещё раз.');
-  });
-});
-
-// ── Очистка заказов (админ) ──
+exportBtn.addEventListener('click', exportToExcel);
 
 clearBtn.addEventListener('click', () => {
   if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
@@ -796,8 +880,6 @@ clearBtn.addEventListener('click', () => {
   saveOrders();
   renderOrders();
 });
-
-// ── Инициализация ──
 
 renderStartWarning();
 </script>
