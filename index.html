@@ -52,7 +52,6 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
 }
 .small-btn:hover { background: var(--sb-hover); }
 
-/* Навигация-вкладки в шапке */
 .nav-tabs {
   display: flex; gap: 0; margin-bottom: 16px;
   border-bottom: 2px solid var(--border);
@@ -235,7 +234,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
             <tr>
               <th>Товар</th>
               <th class="num">Кг</th>
-              <th class="num">Цена, руб/кг</th>
+              <th class="num">Цена за прошлый раз, руб/кг</th>
               <th class="num">Стоимость, руб</th>
               <th></th>
             </tr>
@@ -345,6 +344,10 @@ window.onerror = function (msg, src, line) {
   }
 };
 
+// ──────────────────────────────────────────────
+//  НАСТРОЙКИ
+// ──────────────────────────────────────────────
+
 const PRODUCTS = [
   'Картофель', 'Морковь', 'Лук репчатый',
   'Капуста белокочанная', 'Свёкла', 'Помидоры',
@@ -356,6 +359,10 @@ const USERS = {
   ivan:  { password: 'ivan456',  role: 'user'  },
   maria: { password: 'maria789', role: 'user'  },
 };
+
+// ──────────────────────────────────────────────
+//  Безопасное хранилище
+// ──────────────────────────────────────────────
 
 const storage = (() => {
   try {
@@ -372,6 +379,10 @@ const storage = (() => {
     };
   }
 })();
+
+// ──────────────────────────────────────────────
+//  Элементы
+// ──────────────────────────────────────────────
 
 const $ = id => document.getElementById(id);
 
@@ -424,6 +435,10 @@ const logoutBtn        = $('logout-btn');
 const themeToggleLogin = $('theme-toggle-login');
 const themeToggleApp   = $('theme-toggle-app');
 
+// ──────────────────────────────────────────────
+//  Состояние
+// ──────────────────────────────────────────────
+
 let currentUser = null;
 let editingIndex = -1;
 
@@ -444,6 +459,10 @@ try { if (storage.getItem('orderStartTime')) startTime = new Date(storage.getIte
 let wasEditable = true;
 let wasOpen = true;
 
+// ──────────────────────────────────────────────
+//  Тема
+// ──────────────────────────────────────────────
+
 let theme = storage.getItem('theme') || 'light';
 
 function applyTheme() {
@@ -462,7 +481,12 @@ function toggleTheme() {
 themeToggleLogin.addEventListener('click', toggleTheme);
 themeToggleApp.addEventListener('click', toggleTheme);
 
+// ──────────────────────────────────────────────
+//  Утилиты
+// ──────────────────────────────────────────────
+
 function saveOrders() { storage.setItem('orders', JSON.stringify(orders)); }
+
 function isOrderingOpen() { return !startTime || Date.now() >= startTime.getTime(); }
 function isEditable() { return !deadline || Date.now() < deadline.getTime(); }
 
@@ -515,7 +539,7 @@ function buildSummary() {
     });
     const price = prices[p] || 0;
     const cost = totalKg * price;
-    return { product: p, totalKg, price, cost, costWithMarkup: withMarkup(cost) };
+    return { product: p, totalKg: totalKg, price: price, cost: cost, costWithMarkup: withMarkup(cost) };
   });
 
   const byUser = entries
@@ -565,12 +589,21 @@ setInterval(() => {
   }
 }, 1000);
 
+// ──────────────────────────────────────────────
+//  Отрисовка
+// ──────────────────────────────────────────────
+
 function fillProducts() {
   productSelect.innerHTML = '';
   PRODUCTS.forEach(p => {
     const opt = document.createElement('option');
     opt.value = p;
-    opt.textContent = prices[p] > 0 ? p + ' — ' + fmtRub(prices[p]) + ' руб/кг' : p;
+    const price = prices[p];
+    if (price > 0) {
+      opt.textContent = p + ' — ' + fmtRub(price) + ' руб/кг (цена за прошлый раз)';
+    } else {
+      opt.textContent = p;
+    }
     productSelect.appendChild(opt);
   });
 }
@@ -593,7 +626,7 @@ function renderPrices() {
   markupInput.value = markup > 0 ? markup : '';
 }
 
-// Таблица «Мой заказ» (пользователь) — с ценами и стоимостью
+// Таблица «Мой заказ» (пользователь) — цены подписаны как «за прошлый раз»
 function renderOrders() {
   if (!currentUser) return;
   if (currentUser.role === 'admin') { renderAdminOrders(); return; }
@@ -642,14 +675,14 @@ function renderOrders() {
     ordersBody.appendChild(tr);
   });
 
+  // ИТОГО — только сумма по ценам, без упоминания наценки
   const footTr = document.createElement('tr');
   footTr.innerHTML =
     '<td>ИТОГО</td><td></td><td></td>' +
-    '<td class="num">' + fmtRub(withMarkup(sumNoMarkup)) + '</td><td></td>';
+    '<td class="num">' + fmtRub(sumNoMarkup) + '</td><td></td>';
   ordersFoot.appendChild(footTr);
 
-  userTotalNote.textContent = 'Сумма к оплате: ' + fmtRub(withMarkup(sumNoMarkup)) +
-    ' руб (включая наценку ' + fmtRub(markup) + '%)';
+  userTotalNote.textContent = 'Сумма: ' + fmtRub(sumNoMarkup) + ' руб';
 }
 
 // Матрица «Заказы» + сводка (админ)
@@ -800,7 +833,7 @@ function doLogin() {
     loginError.textContent = 'Заказывать можно только с ' + startTime.toLocaleString('ru-RU'); return;
   }
 
-  currentUser = { name, role: user.role };
+  currentUser = { name: name, role: user.role };
   loginError.textContent = '';
   loginName.value = ''; loginPass.value = '';
   loginScreen.classList.add('hidden');
@@ -861,7 +894,7 @@ saveBtn.addEventListener('click', () => {
     if (myOrder.items.findIndex(i => i.product === product) >= 0) {
       alert('Этот товар уже в заказе. Отредактируйте его.'); return;
     }
-    myOrder.items.push({ product, kg });
+    myOrder.items.push({ product: product, kg: kg });
     myOrder.editedAt = new Date().toLocaleString('ru-RU');
     kgInput.value = '';
   }
@@ -870,7 +903,7 @@ saveBtn.addEventListener('click', () => {
 
 cancelEditBtn.addEventListener('click', resetForm);
 
-// ── Цены ──
+// ── Цены и наценка (админ) ──
 
 savePricesBtn.addEventListener('click', () => {
   let ok = true;
@@ -889,7 +922,7 @@ savePricesBtn.addEventListener('click', () => {
   alert('Сохранено. Наценка: ' + fmtRub(markup) + '%');
 });
 
-// ── Время начала ──
+// ── Время начала (админ) ──
 
 setStartBtn.addEventListener('click', () => {
   if (!startInput.value) { alert('Выберите дату и время'); return; }
@@ -904,7 +937,7 @@ clearStartBtn.addEventListener('click', () => {
   renderStartWarning(); alert('Ограничение снято.');
 });
 
-// ── Дедлайн ──
+// ── Дедлайн (админ) ──
 
 setDeadlineBtn.addEventListener('click', () => {
   if (!deadlineInput.value) { alert('Выберите дату и время'); return; }
@@ -1062,6 +1095,8 @@ clearBtn.addEventListener('click', () => {
   if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
   orders = {}; saveOrders(); renderOrders();
 });
+
+// ── Инициализация ──
 
 applyTheme();
 renderStartWarning();
