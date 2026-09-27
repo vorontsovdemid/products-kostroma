@@ -42,9 +42,7 @@
             color: var(--text);
         }
 
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
+        .form-group { margin-bottom: 1.25rem; }
 
         label {
             display: block;
@@ -59,7 +57,7 @@
             border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 1rem;
-            box-sizing: border-box; /* Важно для отступов */
+            box-sizing: border-box;
             transition: border-color 0.2s;
         }
 
@@ -89,10 +87,7 @@
             transition: background-color 0.2s, transform 0.1s;
         }
 
-        button.submit-btn:hover {
-            background-color: var(--primary-hover);
-        }
-
+        button.submit-btn:hover { background-color: var(--primary-hover); }
         button.submit-btn:disabled {
             background-color: #9ca3af;
             cursor: not-allowed;
@@ -155,9 +150,8 @@
     </div>
 
     <script>
-        // ВАЖНО: Здесь жестко прописан твой URL, чтобы избежать ошибок подстановки
-        const DB_URL = 'https://orders-kostroma-default-rtdb.firebaseio.com';
-
+        // Переменная больше не нужна для формирования URL, адрес вшит напрямую в fetch
+        
         const productSelect = document.getElementById('productSelect');
         const quantityInput = document.getElementById('quantityInput');
         const totalPriceDisplay = document.getElementById('totalPriceDisplay');
@@ -168,11 +162,11 @@
 
         async function loadProducts() {
             setStatus('Загрузка товаров...', 'loading');
-            orderBtn.disabled = true; // Блокируем кнопку во время загрузки
+            orderBtn.disabled = true;
 
             try {
-                // Формируем правильный URL для получения JSON из Firebase
-                const response = await fetch(`\${DB_URL}/products.json`);
+                // ИСПРАВЛЕНИЕ: Жестко прописанный URL вместо переменной
+                const response = await fetch('https://orders-kostroma-default-rtdb.firebaseio.com/products.json');
                 
                 if (!response.ok) {
                     throw new Error(`Ошибка сети: \${response.status}`);
@@ -186,7 +180,6 @@
                     return;
                 }
 
-                // Очищаем и заполняем селектор
                 productSelect.innerHTML = '<option value="" disabled selected>Выберите товар</option>';
                 
                 Object.keys(data).forEach(key => {
@@ -198,18 +191,17 @@
                     productSelect.appendChild(option);
                 });
 
-                // Навешиваем слушатели событий
                 productSelect.addEventListener('change', updateTotal);
                 quantityInput.addEventListener('input', updateTotal);
 
-                updateTotal(); // Считаем сразу
+                updateTotal();
                 setStatus('Товары загружены. Можно оформлять заказ.', 'success');
                 
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
-                setStatus('Ошибка: не удалось получить данные. Проверьте консоль (F12).', 'error');
+                setStatus('Ошибка: проверьте консоль (F12) и правила доступа в Firebase.', 'error');
             } finally {
-                orderBtn.disabled = false; // Разблокируем кнопку
+                orderBtn.disabled = false;
             }
         }
 
@@ -239,14 +231,11 @@
                 return;
             }
 
-            // Блокируем кнопку и меняем текст на "Отправка..."
             orderBtn.disabled = true;
             orderBtn.innerHTML = '<span class="spinner"></span> Отправка заказа...';
-            setStatus('', ''); // Очищаем статус
+            setStatus('', '');
 
             try {
-                const orderId = Date.now().toString();
-                
                 const orderData = {
                     product_id: productId,
                     product_name: productName,
@@ -257,7 +246,8 @@
                     status: 'new'
                 };
 
-                const response = await fetch(`\${DB_URL}/orders.json`, {
+                // ИСПРАВЛЕНИЕ: Жестко прописанный URL для отправки
+                const response = await fetch('https://orders-kostroma-default-rtdb.firebaseio.com/orders.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
@@ -265,8 +255,6 @@
 
                 if (response.ok) {
                     setStatus('✅ Заказ успешно оформлен!', 'success');
-                    
-                    // Сброс формы
                     productSelect.value = '';
                     quantityInput.value = '1';
                     totalPriceDisplay.value = '0 ₽';
@@ -276,9 +264,8 @@
                 }
             } catch (error) {
                 console.error('Ошибка отправки:', error);
-                setStatus('❌ Не удалось отправить заказ. Проверьте правила доступа в Firebase.', 'error');
+                setStatus('❌ Не удалось отправить заказ. Проверьте Rules в Firebase.', 'error');
             } finally {
-                // Возвращаем кнопку в исходное состояние
                 orderBtn.disabled = false;
                 orderBtn.innerHTML = 'Оформить заказ';
             }
