@@ -22,13 +22,11 @@
   --nav-bg: #1e293b; --nav-active: #3b82f6;
 }
 
-/* ── ФОН ВСЕЙ СТРАНИЦЫ: каланча ── */
 body {
   font-family: Arial, sans-serif;
   color: var(--text);
   padding: 12px; margin: 0;
-
-  background-image: url('bg.jpg');
+  background-image: url('kalyancha.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -37,7 +35,6 @@ body {
   min-height: 100vh;
 }
 
-/* ── Центральный блок: обычный, непрозрачный ── */
 .container {
   max-width: 900px; margin: 0 auto;
   background: var(--surface); color: var(--text);
@@ -51,6 +48,9 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
   align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;
 }
 .user-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sync-info { font-size: 12px; color: var(--note); }
+.sync-ok { color: #1a7f37; }
+.sync-err { color: var(--danger); }
 .theme-btn {
   padding: 6px 12px; font-size: 18px;
   background: var(--sb-bg); color: #fff;
@@ -119,8 +119,7 @@ button:disabled { background: #ccc; cursor: not-allowed; color: #888; }
 }
 
 .table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
   margin-top: 12px;
 }
 table { width: 100%; border-collapse: collapse; min-width: 380px; }
@@ -131,10 +130,7 @@ th, td {
 th { background: var(--th-bg); white-space: nowrap; }
 tr:nth-child(even) { background: var(--even-row); }
 td.num, th.num { text-align: right; white-space: nowrap; }
-tfoot td {
-  background: var(--tfoot-bg); color: var(--tfoot-text);
-  font-weight: 700;
-}
+tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 700; }
 
 hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 .hidden { display: none; }
@@ -181,11 +177,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     <h1>Вход</h1>
     <button class="theme-btn" id="theme-toggle-login" type="button">🌙</button>
   </div>
-
   <div id="start-warning" class="start-warning hidden">
     ЗАКАЗЫ ПРИНИМАЮТСЯ С<br><span id="start-time-display"></span>
   </div>
-
   <div class="login-form">
     <label>Имя:
       <input type="text" id="login-name" autocomplete="username" placeholder="Ваше имя" />
@@ -203,13 +197,14 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
   <div class="header">
     <h1>Приём заказов</h1>
     <div class="user-info">
+      <span id="sync-status" class="sync-info"></span>
+      <button id="sync-btn" class="small-btn" type="button" title="Обновить данные">🔄</button>
       <span id="current-user"></span>
       <button id="logout-btn" class="small-btn" type="button">Выйти</button>
       <button class="theme-btn" id="theme-toggle-app" type="button">🌙</button>
     </div>
   </div>
 
-  <!-- Вкладки навигации (только для админа) -->
   <div id="nav-tabs" class="nav-tabs hidden">
     <button type="button" class="nav-tab active" id="nav-orders">Заказы</button>
     <button type="button" class="nav-tab" id="nav-prices">Цены и наценка</button>
@@ -221,8 +216,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 
   <!-- ── Вкладка «Заказы» ── -->
   <div id="view-orders">
-
-    <!-- Форма заказа (только для пользователей) -->
     <div id="order-form-section" class="order-form">
       <h2 id="form-title">Добавить товар в заказ</h2>
       <label>Товар:
@@ -239,7 +232,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       <p id="form-note" class="note"></p>
     </div>
 
-    <!-- Таблица «Мой заказ» (для пользователя) -->
     <div id="user-orders-section">
       <h2 id="orders-title">Мой заказ</h2>
       <div class="table-wrap">
@@ -260,21 +252,17 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       <p id="user-total-note" class="total-note"></p>
     </div>
 
-    <!-- Матрица «Заказы» (для админа) -->
     <div id="admin-orders-section" class="hidden">
       <div class="admin-section">
         <h3>Заказы</h3>
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr id="matrix-head"></tr>
-            </thead>
+            <thead><tr id="matrix-head"></tr></thead>
             <tbody id="matrix-body"></tbody>
             <tfoot id="matrix-foot"></tfoot>
           </table>
         </div>
       </div>
-
       <div class="admin-section">
         <h3>Сводка по товарам</h3>
         <div class="table-wrap">
@@ -293,7 +281,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
           </table>
         </div>
       </div>
-
       <div class="admin-section">
         <h3>Действия</h3>
         <div class="btn-row">
@@ -311,10 +298,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       <div class="table-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Товар</th>
-              <th class="num">Цена, руб/кг</th>
-            </tr>
+            <tr><th>Товар</th><th class="num">Цена, руб/кг</th></tr>
           </thead>
           <tbody id="prices-body"></tbody>
         </table>
@@ -324,7 +308,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       </label>
       <button type="button" id="save-prices">Сохранить цены и наценку</button>
     </div>
-
     <div class="admin-section">
       <h3>Время начала приёма заказов</h3>
       <div class="settings-row">
@@ -335,7 +318,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
         <button type="button" id="clear-start" class="small-btn">Сбросить</button>
       </div>
     </div>
-
     <div class="admin-section">
       <h3>Дедлайн правок</h3>
       <div class="settings-row">
@@ -358,9 +340,17 @@ window.onerror = function (msg, src, line) {
   }
 };
 
-// ──────────────────────────────────────────────
-//  НАСТРОЙКИ
-// ──────────────────────────────────────────────
+// ══════════════════════════════════════════════
+//  КОНФИГУРАЦИЯ — ВПИШИ СВОИ ДАННЫЕ
+// ══════════════════════════════════════════════
+
+const GH_CONFIG = {
+  owner:  'ВАШ_ЛОГИН',       // ← твой логин на GitHub (без @)
+  repo:   'ИМЯ_РЕПОЗИТОРИЯ', // ← имя репозитория
+  file:   'data.json',       // ← файл с данными (создастся сам)
+  branch: 'main',            // ← ветка: main или master
+  token:  'ВСТАВЬ_ТОКЕН_СЮДА', // ← fine-grained token (Contents: Read and Write)
+};
 
 const PRODUCTS = [
   'Картофель', 'Морковь', 'Лук репчатый',
@@ -374,9 +364,9 @@ const USERS = {
   maria: { password: 'maria789', role: 'user'  },
 };
 
-// ──────────────────────────────────────────────
-//  Безопасное хранилище
-// ──────────────────────────────────────────────
+// ══════════════════════════════════════════════
+//  ХРАНИЛИЩЕ (только тема + кэш)
+// ══════════════════════════════════════════════
 
 const storage = (() => {
   try {
@@ -394,88 +384,227 @@ const storage = (() => {
   }
 })();
 
-// ──────────────────────────────────────────────
-//  Элементы
-// ──────────────────────────────────────────────
+// ══════════════════════════════════════════════
+//  ЭЛЕМЕНТЫ DOM
+// ══════════════════════════════════════════════
 
 const $ = id => document.getElementById(id);
 
-const loginScreen  = $('login-screen');
-const appScreen    = $('app-screen');
-const loginName    = $('login-name');
-const loginPass    = $('login-pass');
-const loginBtn     = $('login-btn');
-const loginError   = $('login-error');
-const startWarning = $('start-warning');
+const loginScreen = $('login-screen');
+const appScreen   = $('app-screen');
+const loginName   = $('login-name');
+const loginPass   = $('login-pass');
+const loginBtn    = $('login-btn');
+const loginError  = $('login-error');
+const startWarning     = $('start-warning');
 const startTimeDisplay = $('start-time-display');
 const navTabs      = $('nav-tabs');
 const navOrdersBtn = $('nav-orders');
 const navPricesBtn = $('nav-prices');
 const viewOrders   = $('view-orders');
 const viewPrices   = $('view-prices');
-const orderFormSection = $('order-form-section');
-const userOrdersSection = $('user-orders-section');
+const orderFormSection  = $('order-form-section');
+const userOrdersSection  = $('user-orders-section');
 const adminOrdersSection = $('admin-orders-section');
-const productSelect    = $('product');
-const kgInput          = $('kg');
-const saveBtn          = $('save-order');
-const cancelEditBtn    = $('cancel-edit');
-const formTitle        = $('form-title');
-const formNote         = $('form-note');
-const ordersBody       = $('orders-body');
-const ordersFoot       = $('orders-foot');
-const userTotalNote    = $('user-total-note');
-const ordersTitle      = $('orders-title');
-const deadlineBox      = $('deadline-box');
-const deadlineText     = $('deadline-text');
-const deadlineInput    = $('deadline-input');
+const productSelect = $('product');
+const kgInput       = $('kg');
+const saveBtn       = $('save-order');
+const cancelEditBtn = $('cancel-edit');
+const formTitle     = $('form-title');
+const formNote      = $('form-note');
+const ordersBody    = $('orders-body');
+const ordersFoot    = $('orders-foot');
+const userTotalNote = $('user-total-note');
+const deadlineBox   = $('deadline-box');
+const deadlineText  = $('deadline-text');
+const deadlineInput   = $('deadline-input');
 const setDeadlineBtn   = $('set-deadline');
 const clearDeadlineBtn = $('clear-deadline');
-const startInput       = $('start-input');
-const setStartBtn      = $('set-start');
-const clearStartBtn    = $('clear-start');
-const pricesBody       = $('prices-body');
-const markupInput      = $('markup-input');
-const savePricesBtn    = $('save-prices');
-const matrixHead       = $('matrix-head');
-const matrixBody       = $('matrix-body');
-const matrixFoot       = $('matrix-foot');
+const startInput     = $('start-input');
+const setStartBtn    = $('set-start');
+const clearStartBtn  = $('clear-start');
+const pricesBody     = $('prices-body');
+const markupInput    = $('markup-input');
+const savePricesBtn  = $('save-prices');
+const matrixHead     = $('matrix-head');
+const matrixBody     = $('matrix-body');
+const matrixFoot     = $('matrix-foot');
 const productSummaryBody = $('product-summary-body');
 const productSummaryFoot = $('product-summary-foot');
-const exportBtn        = $('export-excel');
-const clearBtn         = $('clear-orders');
-const currentUserEl    = $('current-user');
-const logoutBtn        = $('logout-btn');
+const exportBtn  = $('export-excel');
+const clearBtn   = $('clear-orders');
+const currentUserEl  = $('current-user');
+const logoutBtn      = $('logout-btn');
 const themeToggleLogin = $('theme-toggle-login');
 const themeToggleApp   = $('theme-toggle-app');
+const syncStatusEl = $('sync-status');
+const syncBtn      = $('sync-btn');
 
-// ──────────────────────────────────────────────
-//  Состояние
-// ──────────────────────────────────────────────
+// ══════════════════════════════════════════════
+//  СОСТОЯНИЕ (все данные — из облака)
+// ══════════════════════════════════════════════
 
 let currentUser = null;
 let editingIndex = -1;
+let lastSync = null;
+let isUpdating = false;
 
-let orders = {};
-try { orders = JSON.parse(storage.getItem('orders')) || {}; } catch (e) { orders = {}; }
-
-let prices = {};
-try { prices = JSON.parse(storage.getItem('prices')) || {}; } catch (e) { prices = {}; }
-
-let markup = parseFloat(storage.getItem('markup')) || 0;
-
+let prices   = {};
+let markup   = 0;
+let orders   = {};
 let deadline = null;
-try { if (storage.getItem('orderDeadline')) deadline = new Date(storage.getItem('orderDeadline')); } catch (e) {}
-
 let startTime = null;
-try { if (storage.getItem('orderStartTime')) startTime = new Date(storage.getItem('orderStartTime')); } catch (e) {}
 
 let wasEditable = true;
 let wasOpen = true;
 
-// ──────────────────────────────────────────────
-//  Тема
-// ──────────────────────────────────────────────
+// ══════════════════════════════════════════════
+//  ОБЛАКО: ЧТЕНИЕ И ЗАПИСЬ ЧЕРЕЗ GITHUB API
+// ══════════════════════════════════════════════
+
+function defaultCloudData() {
+  return {
+    prices: {}, markup: 0, orders: {},
+    deadline: null, startTime: null,
+    lastUpdated: new Date().toISOString(),
+  };
+}
+
+async function readCloudDataWithSha() {
+  const api = 'https://api.github.com/repos/' + GH_CONFIG.owner + '/' + GH_CONFIG.repo +
+    '/contents/' + GH_CONFIG.file + '?ref=' + GH_CONFIG.branch;
+  const headers = { 'Authorization': 'Bearer ' + GH_CONFIG.token, 'Accept': 'application/vnd.github+json' };
+  const res = await fetch(api, { headers });
+  if (res.status === 404) return { data: defaultCloudData(), sha: null };
+  if (!res.ok) throw new Error('GitHub ' + res.status + ': ' + (await res.text()).slice(0, 200));
+  const json = await res.json();
+  const sha = json.sha;
+  const raw = atob(json.content.replace(/\n/g, ''));
+  const content = decodeURIComponent(escape(raw));
+  return { data: JSON.parse(content), sha: sha };
+}
+
+async function writeCloudData(data, sha) {
+  const api = 'https://api.github.com/repos/' + GH_CONFIG.owner + '/' + GH_CONFIG.repo +
+    '/contents/' + GH_CONFIG.file;
+  const headers = { 'Authorization': 'Bearer ' + GH_CONFIG.token, 'Accept': 'application/vnd.github+json' };
+  const json = JSON.stringify(data, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(json)));
+  const body = {
+    message: 'Обновление данных ' + new Date().toLocaleString('ru-RU'),
+    content: encoded,
+    branch: GH_CONFIG.branch,
+  };
+  if (sha) body.sha = sha;
+  const res = await fetch(api, { method: 'PUT', headers, body: JSON.stringify(body) });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error('GitHub ' + res.status + ': ' + errText.slice(0, 200));
+  }
+  return (await res.json()).content.sha;
+}
+
+async function updateCloudData(mutator) {
+  if (isUpdating) {
+    await new Promise(r => setTimeout(r, 600));
+    return updateCloudData(mutator);
+  }
+  isUpdating = true;
+  updateSyncStatus('syncing');
+  try {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { data, sha } = await readCloudDataWithSha();
+      mutator(data);
+      data.lastUpdated = new Date().toISOString();
+      try {
+        await writeCloudData(data, sha);
+        applyCloudData(data);
+        if (currentUser) {
+          fillProducts();
+          renderOrders();
+          renderDeadline();
+          if (currentUser.role === 'admin') renderPrices();
+        }
+        renderStartWarning();
+        return data;
+      } catch (e) {
+        if (e.message.includes('409') && attempt < 2) continue;
+        throw e;
+      }
+    }
+  } finally {
+    isUpdating = false;
+  }
+}
+
+function applyCloudData(data) {
+  if (data.prices) prices = data.prices;
+  if (data.markup !== undefined) markup = Number(data.markup) || 0;
+  if (data.orders) orders = data.orders;
+  deadline = data.deadline ? new Date(data.deadline) : null;
+  startTime = data.startTime ? new Date(data.startTime) : null;
+  storage.setItem('cloudCache', JSON.stringify(data));
+  lastSync = new Date();
+  updateSyncStatus('ok');
+}
+
+async function syncFromCloud() {
+  if (isUpdating) return;
+  updateSyncStatus('syncing');
+  try {
+    const { data } = await readCloudDataWithSha();
+    applyCloudData(data);
+    if (currentUser) {
+      fillProducts();
+      renderOrders();
+      renderDeadline();
+      if (currentUser.role === 'admin') {
+        renderPrices();
+        if (deadline) deadlineInput.value = toLocalInputValue(deadline);
+        if (startTime) startInput.value = toLocalInputValue(startTime);
+      }
+    }
+    renderStartWarning();
+    updateSyncStatus('ok');
+  } catch (e) {
+    try {
+      const cache = JSON.parse(storage.getItem('cloudCache'));
+      if (cache) {
+        applyCloudData(cache);
+        if (currentUser) {
+          fillProducts();
+          renderOrders();
+          renderDeadline();
+          if (currentUser.role === 'admin') {
+            renderPrices();
+            if (deadline) deadlineInput.value = toLocalInputValue(deadline);
+            if (startTime) startInput.value = toLocalInputValue(startTime);
+          }
+        }
+        renderStartWarning();
+      }
+    } catch (e2) {}
+    updateSyncStatus('err', e.message);
+  }
+}
+
+function updateSyncStatus(state, msg) {
+  if (!syncStatusEl) return;
+  if (state === 'ok') {
+    syncStatusEl.textContent = '🔄 ' + (lastSync ? lastSync.toLocaleTimeString('ru-RU') : '');
+    syncStatusEl.className = 'sync-info sync-ok';
+  } else if (state === 'syncing') {
+    syncStatusEl.textContent = '🔄 Синхронизация...';
+    syncStatusEl.className = 'sync-info';
+  } else {
+    syncStatusEl.textContent = '⚠️ Нет связи';
+    syncStatusEl.className = 'sync-info sync-err';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  ТЕМА
+// ══════════════════════════════════════════════
 
 let theme = storage.getItem('theme') || 'light';
 
@@ -495,11 +624,9 @@ function toggleTheme() {
 themeToggleLogin.addEventListener('click', toggleTheme);
 themeToggleApp.addEventListener('click', toggleTheme);
 
-// ──────────────────────────────────────────────
-//  Утилиты
-// ──────────────────────────────────────────────
-
-function saveOrders() { storage.setItem('orders', JSON.stringify(orders)); }
+// ══════════════════════════════════════════════
+//  УТИЛИТЫ
+// ══════════════════════════════════════════════
 
 function isOrderingOpen() { return !startTime || Date.now() >= startTime.getTime(); }
 function isEditable() { return !deadline || Date.now() < deadline.getTime(); }
@@ -553,7 +680,7 @@ function buildSummary() {
     });
     const price = prices[p] || 0;
     const cost = totalKg * price;
-    return { product: p, totalKg: totalKg, price: price, cost: cost, costWithMarkup: withMarkup(cost) };
+    return { product: p, totalKg, price, cost, costWithMarkup: withMarkup(cost) };
   });
 
   const byUser = entries
@@ -603,9 +730,11 @@ setInterval(() => {
   }
 }, 1000);
 
-// ──────────────────────────────────────────────
-//  Отрисовка
-// ──────────────────────────────────────────────
+setInterval(() => { syncFromCloud(); }, 30000);
+
+// ══════════════════════════════════════════════
+//  ОТРИСОВКА
+// ══════════════════════════════════════════════
 
 function fillProducts() {
   productSelect.innerHTML = '';
@@ -613,11 +742,7 @@ function fillProducts() {
     const opt = document.createElement('option');
     opt.value = p;
     const price = prices[p];
-    if (price > 0) {
-      opt.textContent = p + ' — ' + fmtRub(price) + ' руб/кг';
-    } else {
-      opt.textContent = p;
-    }
+    opt.textContent = price > 0 ? p + ' — ' + fmtRub(price) + ' руб/кг' : p;
     productSelect.appendChild(opt);
   });
 }
@@ -640,7 +765,6 @@ function renderPrices() {
   markupInput.value = markup > 0 ? markup : '';
 }
 
-// Таблица «Мой заказ» (пользователь)
 function renderOrders() {
   if (!currentUser) return;
   if (currentUser.role === 'admin') { renderAdminOrders(); return; }
@@ -698,11 +822,9 @@ function renderOrders() {
   userTotalNote.textContent = 'Сумма: ' + fmtRub(sumNoMarkup) + ' руб';
 }
 
-// Матрица «Заказы» + сводка (админ)
 function renderAdminOrders() {
   const s = buildSummary();
 
-  // Матрица
   matrixHead.innerHTML = '';
   const thU = document.createElement('th');
   thU.textContent = 'Заказчик';
@@ -744,7 +866,6 @@ function renderAdminOrders() {
   footTr.innerHTML = fhtml;
   matrixFoot.appendChild(footTr);
 
-  // Сводка по товарам
   productSummaryBody.innerHTML = '';
   if (s.byProduct.length === 0) {
     productSummaryBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--note);">Нет данных</td></tr>';
@@ -799,20 +920,9 @@ function resetForm() {
   formNote.textContent = '';
 }
 
-function deleteItem(idx) {
-  if (!isEditable() || !isOrderingOpen()) return;
-  if (!confirm('Удалить этот товар из заказа?')) return;
-  const myOrder = orders[currentUser.name];
-  if (!myOrder) return;
-  myOrder.items.splice(idx, 1);
-  if (myOrder.items.length === 0) { delete orders[currentUser.name]; }
-  else { myOrder.editedAt = new Date().toLocaleString('ru-RU'); }
-  if (editingIndex === idx) { resetForm(); }
-  else if (editingIndex > idx) { editingIndex--; }
-  saveOrders(); renderOrders();
-}
-
-// ── Навигация ──
+// ══════════════════════════════════════════════
+//  НАВИГАЦИЯ
+// ══════════════════════════════════════════════
 
 function switchView(which) {
   if (which === 'orders') {
@@ -832,7 +942,9 @@ function switchView(which) {
 navOrdersBtn.addEventListener('click', () => switchView('orders'));
 navPricesBtn.addEventListener('click', () => switchView('prices'));
 
-// ── Вход ──
+// ══════════════════════════════════════════════
+//  ВХОД / ВЫХОД
+// ══════════════════════════════════════════════
 
 function doLogin() {
   const name = loginName.value.trim();
@@ -873,6 +985,7 @@ function doLogin() {
   fillProducts();
   renderDeadline();
   renderOrders();
+  syncFromCloud();
 }
 
 loginBtn.addEventListener('click', doLogin);
@@ -887,85 +1000,172 @@ logoutBtn.addEventListener('click', () => {
   renderStartWarning();
 });
 
-saveBtn.addEventListener('click', () => {
+syncBtn.addEventListener('click', () => { syncFromCloud(); });
+
+// ══════════════════════════════════════════════
+//  ЗАКАЗЫ (синхронизация с облаком)
+// ══════════════════════════════════════════════
+
+saveBtn.addEventListener('click', async () => {
   if (!isOrderingOpen()) { alert('Приём заказов ещё не начался'); return; }
   if (!isEditable()) { alert('Срок приёма правок истёк'); return; }
   const product = productSelect.value;
   const kg = parseFloat((kgInput.value || '').replace(',', '.'));
   if (!product || isNaN(kg) || kg <= 0) { alert('Выберите товар и укажите количество больше 0'); return; }
 
-  if (!orders[currentUser.name]) {
-    orders[currentUser.name] = { user: currentUser.name, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' };
-  }
-  const myOrder = orders[currentUser.name];
-  if (editingIndex >= 0) {
-    myOrder.items[editingIndex].product = product;
-    myOrder.items[editingIndex].kg = kg;
-    myOrder.editedAt = new Date().toLocaleString('ru-RU');
-    resetForm();
-  } else {
-    if (myOrder.items.findIndex(i => i.product === product) >= 0) {
+  if (editingIndex < 0) {
+    const myOrder = orders[currentUser.name];
+    if (myOrder && myOrder.items.findIndex(i => i.product === product) >= 0) {
       alert('Этот товар уже в заказе. Отредактируйте его.'); return;
     }
-    myOrder.items.push({ product: product, kg: kg });
-    myOrder.editedAt = new Date().toLocaleString('ru-RU');
-    kgInput.value = '';
   }
-  saveOrders(); renderOrders();
+
+  saveBtn.disabled = true;
+  const oldText = saveBtn.textContent;
+  saveBtn.textContent = 'Сохранение...';
+
+  try {
+    await updateCloudData(data => {
+      if (!data.orders) data.orders = {};
+      if (!data.orders[currentUser.name]) {
+        data.orders[currentUser.name] = { user: currentUser.name, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' };
+      }
+      const myOrder = data.orders[currentUser.name];
+      if (editingIndex >= 0) {
+        myOrder.items[editingIndex].product = product;
+        myOrder.items[editingIndex].kg = kg;
+        myOrder.editedAt = new Date().toLocaleString('ru-RU');
+      } else {
+        myOrder.items.push({ product: product, kg: kg });
+        myOrder.editedAt = new Date().toLocaleString('ru-RU');
+      }
+    });
+
+    if (editingIndex >= 0) resetForm();
+    else kgInput.value = '';
+  } catch (e) {
+    alert('Не удалось сохранить заказ: ' + e.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = oldText;
+  }
 });
 
 cancelEditBtn.addEventListener('click', resetForm);
 
-// ── Цены и наценка (админ) ──
+async function deleteItem(idx) {
+  if (!isEditable() || !isOrderingOpen()) return;
+  if (!confirm('Удалить этот товар из заказа?')) return;
 
-savePricesBtn.addEventListener('click', () => {
+  try {
+    await updateCloudData(data => {
+      const myOrder = data.orders && data.orders[currentUser.name];
+      if (!myOrder) return;
+      myOrder.items.splice(idx, 1);
+      if (myOrder.items.length === 0) {
+        delete data.orders[currentUser.name];
+      } else {
+        myOrder.editedAt = new Date().toLocaleString('ru-RU');
+      }
+    });
+
+    if (editingIndex === idx) resetForm();
+    else if (editingIndex > idx) editingIndex--;
+  } catch (e) {
+    alert('Не удалось удалить: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  ЦЕНЫ И НАЦЕНКА (админ → облако)
+// ══════════════════════════════════════════════
+
+savePricesBtn.addEventListener('click', async () => {
+  const newPrices = {};
   let ok = true;
   pricesBody.querySelectorAll('input[data-product]').forEach(inp => {
     const val = parseFloat((inp.value || '').replace(',', '.'));
     if (isNaN(val) || val < 0) { inp.style.borderColor = 'var(--danger)'; ok = false; }
-    else { inp.style.borderColor = ''; prices[inp.dataset.product] = val; }
+    else { inp.style.borderColor = ''; newPrices[inp.dataset.product] = val; }
   });
   const mk = parseFloat((markupInput.value || '0').replace(',', '.'));
   if (isNaN(mk) || mk < 0) { markupInput.style.borderColor = 'var(--danger)'; ok = false; }
-  else { markupInput.style.borderColor = ''; markup = mk; }
   if (!ok) { alert('Проверьте значения: цена и наценка должны быть числами от 0 и выше'); return; }
-  storage.setItem('prices', JSON.stringify(prices));
-  storage.setItem('markup', String(markup));
-  fillProducts(); renderOrders();
-  alert('Сохранено. Наценка: ' + fmtRub(markup) + '%');
+
+  savePricesBtn.disabled = true;
+  const oldText = savePricesBtn.textContent;
+  savePricesBtn.textContent = 'Сохранение...';
+
+  try {
+    await updateCloudData(data => {
+      data.prices = newPrices;
+      data.markup = mk;
+    });
+    alert('Цены сохранены. Они появятся у всех пользователей при следующем обновлении (до 30 сек).');
+  } catch (e) {
+    alert('Не удалось сохранить цены: ' + e.message);
+  } finally {
+    savePricesBtn.disabled = false;
+    savePricesBtn.textContent = oldText;
+  }
 });
 
-// ── Время начала (админ) ──
+// ══════════════════════════════════════════════
+//  ВРЕМЯ НАЧАЛА (админ → облако)
+// ══════════════════════════════════════════════
 
-setStartBtn.addEventListener('click', () => {
+setStartBtn.addEventListener('click', async () => {
   if (!startInput.value) { alert('Выберите дату и время'); return; }
-  startTime = new Date(startInput.value);
-  storage.setItem('orderStartTime', startTime.toISOString());
-  renderStartWarning();
-  alert('Начало заказов: ' + startTime.toLocaleString('ru-RU'));
+  const newStart = new Date(startInput.value).toISOString();
+  try {
+    await updateCloudData(data => { data.startTime = newStart; });
+    alert('Начало заказов: ' + startTime.toLocaleString('ru-RU'));
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
 });
 
-clearStartBtn.addEventListener('click', () => {
-  startTime = null; storage.removeItem('orderStartTime'); startInput.value = '';
-  renderStartWarning(); alert('Ограничение снято.');
+clearStartBtn.addEventListener('click', async () => {
+  try {
+    await updateCloudData(data => { data.startTime = null; });
+    startInput.value = '';
+    alert('Ограничение снято.');
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
 });
 
-// ── Дедлайн (админ) ──
+// ══════════════════════════════════════════════
+//  ДЕДЛАЙН (админ → облако)
+// ══════════════════════════════════════════════
 
-setDeadlineBtn.addEventListener('click', () => {
+setDeadlineBtn.addEventListener('click', async () => {
   if (!deadlineInput.value) { alert('Выберите дату и время'); return; }
-  deadline = new Date(deadlineInput.value);
-  storage.setItem('orderDeadline', deadline.toISOString());
-  renderDeadline(); renderOrders();
-  alert('Дедлайн установлен: ' + deadline.toLocaleString('ru-RU'));
+  const newDeadline = new Date(deadlineInput.value).toISOString();
+  try {
+    await updateCloudData(data => { data.deadline = newDeadline; });
+    alert('Дедлайн установлен: ' + deadline.toLocaleString('ru-RU'));
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
 });
 
-clearDeadlineBtn.addEventListener('click', () => {
-  deadline = null; storage.removeItem('orderDeadline'); deadlineInput.value = '';
-  renderDeadline(); renderOrders(); alert('Дедлайн снят.');
+clearDeadlineBtn.addEventListener('click', async () => {
+  try {
+    await updateCloudData(data => { data.deadline = null; });
+    deadlineInput.value = '';
+    alert('Дедлайн снят.');
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
 });
 
-// ── Экспорт ──
+// ══════════════════════════════════════════════
+//  ОЧИСТКА ВСЕХ ЗАКАЗОВ (админ → облако)
+// ══════════════════════════════════════════════
+
+clearBtn.addEventListener('click', async () => {
+  if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
+  try {
+    await updateCloudData(data => { data.orders = {}; });
+  } catch (e) { alert('Не удалось очистить: ' + e.message); }
+});
+
+// ══════════════════════════════════════════════
+//  ЭКСПОРТ
+// ══════════════════════════════════════════════
 
 function loadXlsxLib() {
   return new Promise((resolve, reject) => {
@@ -999,7 +1199,6 @@ function downloadFile(content, filename, mime) {
 function exportToCsv() {
   const s = buildSummary();
   const lines = [];
-
   lines.push('ЗАКАЗЫ');
   lines.push(['Заказчик'].concat(s.ordered, ['Итого с наценкой, руб']).join(';'));
   s.byUser.forEach(u => {
@@ -1018,7 +1217,6 @@ function exportToCsv() {
   });
   totRow.push('"' + fmtRub(s.grandTotal) + '"');
   lines.push(totRow.join(';'));
-
   lines.push(''); lines.push('Наценка: ' + fmtRub(markup) + '%');
   lines.push(''); lines.push('СВОДКА ПО ТОВАРАМ');
   lines.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб;С наценкой, руб');
@@ -1029,12 +1227,10 @@ function exportToCsv() {
   const sumCost = s.byProduct.reduce((a, r) => a + r.cost, 0);
   const sumMk = s.byProduct.reduce((a, r) => a + r.costWithMarkup, 0);
   lines.push('"ИТОГО";' + fmtKg(sumKg) + ';;"' + fmtRub(sumCost) + '";"' + fmtRub(sumMk) + '"');
-
   lines.push(''); lines.push('КТО СКОЛЬКО ДОЛЖЕН');
   lines.push('Заказчик;Сумма с наценкой, руб');
   s.byUser.forEach(u => { lines.push('"' + u.user + '";"' + fmtRub(u.total) + '"'); });
   lines.push('"ИТОГО";"' + fmtRub(s.grandTotal) + '"');
-
   downloadFile(lines.join('\n'), 'itogi_' + new Date().toISOString().slice(0, 10) + '.csv', 'text/csv;charset=utf-8');
 }
 
@@ -1051,7 +1247,6 @@ function exportToExcel() {
 
   loadXlsxLib().then(() => {
     const s = buildSummary();
-
     const matrixData = s.byUser.map(u => {
       const row = { 'Заказчик': u.user };
       s.ordered.forEach(p => {
@@ -1104,15 +1299,12 @@ function exportToExcel() {
 
 exportBtn.addEventListener('click', exportToExcel);
 
-clearBtn.addEventListener('click', () => {
-  if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
-  orders = {}; saveOrders(); renderOrders();
-});
-
-// ── Инициализация ──
+// ══════════════════════════════════════════════
+//  ИНИЦИАЛИЗАЦИЯ
+// ══════════════════════════════════════════════
 
 applyTheme();
-renderStartWarning();
+syncFromCloud();
 </script>
 </body>
 </html>
