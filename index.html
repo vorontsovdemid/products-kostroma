@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Заказы на товар</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Экран авторизации -->
+    <div id="login-screen" class="container">
+      <h1>Вход</h1>
+      <div class="login-form">
+        <label>Имя:
+          <input type="text" id="login-name" placeholder="Ваше имя" />
+        </label>
+        <label>Пароль:
+          <input type="password" id="login-pass" placeholder="Пароль" />
+        </label>
+        <button type="button" id="login-btn">Войти</button>
+        <p id="login-error" class="error"></p>
+      </div>
+    </div>
+
+    <!-- Основной экран -->
+    <div id="app-screen" class="container hidden">
+      <div class="header">
+        <h1>Приём заказов</h1>
+        <div class="user-info">
+          <span id="current-user"></span>
+          <button id="logout-btn" class="small-btn">Выйти</button>
+        </div>
+      </div>
+
+      <!-- Форма заказа -->
+      <div class="order-form">
+        <label>Товар:
+          <select id="product"></select>
+        </label>
+        <label>Количество (кг):
+          <input type="number" id="kg" step="0.01" min="0.01" placeholder="кг" />
+        </label>
+        <button type="button" id="add-order">Добавить заказ</button>
+      </div>
+
+      <!-- Список заказов -->
+      <h2>Заказы</h2>
+      <table id="orders-table">
+        <thead>
+          <tr>
+            <th>Товар</th>
+            <th>Кг</th>
+            <th>Заказчик</th>
+            <th>Дата</th>
+          </tr>
+        </thead>
+        <tbody id="orders-body"></tbody>
+      </table>
+
+      <!-- Кнопка экспорта (только админ) -->
+      <div id="admin-panel" class="hidden">
+        <hr />
+        <h2>Админ-панель</h2>
+        <button id="export-excel">Итоги → Excel</button>
+        <button id="clear-orders" class="danger-btn">Очистить все заказы</button>
+      </div>
+    </div>
+
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
