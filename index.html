@@ -1,280 +1,1274 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заказ продуктов | Кострома</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --bg: #f3f4f6;
-            --card: #ffffff;
-            --text: #1f2937;
-            --text-muted: #6b7280;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Заказы на товар</title>
+<style>
+:root {
+  --bg: #f5f5f5; --surface: #fff; --text: #333; --border: #ddd;
+  --th-bg: #f0f0f0; --input-border: #ccc; --primary: #007bff;
+  --primary-hover: #0056b3; --danger: #dc3545; --danger-hover: #b02a37;
+  --note: #777; --even-row: #fafafa; --dl-bg: #fff5f5; --sb-bg: #999;
+  --sb-hover: #777; --tfoot-bg: #e9ecef; --tfoot-text: #333;
+  --nav-bg: #f0f0f0; --nav-active: #007bff;
+}
+[data-theme="dark"] {
+  --bg: #1a1a2e; --surface: #16213e; --text: #e0e0e0; --border: #334155;
+  --th-bg: #1e293b; --input-border: #475569; --primary: #3b82f6;
+  --primary-hover: #2563eb; --danger: #ef4444; --danger-hover: #dc2626;
+  --note: #94a3b8; --even-row: #1e293b; --dl-bg: #2d1b1b; --sb-bg: #475569;
+  --sb-hover: #64748b; --tfoot-bg: #0f172a; --tfoot-text: #e0e0e0;
+  --nav-bg: #1e293b; --nav-active: #3b82f6;
+}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
+body {
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  padding: 12px; margin: 0;
+  background-image: url('kalyancha.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: var(--bg);
+  min-height: 100vh;
+}
 
-        .container {
-            background: var(--card);
-            width: 100%;
-            max-width: 500px;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+.container {
+  max-width: 900px; margin: 0 auto;
+  background: var(--surface); color: var(--text);
+  padding: 20px; border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
 
-        h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--text);
-        }
+h1, h2, h3 { color: var(--text); margin-top: 0; }
+.header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;
+}
+.user-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sync-info { font-size: 12px; color: var(--note); }
+.sync-ok { color: #1a7f37; }
+.sync-err { color: var(--danger); }
+.theme-btn {
+  padding: 6px 12px; font-size: 18px;
+  background: var(--sb-bg); color: #fff;
+  border: none; border-radius: 5px; cursor: pointer; margin: 0;
+}
+.theme-btn:hover { background: var(--sb-hover); }
+.small-btn {
+  padding: 5px 10px; font-size: 13px;
+  background: var(--sb-bg); color: #fff;
+  border: none; border-radius: 5px; cursor: pointer; margin: 0;
+}
+.small-btn:hover { background: var(--sb-hover); }
 
-        .form-group { margin-bottom: 1.25rem; }
+.nav-tabs {
+  display: flex; gap: 0; margin-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+}
+.nav-tab {
+  background: transparent; color: var(--text);
+  border: none; border-bottom: 3px solid transparent;
+  padding: 8px 18px; margin-bottom: 0; font-size: 15px;
+  cursor: pointer; border-radius: 0;
+}
+.nav-tab:hover { background: var(--nav-bg); }
+.nav-tab.active {
+  color: var(--primary); border-bottom-color: var(--nav-active);
+  font-weight: 700;
+}
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text);
-        }
+.login-form, .order-form {
+  display: flex; flex-direction: column; gap: 12px; max-width: 380px;
+}
+label { display: block; font-weight: 600; }
+.hint { font-weight: 400; font-size: 13px; color: var(--note); }
+input, select {
+  width: 100%; padding: 9px;
+  border: 1px solid var(--input-border); border-radius: 5px;
+  box-sizing: border-box; font-size: 15px;
+  background: var(--surface); color: var(--text);
+}
+button {
+  padding: 10px 16px; background: var(--primary); color: #fff;
+  border: none; border-radius: 5px; cursor: pointer;
+  font-size: 15px; margin-bottom: 8px;
+}
+button:hover { background: var(--primary-hover); }
+button:disabled { background: #ccc; cursor: not-allowed; color: #888; }
+.danger-btn { background: var(--danger); }
+.danger-btn:hover { background: var(--danger-hover); }
+.form-buttons { display: flex; gap: 8px; align-items: center; }
+.error { color: var(--danger); font-size: 14px; min-height: 20px; }
+.note { color: var(--note); font-size: 13px; }
 
-        select, input[type="number"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
+.start-warning {
+  color: var(--danger); font-size: 24px; font-weight: 700;
+  text-align: center; margin: 20px 0; padding: 24px 16px;
+  border: 3px solid var(--danger); border-radius: 10px;
+  background: var(--dl-bg); line-height: 1.5;
+}
 
-        select:focus, input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
+.deadline-box {
+  margin: 14px 0; padding: 12px 16px;
+  border: 2px solid var(--danger); border-radius: 8px;
+  background: var(--dl-bg); color: var(--danger);
+  font-weight: 700; font-size: 15px; text-align: center;
+}
 
-        .price-display {
-            background-color: #f9fafb;
-            border-color: #e5e7eb;
-            color: var(--primary);
-            font-weight: bold;
-        }
+.table-wrap {
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  margin-top: 12px;
+}
+table { width: 100%; border-collapse: collapse; min-width: 380px; }
+th, td {
+  border: 1px solid var(--border); padding: 8px 10px; text-align: left;
+  word-break: break-word;
+}
+th { background: var(--th-bg); white-space: nowrap; }
+tr:nth-child(even) { background: var(--even-row); }
+td.num, th.num { text-align: right; white-space: nowrap; }
+tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 700; }
 
-        button.submit-btn {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-        }
+hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+.hidden { display: none; }
 
-        button.submit-btn:hover { background-color: var(--primary-hover); }
-        button.submit-btn:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
-            transform: none;
-        }
+.admin-section { margin-bottom: 22px; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.btn-row button { margin-bottom: 0; }
+.settings-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.settings-row label { flex: 1; min-width: 180px; }
+.settings-row button { margin-bottom: 0; white-space: nowrap; }
+.markup-label { margin-top: 14px; }
+.markup-label input { max-width: 160px; }
+.price-input { max-width: 130px; }
+.total-note { margin-top: 8px; font-weight: 700; }
 
-        #status {
-            margin-top: 1rem;
-            text-align: center;
-            font-size: 0.9rem;
-            min-height: 1.2rem;
-        }
+#js-error {
+  position: fixed; left: 8px; right: 8px; bottom: 8px;
+  background: #dc3545; color: #fff;
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; z-index: 9999; word-break: break-word;
+}
 
-        .success { color: var(--success); }
-        .error { color: var(--danger); }
-        .loading { color: var(--primary); }
-
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
+@media (max-width: 520px) {
+  body { padding: 8px; }
+  .container { padding: 16px; border-radius: 8px; }
+  h1 { font-size: 20px; }
+  h2 { font-size: 17px; }
+  h3 { font-size: 15px; }
+  th, td { padding: 6px 8px; font-size: 14px; }
+  .start-warning { font-size: 20px; padding: 18px 12px; }
+  .deadline-box { font-size: 13px; padding: 10px 12px; }
+  button { padding: 9px 14px; font-size: 14px; }
+  .nav-tab { padding: 8px 12px; font-size: 14px; }
+}
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🛒 Заказ продуктов</h1>
+<div id="js-error" class="hidden"></div>
 
-        <div class="form-group">
-            <label for="productSelect">Выберите товар</label>
-            <select id="productSelect" required>
-                <option value="" disabled selected>Загрузка товаров...</option>
-            </select>
-        </div>
+<!-- ────── Экран входа ────── -->
+<div id="login-screen" class="container">
+  <div class="header">
+    <h1>Вход</h1>
+    <button class="theme-btn" id="theme-toggle-login" type="button">🌙</button>
+  </div>
+  <div id="start-warning" class="start-warning hidden">
+    ЗАКАЗЫ ПРИНИМАЮТСЯ С<br><span id="start-time-display"></span>
+  </div>
+  <div class="login-form">
+    <label>Имя:
+      <input type="text" id="login-name" autocomplete="username" placeholder="Ваше имя" />
+    </label>
+    <label>Пароль:
+      <input type="password" id="login-pass" autocomplete="current-password" placeholder="Пароль" />
+    </label>
+    <button type="button" id="login-btn">Войти</button>
+    <p id="login-error" class="error"></p>
+  </div>
+</div>
 
-        <div class="form-group">
-            <label for="quantityInput">Количество (кг)</label>
-            <input type="number" id="quantityInput" value="1" min="0.1" step="0.1" required>
-        </div>
+<!-- ────── Основной экран ────── -->
+<div id="app-screen" class="container hidden">
+  <div class="header">
+    <h1>Приём заказов</h1>
+    <div class="user-info">
+      <span id="sync-status" class="sync-info"></span>
+      <button id="sync-btn" class="small-btn" type="button" title="Обновить данные">🔄</button>
+      <span id="current-user"></span>
+      <button id="logout-btn" class="small-btn" type="button">Выйти</button>
+      <button class="theme-btn" id="theme-toggle-app" type="button">🌙</button>
+    </div>
+  </div>
 
-        <div class="form-group">
-            <label>Итоговая стоимость</label>
-            <input type="text" id="totalPriceDisplay" class="price-display" readonly value="0 ₽">
-        </div>
+  <div id="nav-tabs" class="nav-tabs hidden">
+    <button type="button" class="nav-tab active" id="nav-orders">Заказы</button>
+    <button type="button" class="nav-tab" id="nav-prices">Цены и наценка</button>
+  </div>
 
-        <button type="button" class="submit-btn" id="orderBtn" onclick="sendOrder()">
-            Оформить заказ
-        </button>
+  <div id="deadline-box" class="deadline-box hidden">
+    <span id="deadline-text"></span>
+  </div>
 
-        <div id="status"></div>
+  <!-- ── Вкладка «Заказы» ── -->
+  <div id="view-orders">
+    <div id="order-form-section" class="order-form">
+      <h2 id="form-title">Добавить товар в заказ</h2>
+      <label>Товар:
+        <span class="hint"> (цена за прошлый раз)</span><br />
+        <select id="product"></select>
+      </label>
+      <label>Количество (кг):
+        <input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="кг" />
+      </label>
+      <div class="form-buttons">
+        <button type="button" id="save-order">Добавить</button>
+        <button type="button" id="cancel-edit" class="small-btn hidden">Отменить</button>
+      </div>
+      <p id="form-note" class="note"></p>
     </div>
 
-    <script>
-        // Переменная больше не нужна для формирования URL, адрес вшит напрямую в fetch
-        
-        const productSelect = document.getElementById('productSelect');
-        const quantityInput = document.getElementById('quantityInput');
-        const totalPriceDisplay = document.getElementById('totalPriceDisplay');
-        const statusDiv = document.getElementById('status');
-        const orderBtn = document.getElementById('orderBtn');
+    <div id="user-orders-section">
+      <h2 id="orders-title">Мой заказ</h2>
+      <div class="table-wrap">
+        <table id="orders-table">
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th class="num">Кг</th>
+              <th class="num">Цена за прошлый раз, руб/кг</th>
+              <th class="num">Стоимость, руб</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="orders-body"></tbody>
+          <tfoot id="orders-foot"></tfoot>
+        </table>
+      </div>
+      <p id="user-total-note" class="total-note"></p>
+    </div>
 
-        document.addEventListener('DOMContentLoaded', loadProducts);
+    <div id="admin-orders-section" class="hidden">
+      <div class="admin-section">
+        <h3>Заказы</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr id="matrix-head"></tr></thead>
+            <tbody id="matrix-body"></tbody>
+            <tfoot id="matrix-foot"></tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="admin-section">
+        <h3>Сводка по товарам</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Товар</th>
+                <th class="num">Всего, кг</th>
+                <th class="num">Цена, руб/кг</th>
+                <th class="num">Стоимость, руб</th>
+                <th class="num">С наценкой, руб</th>
+              </tr>
+            </thead>
+            <tbody id="product-summary-body"></tbody>
+            <tfoot id="product-summary-foot"></tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="admin-section">
+        <h3>Действия</h3>
+        <div class="btn-row">
+          <button id="export-excel" type="button">Итоги → Excel</button>
+          <button id="clear-orders" class="danger-btn" type="button">Очистить все заказы</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        async function loadProducts() {
-            setStatus('Загрузка товаров...', 'loading');
-            orderBtn.disabled = true;
+  <!-- ── Вкладка «Цены и наценка» (только админ) ── -->
+  <div id="view-prices" class="hidden">
+    <div class="admin-section">
+      <h3>Цены товаров</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Товар</th><th class="num">Цена, руб/кг</th></tr>
+          </thead>
+          <tbody id="prices-body"></tbody>
+        </table>
+      </div>
+      <label class="markup-label">Наценка за перевозку, %:
+        <input type="number" id="markup-input" step="0.1" min="0" inputmode="decimal" />
+      </label>
+      <button type="button" id="save-prices">Сохранить цены и наценку</button>
+    </div>
+    <div class="admin-section">
+      <h3>Время начала приёма заказов</h3>
+      <div class="settings-row">
+        <label>Открыть заказы с:
+          <input type="datetime-local" id="start-input" />
+        </label>
+        <button type="button" id="set-start">Установить</button>
+        <button type="button" id="clear-start" class="small-btn">Сбросить</button>
+      </div>
+    </div>
+    <div class="admin-section">
+      <h3>Дедлайн правок</h3>
+      <div class="settings-row">
+        <label>Закрыть правки после:
+          <input type="datetime-local" id="deadline-input" />
+        </label>
+        <button type="button" id="set-deadline">Установить</button>
+        <button type="button" id="clear-deadline" class="small-btn">Сбросить</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-            try {
-                // ИСПРАВЛЕНИЕ: Жестко прописанный URL вместо переменной
-                const response = await fetch('https://orders-kostroma-default-rtdb.europe-west1.firebasedatabase.app/products.json');
-                
-                if (!response.ok) {
-                    throw new Error(`Ошибка сети: \${response.status}`);
-                }
+<script>
+window.onerror = function (msg, src, line) {
+  var el = document.getElementById('js-error');
+  if (el) {
+    el.textContent = 'Ошибка скрипта: ' + msg + ' (строка ' + line + ')';
+    el.classList.remove('hidden');
+  }
+};
 
-                const data = await response.json();
+// ══════════════════════════════════════════════
+//  КОНФИГУРАЦИЯ — FIREBASE
+// ══════════════════════════════════════════════
 
-                if (!data || Object.keys(data).length === 0) {
-                    productSelect.innerHTML = '<option value="" disabled>В базе нет товаров</option>';
-                    setStatus('Товары не найдены. Проверьте узел "products" в Firebase.', 'error');
-                    return;
-                }
+const DB_URL = 'https://orders-kostroma-default-rtdb.europe-west1.firebasedatabase.app';
+// Все данные приложения живут в узле "data":
+//   data/prices, data/markup, data/orders, data/deadline, data/startTime
 
-                productSelect.innerHTML = '<option value="" disabled selected>Выберите товар</option>';
-                
-                Object.keys(data).forEach(key => {
-                    const product = data[key];
-                    const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = `${product.name} — ${product.price} ₽/кг`;
-                    option.dataset.price = product.price;
-                    productSelect.appendChild(option);
-                });
+const PRODUCTS = [
+  'Картофель', 'Морковь', 'Лук репчатый',
+  'Капуста белокочанная', 'Свёкла', 'Помидоры',
+  'Огурцы', 'Яблоки', 'Груши', 'Мука пшеничная',
+];
 
-                productSelect.addEventListener('change', updateTotal);
-                quantityInput.addEventListener('input', updateTotal);
+const USERS = {
+  admin: { password: 'admin123', role: 'admin' },
+  ivan:  { password: 'ivan456',  role: 'user'  },
+  maria: { password: 'maria789', role: 'user'  },
+};
 
-                updateTotal();
-                setStatus('Товары загружены. Можно оформлять заказ.', 'success');
-                
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                setStatus('Ошибка: проверьте консоль (F12) и правила доступа в Firebase.', 'error');
-            } finally {
-                orderBtn.disabled = false;
-            }
-        }
+// ══════════════════════════════════════════════
+//  ХРАНИЛИЩЕ (тема + кэш на случай нет связи)
+// ══════════════════════════════════════════════
 
-        function updateTotal() {
-            const selectedOption = productSelect.options[productSelect.selectedIndex];
-            const price = parseFloat(selectedOption.dataset.price) || 0;
-            const quantity = parseFloat(quantityInput.value) || 0;
-            const total = price * quantity;
+const storage = (() => {
+  try {
+    const t = '__test__';
+    localStorage.setItem(t, t);
+    localStorage.removeItem(t);
+    return localStorage;
+  } catch (e) {
+    const mem = {};
+    return {
+      getItem: k => (k in mem ? mem[k] : null),
+      setItem: (k, v) => { mem[k] = String(v); },
+      removeItem: k => { delete mem[k]; },
+    };
+  }
+})();
 
-            if (total > 0) {
-                totalPriceDisplay.value = `\${total.toLocaleString('ru-RU')} ₽`;
-            } else {
-                totalPriceDisplay.value = '0 ₽';
-            }
-        }
+// ══════════════════════════════════════════════
+//  ЭЛЕМЕНТЫ DOM
+// ══════════════════════════════════════════════
 
-        async function sendOrder() {
-            const selectedOption = productSelect.options[productSelect.selectedIndex];
-            const productId = selectedOption.value;
-            const productName = selectedOption.textContent.split(' —');
-            const quantity = parseFloat(quantityInput.value);
-            const pricePerKg = parseFloat(selectedOption.dataset.price);
-            const total = quantity * pricePerKg;
+const $ = id => document.getElementById(id);
 
-            if (!productId || quantity <= 0) {
-                setStatus('Пожалуйста, выберите товар и укажите корректное количество.', 'error');
-                return;
-            }
+const loginScreen = $('login-screen');
+const appScreen   = $('app-screen');
+const loginName   = $('login-name');
+const loginPass   = $('login-pass');
+const loginBtn    = $('login-btn');
+const loginError  = $('login-error');
+const startWarning     = $('start-warning');
+const startTimeDisplay = $('start-time-display');
+const navTabs      = $('nav-tabs');
+const navOrdersBtn = $('nav-orders');
+const navPricesBtn = $('nav-prices');
+const viewOrders   = $('view-orders');
+const viewPrices   = $('view-prices');
+const orderFormSection  = $('order-form-section');
+const userOrdersSection  = $('user-orders-section');
+const adminOrdersSection = $('admin-orders-section');
+const productSelect = $('product');
+const kgInput       = $('kg');
+const saveBtn       = $('save-order');
+const cancelEditBtn = $('cancel-edit');
+const formTitle     = $('form-title');
+const formNote      = $('form-note');
+const ordersBody    = $('orders-body');
+const ordersFoot    = $('orders-foot');
+const userTotalNote = $('user-total-note');
+const deadlineBox   = $('deadline-box');
+const deadlineText  = $('deadline-text');
+const deadlineInput   = $('deadline-input');
+const setDeadlineBtn   = $('set-deadline');
+const clearDeadlineBtn = $('clear-deadline');
+const startInput     = $('start-input');
+const setStartBtn    = $('set-start');
+const clearStartBtn  = $('clear-start');
+const pricesBody     = $('prices-body');
+const markupInput    = $('markup-input');
+const savePricesBtn  = $('save-prices');
+const matrixHead     = $('matrix-head');
+const matrixBody     = $('matrix-body');
+const matrixFoot     = $('matrix-foot');
+const productSummaryBody = $('product-summary-body');
+const productSummaryFoot = $('product-summary-foot');
+const exportBtn  = $('export-excel');
+const clearBtn   = $('clear-orders');
+const currentUserEl  = $('current-user');
+const logoutBtn      = $('logout-btn');
+const themeToggleLogin = $('theme-toggle-login');
+const themeToggleApp   = $('theme-toggle-app');
+const syncStatusEl = $('sync-status');
+const syncBtn      = $('sync-btn');
 
-            orderBtn.disabled = true;
-            orderBtn.innerHTML = '<span class="spinner"></span> Отправка заказа...';
-            setStatus('', '');
+// ══════════════════════════════════════════════
+//  СОСТОЯНИЕ
+// ══════════════════════════════════════════════
 
-            try {
-                const orderData = {
-                    product_id: productId,
-                    product_name: productName,
-                    quantity_kg: quantity,
-                    price_per_kg: pricePerKg,
-                    total_price: total,
-                    timestamp: new Date().toISOString(),
-                    status: 'new'
-                };
+let currentUser = null;
+let editingIndex = -1;
+let lastSync = null;
+let isUpdating = false;
 
-                // ИСПРАВЛЕНИЕ: Жестко прописанный URL для отправки
-                const response = await fetch('https://orders-kostroma-default-rtdb.firebaseio.com/orders.json', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
-                });
+let prices   = {};
+let markup   = 0;
+let orders   = {};
+let deadline = null;
+let startTime = null;
 
-                if (response.ok) {
-                    setStatus('✅ Заказ успешно оформлен!', 'success');
-                    productSelect.value = '';
-                    quantityInput.value = '1';
-                    totalPriceDisplay.value = '0 ₽';
-                    updateTotal();
-                } else {
-                    throw new Error('Ошибка сервера Firebase');
-                }
-            } catch (error) {
-                console.error('Ошибка отправки:', error);
-                setStatus('❌ Не удалось отправить заказ. Проверьте Rules в Firebase.', 'error');
-            } finally {
-                orderBtn.disabled = false;
-                orderBtn.innerHTML = 'Оформить заказ';
-            }
-        }
+let wasEditable = true;
+let wasOpen = true;
 
-        function setStatus(message, type) {
-            statusDiv.textContent = message;
-            statusDiv.className = type || '';
-        }
-    </script>
+// ══════════════════════════════════════════════
+//  ОБЛАКО: ЧТЕНИЕ И ЗАПИСЬ ЧЕРЕЗ FIREBASE REST API
+// ══════════════════════════════════════════════
+
+function defaultCloudData() {
+  return {
+    prices: {}, markup: 0, orders: {},
+    deadline: null, startTime: null,
+    lastUpdated: new Date().toISOString(),
+  };
+}
+
+// Чтение всех данных из Firebase (узел "data")
+async function readCloudData() {
+  const res = await fetch(DB_URL + '/data.json');
+  if (!res.ok) {
+    const t = await res.text().catch(() => '');
+    throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200));
+  }
+  const data = await res.json();
+  return data || defaultCloudData();
+}
+
+// Полная перезапись узла "data"
+async function writeCloudData(data) {
+  const res = await fetch(DB_URL + '/data.json', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const t = await res.text().catch(() => '');
+    throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200));
+  }
+}
+
+// Читает данные, применяет изменения, пишет обратно.
+async function updateCloudData(mutator) {
+  if (isUpdating) {
+    await new Promise(r => setTimeout(r, 600));
+    return updateCloudData(mutator);
+  }
+  isUpdating = true;
+  updateSyncStatus('syncing');
+  try {
+    const data = await readCloudData();
+    mutator(data);
+    data.lastUpdated = new Date().toISOString();
+    await writeCloudData(data);
+    applyCloudData(data);
+    rerenderAll();
+    return data;
+  } finally {
+    isUpdating = false;
+  }
+}
+
+function applyCloudData(data) {
+  if (data.prices) prices = data.prices;
+  if (data.markup !== undefined) markup = Number(data.markup) || 0;
+  if (data.orders) orders = data.orders;
+  deadline = data.deadline ? new Date(data.deadline) : null;
+  startTime = data.startTime ? new Date(data.startTime) : null;
+  storage.setItem('cloudCache', JSON.stringify(data));
+  lastSync = new Date();
+  updateSyncStatus('ok');
+}
+
+function rerenderAll() {
+  if (!currentUser) return;
+  fillProducts();
+  renderOrders();
+  renderDeadline();
+  if (currentUser.role === 'admin') {
+    renderPrices();
+    if (deadline) deadlineInput.value = toLocalInputValue(deadline);
+    if (startTime) startInput.value = toLocalInputValue(startTime);
+  }
+  renderStartWarning();
+}
+
+async function syncFromCloud() {
+  if (isUpdating) return;
+  updateSyncStatus('syncing');
+  try {
+    const data = await readCloudData();
+    applyCloudData(data);
+    rerenderAll();
+    updateSyncStatus('ok');
+  } catch (e) {
+    try {
+      const cache = JSON.parse(storage.getItem('cloudCache'));
+      if (cache) applyCloudData(cache);
+    } catch (e2) {}
+    updateSyncStatus('err');
+  }
+}
+
+function updateSyncStatus(state) {
+  if (!syncStatusEl) return;
+  if (state === 'ok') {
+    syncStatusEl.textContent = '🔄 ' + (lastSync ? lastSync.toLocaleTimeString('ru-RU') : '');
+    syncStatusEl.className = 'sync-info sync-ok';
+  } else if (state === 'syncing') {
+    syncStatusEl.textContent = '🔄 Синхронизация...';
+    syncStatusEl.className = 'sync-info';
+  } else {
+    syncStatusEl.textContent = '⚠️ Нет связи';
+    syncStatusEl.className = 'sync-info sync-err';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  ТЕМА
+// ══════════════════════════════════════════════
+
+let theme = storage.getItem('theme') || 'light';
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = theme === 'dark' ? '☀️' : '🌙';
+  themeToggleLogin.textContent = icon;
+  themeToggleApp.textContent = icon;
+}
+
+function toggleTheme() {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  storage.setItem('theme', theme);
+  applyTheme();
+}
+
+themeToggleLogin.addEventListener('click', toggleTheme);
+themeToggleApp.addEventListener('click', toggleTheme);
+
+// ══════════════════════════════════════════════
+//  УТИЛИТЫ
+// ══════════════════════════════════════════════
+
+function isOrderingOpen() { return !startTime || Date.now() >= startTime.getTime(); }
+function isEditable() { return !deadline || Date.now() < deadline.getTime(); }
+
+function formatCountdown(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(total / 86400);
+  const h = Math.floor((total % 86400) / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const p = n => String(n).padStart(2, '0');
+  return (d > 0 ? d + ' дн ' : '') + p(h) + ':' + p(m) + ':' + p(s);
+}
+
+function toLocalInputValue(date) {
+  const off = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - off).toISOString().slice(0, 16);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function fmtRub(x) { return x.toFixed(2).replace('.', ','); }
+function fmtKg(x) { return String(x).replace('.', ','); }
+function withMarkup(amount) { return amount * (1 + markup / 100); }
+
+function userTotal(order) {
+  let sum = 0;
+  (order.items || []).forEach(i => { sum += (i.kg || 0) * (prices[i.product] || 0); });
+  return withMarkup(sum);
+}
+
+function getOrderedProducts() {
+  return PRODUCTS.filter(p =>
+    Object.values(orders).some(o => (o.items || []).some(i => i.product === p))
+  );
+}
+
+function buildSummary() {
+  const entries = Object.values(orders);
+  const ordered = getOrderedProducts();
+
+  const byProduct = ordered.map(p => {
+    let totalKg = 0;
+    entries.forEach(o => {
+      const item = (o.items || []).find(i => i.product === p);
+      if (item) totalKg += item.kg;
+    });
+    const price = prices[p] || 0;
+    const cost = totalKg * price;
+    return { product: p, totalKg, price, cost, costWithMarkup: withMarkup(cost) };
+  });
+
+  const byUser = entries
+    .map(o => ({
+      user: o.user,
+      items: (o.items || []).filter(i => ordered.includes(i.product)),
+      total: userTotal(o),
+    }))
+    .sort((a, b) => a.user.localeCompare(b.user));
+
+  const grandTotal = byUser.reduce((s, u) => s + u.total, 0);
+  return { ordered, byProduct, byUser, grandTotal };
+}
+
+function renderDeadline() {
+  if (!deadline) { deadlineBox.classList.add('hidden'); return; }
+  deadlineBox.classList.remove('hidden');
+  if (Date.now() < deadline.getTime()) {
+    deadlineText.textContent = '⏰ Правки до ' + deadline.toLocaleString('ru-RU') +
+      '  |  Осталось: ' + formatCountdown(deadline.getTime() - Date.now());
+  } else {
+    deadlineText.textContent = '⛔ Время истекло (' + deadline.toLocaleString('ru-RU') + '). Правки закрыты.';
+  }
+}
+
+function renderStartWarning() {
+  if (!startTime || Date.now() >= startTime.getTime()) {
+    startWarning.classList.add('hidden'); return;
+  }
+  startWarning.classList.remove('hidden');
+  startTimeDisplay.textContent = startTime.toLocaleString('ru-RU');
+}
+
+setInterval(() => {
+  renderStartWarning();
+  if (!currentUser) return;
+  renderDeadline();
+  const open = isOrderingOpen();
+  const editable = isEditable();
+  saveBtn.disabled = !editable || !open;
+  if (!open) { formNote.textContent = 'Приём заказов ещё не начался.'; }
+  else if (!editable) { formNote.textContent = 'Срок истёк — добавление и правка закрыты.'; }
+  else if (editingIndex < 0) { formNote.textContent = ''; }
+  if (wasEditable !== editable || wasOpen !== open) {
+    renderOrders();
+    wasEditable = editable; wasOpen = open;
+  }
+}, 1000);
+
+setInterval(() => { syncFromCloud(); }, 30000);
+
+// ══════════════════════════════════════════════
+//  ОТРИСОВКА
+// ══════════════════════════════════════════════
+
+function fillProducts() {
+  productSelect.innerHTML = '';
+  PRODUCTS.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    const price = prices[p];
+    opt.textContent = price > 0 ? p + ' — ' + fmtRub(price) + ' руб/кг' : p;
+    productSelect.appendChild(opt);
+  });
+}
+
+function renderPrices() {
+  pricesBody.innerHTML = '';
+  PRODUCTS.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + escapeHtml(p) + '</td>';
+    const td = document.createElement('td');
+    td.className = 'num';
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.step = '0.01'; inp.min = '0';
+    inp.inputMode = 'decimal'; inp.className = 'price-input';
+    inp.dataset.product = p;
+    inp.value = prices[p] !== undefined ? prices[p] : '';
+    td.appendChild(inp); tr.appendChild(td);
+    pricesBody.appendChild(tr);
+  });
+  markupInput.value = markup > 0 ? markup : '';
+}
+
+function renderOrders() {
+  if (!currentUser) return;
+  if (currentUser.role === 'admin') { renderAdminOrders(); return; }
+
+  ordersBody.innerHTML = '';
+  ordersFoot.innerHTML = '';
+  userTotalNote.textContent = '';
+
+  const editable = isEditable() && isOrderingOpen();
+  const myOrder = orders[currentUser.name];
+  const items = myOrder ? (myOrder.items || []) : [];
+
+  if (items.length === 0) {
+    ordersBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--note);">Ваш заказ пуст. Добавьте товары.</td></tr>';
+    return;
+  }
+
+  let sumNoMarkup = 0;
+  items.forEach((item, idx) => {
+    const price = prices[item.product] || 0;
+    const cost = item.kg * price;
+    sumNoMarkup += cost;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + escapeHtml(item.product) + '</td>' +
+      '<td class="num">' + fmtKg(item.kg) + '</td>' +
+      '<td class="num">' + (price > 0 ? fmtRub(price) : '—') + '</td>' +
+      '<td class="num">' + fmtRub(cost) + '</td>' +
+      '<td></td>';
+
+    if (editable) {
+      const cell = tr.lastElementChild;
+      const editBtn = document.createElement('button');
+      editBtn.textContent = '✎'; editBtn.className = 'small-btn';
+      editBtn.title = 'Редактировать'; editBtn.style.marginRight = '4px';
+      editBtn.addEventListener('click', () => startEditItem(idx));
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '🗑'; delBtn.className = 'small-btn danger-btn';
+      delBtn.title = 'Удалить';
+      delBtn.addEventListener('click', () => deleteItem(idx));
+
+      cell.append(editBtn, delBtn);
+    }
+    ordersBody.appendChild(tr);
+  });
+
+  const footTr = document.createElement('tr');
+  footTr.innerHTML =
+    '<td>ИТОГО</td><td></td><td></td>' +
+    '<td class="num">' + fmtRub(sumNoMarkup) + '</td><td></td>';
+  ordersFoot.appendChild(footTr);
+
+  userTotalNote.textContent = 'Сумма: ' + fmtRub(sumNoMarkup) + ' руб';
+}
+
+function renderAdminOrders() {
+  const s = buildSummary();
+
+  matrixHead.innerHTML = '';
+  const thU = document.createElement('th');
+  thU.textContent = 'Заказчик';
+  matrixHead.appendChild(thU);
+  s.ordered.forEach(p => {
+    const th = document.createElement('th');
+    th.className = 'num'; th.textContent = p;
+    matrixHead.appendChild(th);
+  });
+  const thTotal = document.createElement('th');
+  thTotal.className = 'num'; thTotal.textContent = 'Итого с наценкой, руб';
+  matrixHead.appendChild(thTotal);
+
+  matrixBody.innerHTML = '';
+  if (s.byUser.length === 0) {
+    matrixBody.innerHTML = '<tr><td colspan="' + (s.ordered.length + 2) + '" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
+  } else {
+    s.byUser.forEach(u => {
+      const tr = document.createElement('tr');
+      let html = '<td>' + escapeHtml(u.user) + '</td>';
+      s.ordered.forEach(p => {
+        const item = u.items.find(i => i.product === p);
+        html += '<td class="num">' + (item ? fmtKg(item.kg) : '') + '</td>';
+      });
+      html += '<td class="num">' + fmtRub(u.total) + '</td>';
+      tr.innerHTML = html;
+      matrixBody.appendChild(tr);
+    });
+  }
+
+  matrixFoot.innerHTML = '';
+  const footTr = document.createElement('tr');
+  let fhtml = '<td>ИТОГО, кг</td>';
+  s.ordered.forEach(p => {
+    const row = s.byProduct.find(r => r.product === p);
+    fhtml += '<td class="num">' + (row && row.totalKg > 0 ? fmtKg(row.totalKg) : '') + '</td>';
+  });
+  fhtml += '<td class="num">' + fmtRub(s.grandTotal) + '</td>';
+  footTr.innerHTML = fhtml;
+  matrixFoot.appendChild(footTr);
+
+  productSummaryBody.innerHTML = '';
+  if (s.byProduct.length === 0) {
+    productSummaryBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--note);">Нет данных</td></tr>';
+  } else {
+    s.byProduct.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(r.product) + '</td>' +
+        '<td class="num">' + fmtKg(r.totalKg) + '</td>' +
+        '<td class="num">' + fmtRub(r.price) + '</td>' +
+        '<td class="num">' + fmtRub(r.cost) + '</td>' +
+        '<td class="num">' + fmtRub(r.costWithMarkup) + '</td>';
+      productSummaryBody.appendChild(tr);
+    });
+  }
+
+  const sumKg = s.byProduct.reduce((a, r) => a + r.totalKg, 0);
+  const sumCost = s.byProduct.reduce((a, r) => a + r.cost, 0);
+  const sumMk = s.byProduct.reduce((a, r) => a + r.costWithMarkup, 0);
+
+  productSummaryFoot.innerHTML = '';
+  const psTr = document.createElement('tr');
+  psTr.innerHTML =
+    '<td>ИТОГО</td>' +
+    '<td class="num">' + fmtKg(sumKg) + '</td><td></td>' +
+    '<td class="num">' + fmtRub(sumCost) + '</td>' +
+    '<td class="num">' + fmtRub(sumMk) + '</td>';
+  productSummaryFoot.appendChild(psTr);
+}
+
+function startEditItem(idx) {
+  const myOrder = orders[currentUser.name];
+  if (!myOrder || !isEditable() || !isOrderingOpen()) return;
+  const item = myOrder.items[idx];
+  if (!item) return;
+  editingIndex = idx;
+  productSelect.value = item.product;
+  kgInput.value = item.kg;
+  formTitle.textContent = 'Редактировать товар';
+  saveBtn.textContent = 'Сохранить';
+  cancelEditBtn.classList.remove('hidden');
+  formNote.textContent = 'Режим правки.';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  editingIndex = -1;
+  kgInput.value = '';
+  formTitle.textContent = 'Добавить товар в заказ';
+  saveBtn.textContent = 'Добавить';
+  cancelEditBtn.classList.add('hidden');
+  formNote.textContent = '';
+}
+
+// ══════════════════════════════════════════════
+//  НАВИГАЦИЯ
+// ══════════════════════════════════════════════
+
+function switchView(which) {
+  if (which === 'orders') {
+    navOrdersBtn.classList.add('active');
+    navPricesBtn.classList.remove('active');
+    viewOrders.classList.remove('hidden');
+    viewPrices.classList.add('hidden');
+    renderOrders();
+  } else {
+    navPricesBtn.classList.add('active');
+    navOrdersBtn.classList.remove('active');
+    viewPrices.classList.remove('hidden');
+    viewOrders.classList.add('hidden');
+  }
+}
+
+navOrdersBtn.addEventListener('click', () => switchView('orders'));
+navPricesBtn.addEventListener('click', () => switchView('prices'));
+
+// ══════════════════════════════════════════════
+//  ВХОД / ВЫХОД
+// ══════════════════════════════════════════════
+
+function doLogin() {
+  const name = loginName.value.trim();
+  const pass = loginPass.value;
+  const user = USERS[name];
+
+  if (!user || user.password !== pass) {
+    loginError.textContent = 'Неверное имя или пароль'; return;
+  }
+  if (user.role !== 'admin' && !isOrderingOpen()) {
+    loginError.textContent = 'Заказывать можно только с ' + (startTime ? startTime.toLocaleString('ru-RU') : ''); return;
+  }
+
+  currentUser = { name: name, role: user.role };
+  loginError.textContent = '';
+  loginName.value = ''; loginPass.value = '';
+  loginScreen.classList.add('hidden');
+  appScreen.classList.remove('hidden');
+  currentUserEl.textContent = '👤 ' + name +
+    ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
+
+  if (user.role === 'admin') {
+    navTabs.classList.remove('hidden');
+    orderFormSection.classList.add('hidden');
+    userOrdersSection.classList.add('hidden');
+    adminOrdersSection.classList.remove('hidden');
+    if (deadline) deadlineInput.value = toLocalInputValue(deadline);
+    if (startTime) startInput.value = toLocalInputValue(startTime);
+    renderPrices();
+    switchView('orders');
+  } else {
+    navTabs.classList.add('hidden');
+    orderFormSection.classList.remove('hidden');
+    userOrdersSection.classList.remove('hidden');
+    adminOrdersSection.classList.add('hidden');
+  }
+
+  fillProducts();
+  renderDeadline();
+  renderOrders();
+  syncFromCloud();
+}
+
+loginBtn.addEventListener('click', doLogin);
+loginName.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+logoutBtn.addEventListener('click', () => {
+  currentUser = null;
+  resetForm();
+  appScreen.classList.add('hidden');
+  loginScreen.classList.remove('hidden');
+  renderStartWarning();
+});
+
+syncBtn.addEventListener('click', () => { syncFromCloud(); });
+
+// ══════════════════════════════════════════════
+//  ЗАКАЗЫ (синхронизация с Firebase)
+// ══════════════════════════════════════════════
+
+saveBtn.addEventListener('click', async () => {
+  if (!isOrderingOpen()) { alert('Приём заказов ещё не начался'); return; }
+  if (!isEditable()) { alert('Срок приёма правок истёк'); return; }
+  const product = productSelect.value;
+  const kg = parseFloat((kgInput.value || '').replace(',', '.'));
+  if (!product || isNaN(kg) || kg <= 0) { alert('Выберите товар и укажите количество больше 0'); return; }
+
+  if (editingIndex < 0) {
+    const myOrder = orders[currentUser.name];
+    if (myOrder && myOrder.items.findIndex(i => i.product === product) >= 0) {
+      alert('Этот товар уже в заказе. Отредактируйте его.'); return;
+    }
+  }
+
+  saveBtn.disabled = true;
+  const oldText = saveBtn.textContent;
+  saveBtn.textContent = 'Сохранение...';
+
+  try {
+    await updateCloudData(data => {
+      if (!data.orders) data.orders = {};
+      if (!data.orders[currentUser.name]) {
+        data.orders[currentUser.name] = { user: currentUser.name, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' };
+      }
+      const myOrder = data.orders[currentUser.name];
+      if (editingIndex >= 0) {
+        myOrder.items[editingIndex].product = product;
+        myOrder.items[editingIndex].kg = kg;
+        myOrder.editedAt = new Date().toLocaleString('ru-RU');
+      } else {
+        myOrder.items.push({ product: product, kg: kg });
+        myOrder.editedAt = new Date().toLocaleString('ru-RU');
+      }
+    });
+
+    if (editingIndex >= 0) resetForm();
+    else kgInput.value = '';
+  } catch (e) {
+    alert('Не удалось сохранить заказ: ' + e.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = oldText;
+  }
+});
+
+cancelEditBtn.addEventListener('click', resetForm);
+
+async function deleteItem(idx) {
+  if (!isEditable() || !isOrderingOpen()) return;
+  if (!confirm('Удалить этот товар из заказа?')) return;
+
+  try {
+    await updateCloudData(data => {
+      const myOrder = data.orders && data.orders[currentUser.name];
+      if (!myOrder) return;
+      myOrder.items.splice(idx, 1);
+      if (myOrder.items.length === 0) {
+        delete data.orders[currentUser.name];
+      } else {
+        myOrder.editedAt = new Date().toLocaleString('ru-RU');
+      }
+    });
+
+    if (editingIndex === idx) resetForm();
+    else if (editingIndex > idx) editingIndex--;
+  } catch (e) {
+    alert('Не удалось удалить: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  ЦЕНЫ И НАЦЕНКА (админ → Firebase)
+// ══════════════════════════════════════════════
+
+savePricesBtn.addEventListener('click', async () => {
+  const newPrices = {};
+  let ok = true;
+  pricesBody.querySelectorAll('input[data-product]').forEach(inp => {
+    const val = parseFloat((inp.value || '').replace(',', '.'));
+    if (isNaN(val) || val < 0) { inp.style.borderColor = 'var(--danger)'; ok = false; }
+    else { inp.style.borderColor = ''; newPrices[inp.dataset.product] = val; }
+  });
+  const mk = parseFloat((markupInput.value || '0').replace(',', '.'));
+  if (isNaN(mk) || mk < 0) { markupInput.style.borderColor = 'var(--danger)'; ok = false; }
+  if (!ok) { alert('Проверьте значения: цена и наценка должны быть числами от 0 и выше'); return; }
+
+  savePricesBtn.disabled = true;
+  const oldText = savePricesBtn.textContent;
+  savePricesBtn.textContent = 'Сохранение...';
+
+  try {
+    await updateCloudData(data => {
+      data.prices = newPrices;
+      data.markup = mk;
+    });
+    alert('Цены сохранены. У всех пользователей обновятся в течение 30 секунд.');
+  } catch (e) {
+    alert('Не удалось сохранить цены: ' + e.message);
+  } finally {
+    savePricesBtn.disabled = false;
+    savePricesBtn.textContent = oldText;
+  }
+});
+
+// ══════════════════════════════════════════════
+//  ВРЕМЯ НАЧАЛА (админ → Firebase)
+// ══════════════════════════════════════════════
+
+setStartBtn.addEventListener('click', async () => {
+  if (!startInput.value) { alert('Выберите дату и время'); return; }
+  const newStart = new Date(startInput.value).toISOString();
+  try {
+    await updateCloudData(data => { data.startTime = newStart; });
+    alert('Начало заказов установлено.');
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+
+clearStartBtn.addEventListener('click', async () => {
+  try {
+    await updateCloudData(data => { data.startTime = null; });
+    startInput.value = '';
+    alert('Ограничение снято.');
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+
+// ══════════════════════════════════════════════
+//  ДЕДЛАЙН (админ → Firebase)
+// ══════════════════════════════════════════════
+
+setDeadlineBtn.addEventListener('click', async () => {
+  if (!deadlineInput.value) { alert('Выберите дату и время'); return; }
+  const newDeadline = new Date(deadlineInput.value).toISOString();
+  try {
+    await updateCloudData(data => { data.deadline = newDeadline; });
+    alert('Дедлайн установлен.');
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+
+clearDeadlineBtn.addEventListener('click', async () => {
+  try {
+    await updateCloudData(data => { data.deadline = null; });
+    deadlineInput.value = '';
+    alert('Дедлайн снят.');
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+
+// ══════════════════════════════════════════════
+//  ОЧИСТКА ВСЕХ ЗАКАЗОВ (админ → Firebase)
+// ══════════════════════════════════════════════
+
+clearBtn.addEventListener('click', async () => {
+  if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
+  try {
+    await updateCloudData(data => { data.orders = {}; });
+  } catch (e) { alert('Не удалось очистить: ' + e.message); }
+});
+
+// ══════════════════════════════════════════════
+//  ЭКСПОРТ
+// ══════════════════════════════════════════════
+
+function loadXlsxLib() {
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) { resolve(); return; }
+    const urls = [
+      'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    ];
+    let i = 0;
+    const tryNext = () => {
+      if (i >= urls.length) { reject(new Error('not loaded')); return; }
+      const s = document.createElement('script');
+      s.src = urls[i++];
+      s.onload = resolve;
+      s.onerror = () => { s.remove(); tryNext(); };
+      document.head.appendChild(s);
+    };
+    tryNext();
+  });
+}
+
+function downloadFile(content, filename, mime) {
+  const blob = new Blob(['\uFEFF' + content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 200);
+}
+
+function exportToCsv() {
+  const s = buildSummary();
+  const lines = [];
+  lines.push('ЗАКАЗЫ');
+  lines.push(['Заказчик'].concat(s.ordered, ['Итого с наценкой, руб']).join(';'));
+  s.byUser.forEach(u => {
+    const row = ['"' + u.user + '"'];
+    s.ordered.forEach(p => {
+      const item = u.items.find(i => i.product === p);
+      row.push(item ? fmtKg(item.kg) : '');
+    });
+    row.push('"' + fmtRub(u.total) + '"');
+    lines.push(row.join(';'));
+  });
+  const totRow = ['"ИТОГО, кг"'];
+  s.ordered.forEach(p => {
+    const r = s.byProduct.find(x => x.product === p);
+    totRow.push(r && r.totalKg > 0 ? fmtKg(r.totalKg) : '');
+  });
+  totRow.push('"' + fmtRub(s.grandTotal) + '"');
+  lines.push(totRow.join(';'));
+  lines.push(''); lines.push('Наценка: ' + fmtRub(markup) + '%');
+  lines.push(''); lines.push('СВОДКА ПО ТОВАРАМ');
+  lines.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб;С наценкой, руб');
+  s.byProduct.forEach(r => {
+    lines.push('"' + r.product + '";' + fmtKg(r.totalKg) + ';' + fmtRub(r.price) + ';"' + fmtRub(r.cost) + '";"' + fmtRub(r.costWithMarkup) + '"');
+  });
+  const sumKg = s.byProduct.reduce((a, r) => a + r.totalKg, 0);
+  const sumCost = s.byProduct.reduce((a, r) => a + r.cost, 0);
+  const sumMk = s.byProduct.reduce((a, r) => a + r.costWithMarkup, 0);
+  lines.push('"ИТОГО";' + fmtKg(sumKg) + ';;"' + fmtRub(sumCost) + '";"' + fmtRub(sumMk) + '"');
+  lines.push(''); lines.push('КТО СКОЛЬКО ДОЛЖЕН');
+  lines.push('Заказчик;Сумма с наценкой, руб');
+  s.byUser.forEach(u => { lines.push('"' + u.user + '";"' + fmtRub(u.total) + '"'); });
+  lines.push('"ИТОГО";"' + fmtRub(s.grandTotal) + '"');
+  downloadFile(lines.join('\n'), 'itogi_' + new Date().toISOString().slice(0, 10) + '.csv', 'text/csv;charset=utf-8');
+}
+
+function exportToExcel() {
+  const entries = Object.values(orders);
+  if (entries.length === 0) { alert('Нет заказов для выгрузки'); return; }
+  const ordered = getOrderedProducts();
+  const missing = ordered.filter(p => !(prices[p] > 0));
+  if (missing.length > 0) { alert('Сначала укажите цены: ' + missing.join(', ')); return; }
+
+  exportBtn.disabled = true;
+  const oldText = exportBtn.textContent;
+  exportBtn.textContent = 'Загрузка...';
+
+  loadXlsxLib().then(() => {
+    const s = buildSummary();
+    const matrixData = s.byUser.map(u => {
+      const row = { 'Заказчик': u.user };
+      s.ordered.forEach(p => {
+        const item = u.items.find(i => i.product === p);
+        row[p] = item ? item.kg : '';
+      });
+      row['Итого с наценкой, руб'] = parseFloat(u.total.toFixed(2));
+      return row;
+    });
+    const totalRow = { 'Заказчик': 'ИТОГО, кг' };
+    s.ordered.forEach(p => {
+      const r = s.byProduct.find(x => x.product === p);
+      totalRow[p] = r && r.totalKg > 0 ? parseFloat(r.totalKg.toFixed(2)) : '';
+    });
+    totalRow['Итого с наценкой, руб'] = parseFloat(s.grandTotal.toFixed(2));
+    matrixData.push(totalRow);
+
+    const productData = s.byProduct.map(r => ({
+      'Товар': r.product,
+      'Всего, кг': parseFloat(r.totalKg.toFixed(2)),
+      'Цена, руб/кг': r.price,
+      'Стоимость, руб': parseFloat(r.cost.toFixed(2)),
+      'С наценкой, руб': parseFloat(r.costWithMarkup.toFixed(2)),
+    }));
+    productData.push({
+      'Товар': 'ИТОГО',
+      'Всего, кг': parseFloat(s.byProduct.reduce((a, r) => a + r.totalKg, 0).toFixed(2)),
+      'Цена, руб/кг': '',
+      'Стоимость, руб': parseFloat(s.byProduct.reduce((a, r) => a + r.cost, 0).toFixed(2)),
+      'С наценкой, руб': parseFloat(s.byProduct.reduce((a, r) => a + r.costWithMarkup, 0).toFixed(2)),
+    });
+
+    const debtsData = s.byUser.map(u => ({
+      'Заказчик': u.user,
+      'Сумма с наценкой, руб': parseFloat(u.total.toFixed(2)),
+    }));
+    debtsData.push({ 'Заказчик': 'ИТОГО', 'Сумма с наценкой, руб': parseFloat(s.grandTotal.toFixed(2)) });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(productData), 'Сводка');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(debtsData), 'Долги');
+    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    exportBtn.disabled = false; exportBtn.textContent = oldText;
+  }).catch(() => {
+    exportToCsv();
+    exportBtn.disabled = false; exportBtn.textContent = oldText;
+  });
+}
+
+exportBtn.addEventListener('click', exportToExcel);
+
+// ══════════════════════════════════════════════
+//  ИНИЦИАЛИЗАЦИЯ
+// ══════════════════════════════════════════════
+
+applyTheme();
+syncFromCloud();
+</script>
 </body>
 </html>
