@@ -1,357 +1,494 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Заказы на товар</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
-      margin: 0;
-    }
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 28px;
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    }
-    h1, h2 { color: #333; margin-top: 0; }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .user-info { display: flex; align-items: center; gap: 10px; }
-    .small-btn {
-      padding: 5px 12px;
-      font-size: 13px;
-      background: #999;
-      margin: 0;
-    }
-    .small-btn:hover { background: #777; }
-    .login-form, .order-form, .deadline-form {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      max-width: 360px;
-    }
-    label { display: block; font-weight: 600; }
-    input, select {
-      width: 100%;
-      padding: 9px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-      font-size: 15px;
-    }
-    button {
-      padding: 10px 18px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 15px;
-      margin-bottom: 10px;
-    }
-    button:hover { background: #0056b3; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    .danger-btn { background: #dc3545; }
-    .danger-btn:hover { background: #b02a37; }
-    .form-buttons { display: flex; gap: 10px; align-items: center; }
-    .error { color: #dc3545; font-size: 14px; min-height: 20px; }
-    .note { color: #777; font-size: 13px; }
-    /* Дедлайн — красным */
-    .deadline-box {
-      margin: 16px 0;
-      padding: 12px 16px;
-      border: 2px solid #dc3545;
-      border-radius: 8px;
-      background: #fff5f5;
-      color: #dc3545;
-      font-weight: 700;
-      font-size: 16px;
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 14px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 9px 12px;
-      text-align: left;
-    }
-    th { background: #f0f0f0; }
-    tr:nth-child(even) { background: #fafafa; }
-    hr { border: none; border-top: 1px solid #eee; margin: 28px 0; }
-    .hidden { display: none; }
-    .admin-section { margin-bottom: 24px; }
-    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-    .btn-row button { margin-bottom: 0; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Заказы на товар</title>
+<style>
+:root {
+  --bg: #f5f5f5; --surface: #fff; --text: #333; --border: #ddd;
+  --th-bg: #f0f0f0; --input-border: #ccc; --primary: #007bff;
+  --primary-hover: #0056b3; --danger: #dc3545; --danger-hover: #b02a37;
+  --note: #777; --even-row: #fafafa; --dl-bg: #fff5f5; --sb-bg: #999;
+  --sb-hover: #777;
+}
+[data-theme="dark"] {
+  --bg: #1a1a2e; --surface: #16213e; --text: #e0e0e0; --border: #334155;
+  --th-bg: #1e293b; --input-border: #475569; --primary: #3b82f6;
+  --primary-hover: #2563eb; --danger: #ef4444; --danger-hover: #dc2626;
+  --note: #94a3b8; --even-row: #1e293b; --dl-bg: #2d1b1b; --sb-bg: #475569;
+  --sb-hover: #64748b;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg); color: var(--text);
+  padding: 20px; margin: 0;
+  transition: background 0.3s, color 0.3s;
+}
+.container {
+  max-width: 820px; margin: 0 auto;
+  background: var(--surface); color: var(--text);
+  padding: 28px; border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  transition: background 0.3s, color 0.3s;
+}
+h1, h2, h3 { color: var(--text); margin-top: 0; }
+.header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;
+}
+.user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.theme-btn {
+  padding: 6px 12px; font-size: 18px;
+  background: var(--sb-bg); color: #fff;
+  border: none; border-radius: 5px; cursor: pointer; margin: 0;
+}
+.theme-btn:hover { background: var(--sb-hover); }
+.small-btn {
+  padding: 5px 12px; font-size: 13px;
+  background: var(--sb-bg); color: #fff;
+  border: none; border-radius: 5px; cursor: pointer; margin: 0;
+}
+.small-btn:hover { background: var(--sb-hover); }
+.login-form, .order-form, .settings-form {
+  display: flex; flex-direction: column; gap: 14px; max-width: 380px;
+}
+label { display: block; font-weight: 600; }
+input, select {
+  width: 100%; padding: 9px;
+  border: 1px solid var(--input-border); border-radius: 5px;
+  box-sizing: border-box; font-size: 15px;
+  background: var(--surface); color: var(--text);
+}
+button {
+  padding: 10px 18px; background: var(--primary); color: #fff;
+  border: none; border-radius: 5px; cursor: pointer;
+  font-size: 15px; margin-bottom: 10px;
+}
+button:hover { background: var(--primary-hover); }
+button:disabled { background: #ccc; cursor: not-allowed; color: #888; }
+.danger-btn { background: var(--danger); }
+.danger-btn:hover { background: var(--danger-hover); }
+.form-buttons { display: flex; gap: 10px; align-items: center; }
+.error { color: var(--danger); font-size: 14px; min-height: 20px; }
+.note { color: var(--note); font-size: 13px; }
+
+/* Большой красный текст на экране входа */
+.start-warning {
+  color: var(--danger); font-size: 26px; font-weight: 700;
+  text-align: center; margin: 20px 0; padding: 24px;
+  border: 3px solid var(--danger); border-radius: 10px;
+  background: var(--dl-bg); letter-spacing: 1px; line-height: 1.5;
+}
+
+/* Плашка дедлайна */
+.deadline-box {
+  margin: 16px 0; padding: 12px 16px;
+  border: 2px solid var(--danger); border-radius: 8px;
+  background: var(--dl-bg); color: var(--danger);
+  font-weight: 700; font-size: 16px; text-align: center;
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; }
+th { background: var(--th-bg); }
+tr:nth-child(even) { background: var(--even-row); }
+hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+.hidden { display: none; }
+.admin-section { margin-bottom: 24px; }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.btn-row button { margin-bottom: 0; }
+.settings-row {
+  display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
+}
+.settings-row label { flex: 1; min-width: 200px; }
+.settings-row button { margin-bottom: 0; white-space: nowrap; }
+</style>
 </head>
 <body>
 
-  <!-- Экран авторизации -->
-  <div id="login-screen" class="container">
+<!-- ────── Экран входа ────── -->
+<div id="login-screen" class="container">
+  <div class="header">
     <h1>Вход</h1>
-    <div class="login-form">
-      <label>Имя:
-        <input type="text" id="login-name" placeholder="Ваше имя" />
-      </label>
-      <label>Пароль:
-        <input type="password" id="login-pass" placeholder="Пароль" />
-      </label>
-      <button type="button" id="login-btn">Войти</button>
-      <p id="login-error" class="error"></p>
+    <button class="theme-btn" id="theme-toggle-login">🌙</button>
+  </div>
+
+  <div id="start-warning" class="start-warning hidden">
+    ЗАКАЗЫ ПРИНИМАЮТСЯ С<br><span id="start-time-display"></span>
+  </div>
+
+  <div class="login-form">
+    <label>Имя:
+      <input type="text" id="login-name" placeholder="Ваше имя" />
+    </label>
+    <label>Пароль:
+      <input type="password" id="login-pass" placeholder="Пароль" />
+    </label>
+    <button type="button" id="login-btn">Войти</button>
+    <p id="login-error" class="error"></p>
+  </div>
+</div>
+
+<!-- ────── Основной экран ────── -->
+<div id="app-screen" class="container hidden">
+  <div class="header">
+    <h1>Приём заказов</h1>
+    <div class="user-info">
+      <span id="current-user"></span>
+      <button id="logout-btn" class="small-btn">Выйти</button>
+      <button class="theme-btn" id="theme-toggle-app">🌙</button>
     </div>
   </div>
 
-  <!-- Основной экран -->
-  <div id="app-screen" class="container hidden">
-    <div class="header">
-      <h1>Приём заказов</h1>
-      <div class="user-info">
-        <span id="current-user"></span>
-        <button id="logout-btn" class="small-btn">Выйти</button>
+  <div id="deadline-box" class="deadline-box hidden">
+    <span id="deadline-text"></span>
+  </div>
+
+  <!-- Форма добавления товара (только для пользователей) -->
+  <div id="order-form-section" class="order-form">
+    <h2 id="form-title">Добавить товар в заказ</h2>
+    <label>Товар:
+      <select id="product"></select>
+    </label>
+    <label>Количество (кг):
+      <input type="number" id="kg" step="0.01" min="0.01" placeholder="кг" />
+    </label>
+    <div class="form-buttons">
+      <button type="button" id="save-order">Добавить</button>
+      <button type="button" id="cancel-edit" class="small-btn hidden">Отменить</button>
+    </div>
+    <p id="form-note" class="note"></p>
+  </div>
+
+  <!-- Таблица заказов -->
+  <h2 id="orders-title">Мой заказ</h2>
+  <table id="orders-table">
+    <thead>
+      <tr>
+        <th>Товар</th>
+        <th>Кг</th>
+        <th id="th-user">Заказчик</th>
+        <th id="th-date">Дата</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="orders-body"></tbody>
+  </table>
+
+  <!-- Админ-панель -->
+  <div id="admin-panel" class="hidden">
+    <hr />
+    <h2>Админ-панель</h2>
+
+    <div class="admin-section">
+      <h3>Время начала приёма заказов</h3>
+      <div class="settings-row">
+        <label>Открыть заказы с:
+          <input type="datetime-local" id="start-input" />
+        </label>
+        <button type="button" id="set-start">Установить</button>
+        <button type="button" id="clear-start" class="small-btn">Сбросить</button>
       </div>
     </div>
 
-    <!-- Дедлайн -->
-    <div id="deadline-box" class="deadline-box hidden">
-      <span id="deadline-text"></span>
+    <div class="admin-section">
+      <h3>Дедлайн правок</h3>
+      <div class="settings-row">
+        <label>Закрыть правки после:
+          <input type="datetime-local" id="deadline-input" />
+        </label>
+        <button type="button" id="set-deadline">Установить</button>
+        <button type="button" id="clear-deadline" class="small-btn">Сбросить</button>
+      </div>
     </div>
 
-    <!-- Форма заказа -->
-    <div class="order-form">
-      <h2 id="form-title">Новый заказ</h2>
-      <label>Товар:
-        <select id="product"></select>
-      </label>
-      <label>Количество (кг):
-        <input type="number" id="kg" step="0.01" min="0.01" placeholder="кг" />
-      </label>
-      <div class="form-buttons">
-        <button type="button" id="save-order">Добавить заказ</button>
-        <button type="button" id="cancel-edit" class="small-btn hidden">Отменить</button>
-      </div>
-      <p id="form-note" class="note"></p>
-    </div>
-
-    <!-- Таблица заказов -->
-    <h2 id="orders-title">Мои заказы</h2>
-    <table id="orders-table">
-      <thead>
-        <tr>
-          <th>Товар</th>
-          <th>Кг</th>
-          <th id="th-user">Заказчик</th>
-          <th>Дата</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="orders-body"></tbody>
-    </table>
-
-    <!-- Админ-панель -->
-    <div id="admin-panel" class="hidden">
-      <hr />
-      <h2>Админ-панель</h2>
-
-      <div class="admin-section">
-        <h3>Дедлайн правок</h3>
-        <div class="deadline-form">
-          <label>Дата и время:
-            <input type="datetime-local" id="deadline-input" />
-          </label>
-          <button type="button" id="set-deadline">Установить дедлайн</button>
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <h3>Действия</h3>
-        <div class="btn-row">
-          <button id="export-excel">Итоги → Excel</button>
-          <button id="clear-orders" class="danger-btn">Очистить все заказы</button>
-        </div>
+    <div class="admin-section">
+      <h3>Действия</h3>
+      <div class="btn-row">
+        <button id="export-excel">Итоги → Excel</button>
+        <button id="clear-orders" class="danger-btn">Очистить все заказы</button>
       </div>
     </div>
   </div>
+</div>
 
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-  <script>
-  // ──────────────────────────────────────────────
-  //  НАСТРОЙКИ
-  // ──────────────────────────────────────────────
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script>
+// ──────────────────────────────────────────────
+//  НАСТРОЙКИ
+// ──────────────────────────────────────────────
 
-  const PRODUCTS = [
-    'Картофель', 'Морковь', 'Лук репчатый',
-    'Капуста белокочанная', 'Свёкла', 'Помидоры',
-    'Огурцы', 'Яблоки', 'Груши', 'Мука пшеничная',
-  ];
+const PRODUCTS = [
+  'Картофель', 'Морковь', 'Лук репчатый',
+  'Капуста белокочанная', 'Свёкла', 'Помидоры',
+  'Огурцы', 'Яблоки', 'Груши', 'Мука пшеничная',
+];
 
-  const USERS = {
-    admin: { password: 'admin123', role: 'admin' },
-    ivan:  { password: 'ivan456',  role: 'user'  },
-    maria: { password: 'maria789', role: 'user'  },
-  };
+const USERS = {
+  admin: { password: 'admin123', role: 'admin' },
+  ivan:  { password: 'ivan456',  role: 'user'  },
+  maria: { password: 'maria789', role: 'user'  },
+};
 
-  // ──────────────────────────────────────────────
-  //  Элементы
-  // ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+//  Элементы
+// ──────────────────────────────────────────────
 
-  const $ = id => document.getElementById(id);
-  const loginScreen = $('login-screen');
-  const appScreen   = $('app-screen');
-  const loginName   = $('login-name');
-  const loginPass   = $('login-pass');
-  const loginBtn    = $('login-btn');
-  const loginError = $('login-error');
-  const productSelect = $('product');
-  const kgInput    = $('kg');
-  const saveBtn    = $('save-order');
-  const cancelEditBtn = $('cancel-edit');
-  const formTitle  = $('form-title');
-  const formNote   = $('form-note');
-  const ordersBody = $('orders-body');
-  const ordersTitle = $('orders-title');
-  const thUser     = $('th-user');
-  const deadlineBox = $('deadline-box');
-  const deadlineText = $('deadline-text');
-  const deadlineInput = $('deadline-input');
-  const setDeadlineBtn = $('set-deadline');
-  const exportBtn  = $('export-excel');
-  const clearBtn   = $('clear-orders');
-  const adminPanel = $('admin-panel');
-  const currentUserEl = $('current-user');
-  const logoutBtn  = $('logout-btn');
+const $ = id => document.getElementById(id);
 
-  let currentUser = null;
-  let editingId = null;
-  let orders = JSON.parse(localStorage.getItem('orders')) || [];
-  let deadline = localStorage.getItem('orderDeadline')
-    ? new Date(localStorage.getItem('orderDeadline'))
-    : null;
+const loginScreen  = $('login-screen');
+const appScreen    = $('app-screen');
+const loginName    = $('login-name');
+const loginPass    = $('login-pass');
+const loginBtn     = $('login-btn');
+const loginError   = $('login-error');
+const startWarning = $('start-warning');
+const startTimeDisplay = $('start-time-display');
+const orderFormSection = $('order-form-section');
+const productSelect    = $('product');
+const kgInput          = $('kg');
+const saveBtn          = $('save-order');
+const cancelEditBtn    = $('cancel-edit');
+const formTitle        = $('form-title');
+const formNote         = $('form-note');
+const ordersBody       = $('orders-body');
+const ordersTitle      = $('orders-title');
+const thUser           = $('th-user');
+const thDate           = $('th-date');
+const deadlineBox      = $('deadline-box');
+const deadlineText     = $('deadline-text');
+const deadlineInput    = $('deadline-input');
+const setDeadlineBtn   = $('set-deadline');
+const clearDeadlineBtn = $('clear-deadline');
+const startInput       = $('start-input');
+const setStartBtn      = $('set-start');
+const clearStartBtn    = $('clear-start');
+const exportBtn        = $('export-excel');
+const clearBtn         = $('clear-orders');
+const adminPanel       = $('admin-panel');
+const currentUserEl    = $('current-user');
+const logoutBtn        = $('logout-btn');
+const themeToggleLogin = $('theme-toggle-login');
+const themeToggleApp   = $('theme-toggle-app');
 
-  // ──────────────────────────────────────────────
-  //  Утилиты
-  // ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+//  Состояние
+// ──────────────────────────────────────────────
 
-  function saveOrders() {
-    localStorage.setItem('orders', JSON.stringify(orders));
+let currentUser = null;
+let editingIndex = -1;
+
+// orders: { "ivan": { user, items: [{product, kg}], date, editedAt }, ... }
+let orders = JSON.parse(localStorage.getItem('orders')) || {};
+
+let deadline = localStorage.getItem('orderDeadline')
+  ? new Date(localStorage.getItem('orderDeadline'))
+  : null;
+
+let startTime = localStorage.getItem('orderStartTime')
+  ? new Date(localStorage.getItem('orderStartTime'))
+  : null;
+
+let wasEditable = true;
+let wasOpen = true;
+
+// ──────────────────────────────────────────────
+//  Тема
+// ──────────────────────────────────────────────
+
+let theme = localStorage.getItem('theme') || 'light';
+applyTheme();
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = theme === 'dark' ? '☀️' : '🌙';
+  themeToggleLogin.textContent = icon;
+  themeToggleApp.textContent = icon;
+}
+
+function toggleTheme() {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('theme', theme);
+  applyTheme();
+}
+
+themeToggleLogin.addEventListener('click', toggleTheme);
+themeToggleApp.addEventListener('click', toggleTheme);
+
+// ──────────────────────────────────────────────
+//  Утилиты
+// ──────────────────────────────────────────────
+
+function saveOrders() {
+  localStorage.setItem('orders', JSON.stringify(orders));
+}
+
+function isOrderingOpen() {
+  return !startTime || Date.now() >= startTime.getTime();
+}
+
+function isEditable() {
+  return !deadline || Date.now() < deadline.getTime();
+}
+
+function formatCountdown(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(total / 86400);
+  const h = Math.floor((total % 86400) / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const p = n => String(n).padStart(2, '0');
+  return (d > 0 ? d + ' дн ' : '') + p(h) + ':' + p(m) + ':' + p(s);
+}
+
+function toLocalInputValue(date) {
+  const off = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - off).toISOString().slice(0, 16);
+}
+
+function renderDeadline() {
+  if (!deadline) {
+    deadlineBox.classList.add('hidden');
+    return;
+  }
+  deadlineBox.classList.remove('hidden');
+  if (Date.now() < deadline.getTime()) {
+    deadlineText.textContent =
+      '⏰ Правки до ' + deadline.toLocaleString('ru-RU') +
+      '  |  Осталось: ' + formatCountdown(deadline.getTime() - Date.now());
+  } else {
+    deadlineText.textContent =
+      '⛔ Время истекло (' + deadline.toLocaleString('ru-RU') + '). Правки закрыты.';
+  }
+}
+
+function renderStartWarning() {
+  if (!startTime || Date.now() >= startTime.getTime()) {
+    startWarning.classList.add('hidden');
+    return;
+  }
+  startWarning.classList.remove('hidden');
+  startTimeDisplay.textContent = startTime.toLocaleString('ru-RU');
+}
+
+// Обновление каждую секунду
+setInterval(() => {
+  renderStartWarning();
+  if (!currentUser) return;
+
+  renderDeadline();
+  const open = isOrderingOpen();
+  const editable = isEditable();
+  saveBtn.disabled = !editable || !open;
+
+  if (!open) {
+    formNote.textContent = 'Приём заказов ещё не начался.';
+  } else if (!editable) {
+    formNote.textContent = 'Срок истёк — добавление и правка закрыты.';
+  } else if (editingIndex < 0) {
+    formNote.textContent = '';
   }
 
-  function isEditable() {
-    return !deadline || Date.now() < deadline.getTime();
+  // Перерисовать таблицу если состояние изменилось (кнопки появились/исчезли)
+  if (wasEditable !== editable || wasOpen !== open) {
+    renderOrders();
+    wasEditable = editable;
+    wasOpen = open;
   }
+}, 1000);
 
-  function formatCountdown(ms) {
-    const total = Math.max(0, Math.floor(ms / 1000));
-    const d = Math.floor(total / 86400);
-    const h = Math.floor((total % 86400) / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-    const p = n => String(n).padStart(2, '0');
-    return (d > 0 ? d + ' дн ' : '') + p(h) + ':' + p(m) + ':' + p(s);
-  }
+// ──────────────────────────────────────────────
+//  Отрисовка
+// ──────────────────────────────────────────────
 
-  function renderDeadline() {
-    if (!deadline) {
-      deadlineBox.classList.add('hidden');
-      return;
-    }
-    deadlineBox.classList.remove('hidden');
-    if (Date.now() < deadline.getTime()) {
-      deadlineText.textContent =
-        '⏰ Правки до ' + deadline.toLocaleString('ru-RU') +
-        '  |  Осталось: ' + formatCountdown(deadline.getTime() - Date.now());
-    } else {
-      deadlineText.textContent =
-        '⛔ Время истекло (' + deadline.toLocaleString('ru-RU') + '). Правки закрыты.';
-    }
-  }
+function fillProducts() {
+  productSelect.innerHTML = '';
+  PRODUCTS.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p;
+    productSelect.appendChild(opt);
+  });
+}
 
-  // Обновление каждую секунду
-  setInterval(() => {
-    if (!currentUser) return;
-    renderDeadline();
-    const editable = isEditable();
-    saveBtn.disabled = !editable;
-    if (!editable) {
-      formNote.textContent = 'Срок истёк — добавление и правка закрыты.';
-    } else if (!editingId) {
-      formNote.textContent = '';
-    }
-  }, 1000);
+function renderOrders() {
+  ordersBody.innerHTML = '';
+  const editable = isEditable() && isOrderingOpen();
+  const isAdmin = currentUser.role === 'admin';
 
-  // ──────────────────────────────────────────────
-  //  Отрисовка
-  // ──────────────────────────────────────────────
+  if (isAdmin) {
+    // Админ: все заказы, плоская таблица
+    ordersTitle.textContent = 'Все заказы';
+    thUser.style.display = '';
+    thDate.style.display = '';
 
-  function fillProducts() {
-    productSelect.innerHTML = '';
-    PRODUCTS.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p;
-      opt.textContent = p;
-      productSelect.appendChild(opt);
+    let rows = [];
+    Object.values(orders).forEach(order => {
+      order.items.forEach(item => {
+        rows.push({
+          user: order.user,
+          product: item.product,
+          kg: item.kg,
+          date: order.editedAt || order.date,
+        });
+      });
     });
-  }
 
-  function renderOrders() {
-    ordersBody.innerHTML = '';
-    const editable = isEditable();
-    const isAdmin = currentUser.role === 'admin';
-
-    // Пользователь видит только свои заказы, админ — все
-    const visible = isAdmin
-      ? orders
-      : orders.filter(o => o.user === currentUser.name);
-
-    ordersTitle.textContent = isAdmin ? 'Все заказы' : 'Мои заказы';
-
-    // Колонку «Заказчик» показываем только админу
-    thUser.style.display = isAdmin ? '' : 'none';
-
-    if (visible.length === 0) {
-      const colspan = isAdmin ? 5 : 4;
-      ordersBody.innerHTML = '<tr><td colspan="' + colspan + '" style="text-align:center;color:#999;">Заказов нет</td></tr>';
+    if (rows.length === 0) {
+      ordersBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
       return;
     }
 
-    visible.forEach(o => {
+    rows.sort((a, b) => a.user.localeCompare(b.user) || a.product.localeCompare(b.product));
+
+    rows.forEach(r => {
       const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + r.product + '</td>' +
+        '<td>' + r.kg + '</td>' +
+        '<td>' + r.user + '</td>' +
+        '<td>' + r.date + '</td>' +
+        '<td></td>';
+      ordersBody.appendChild(tr);
+    });
 
-      // Для пользователя — без колонки заказчика
-      let cells = '<td>' + o.product + '</td><td>' + o.kg + '</td>';
-      if (isAdmin) cells += '<td>' + o.user + '</td>';
-      cells += '<td>' + o.date + '</td><td></td>';
-      tr.innerHTML = cells;
+  } else {
+    // Пользователь: только свой заказ
+    ordersTitle.textContent = 'Мой заказ';
+    thUser.style.display = 'none';
+    thDate.style.display = 'none';
 
-      // Кнопки правки/удаления — автору до дедлайна
-      if (!isAdmin && o.user === currentUser.name && editable) {
+    const myOrder = orders[currentUser.name];
+    const items = myOrder ? myOrder.items : [];
+
+    if (items.length === 0) {
+      ordersBody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--note);">Ваш заказ пуст. Добавьте товары.</td></tr>';
+      return;
+    }
+
+    items.forEach((item, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + item.product + '</td>' +
+        '<td>' + item.kg + '</td>' +
+        '<td></td>';
+
+      if (editable) {
         const cell = tr.lastElementChild;
 
         const editBtn = document.createElement('button');
         editBtn.textContent = '✎';
         editBtn.className = 'small-btn';
         editBtn.title = 'Редактировать';
-        editBtn.style.margin = '0 4px 0 0';
-        editBtn.addEventListener('click', () => startEdit(o.id));
+        editBtn.style.marginRight = '4px';
+        editBtn.addEventListener('click', () => startEditItem(idx));
 
         const delBtn = document.createElement('button');
         delBtn.textContent = '🗑';
         delBtn.className = 'small-btn danger-btn';
         delBtn.title = 'Удалить';
-        delBtn.style.margin = '0';
-        delBtn.addEventListener('click', () => deleteOrder(o.id));
+        delBtn.addEventListener('click', () => deleteItem(idx));
 
         cell.append(editBtn, delBtn);
       }
@@ -359,174 +496,261 @@
       ordersBody.appendChild(tr);
     });
   }
+}
 
-  function startEdit(id) {
-    const order = orders.find(o => o.id === id);
-    if (!order || !isEditable()) return;
+function startEditItem(idx) {
+  const myOrder = orders[currentUser.name];
+  if (!myOrder || !isEditable() || !isOrderingOpen()) return;
 
-    editingId = id;
-    productSelect.value = order.product;
-    kgInput.value = order.kg;
-    formTitle.textContent = 'Правка заказа';
-    saveBtn.textContent = 'Сохранить';
-    cancelEditBtn.classList.remove('hidden');
-    formNote.textContent = 'Режим правки заказа.';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const item = myOrder.items[idx];
+  if (!item) return;
+
+  editingIndex = idx;
+  productSelect.value = item.product;
+  kgInput.value = item.kg;
+  formTitle.textContent = 'Редактировать товар';
+  saveBtn.textContent = 'Сохранить';
+  cancelEditBtn.classList.remove('hidden');
+  formNote.textContent = 'Режим правки.';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  editingIndex = -1;
+  kgInput.value = '';
+  formTitle.textContent = 'Добавить товар в заказ';
+  saveBtn.textContent = 'Добавить';
+  cancelEditBtn.classList.add('hidden');
+  formNote.textContent = '';
+}
+
+function deleteItem(idx) {
+  if (!isEditable() || !isOrderingOpen()) return;
+  if (!confirm('Удалить этот товар из заказа?')) return;
+
+  const myOrder = orders[currentUser.name];
+  if (!myOrder) return;
+
+  myOrder.items.splice(idx, 1);
+
+  if (myOrder.items.length === 0) {
+    delete orders[currentUser.name];
+  } else {
+    myOrder.editedAt = new Date().toLocaleString('ru-RU');
   }
 
-  function resetForm() {
-    editingId = null;
-    kgInput.value = '';
-    formTitle.textContent = 'Новый заказ';
-    saveBtn.textContent = 'Добавить заказ';
-    cancelEditBtn.classList.add('hidden');
-    formNote.textContent = '';
-  }
-
-  function deleteOrder(id) {
-    if (!isEditable()) return;
-    if (!confirm('Удалить этот заказ?')) return;
-    orders = orders.filter(o => o.id !== id);
-    saveOrders();
-    renderOrders();
-  }
-
-  // ──────────────────────────────────────────────
-  //  События
-  // ──────────────────────────────────────────────
-
-  loginBtn.addEventListener('click', () => {
-    const name = loginName.value.trim();
-    const pass = loginPass.value;
-    const user = USERS[name];
-
-    if (!user || user.password !== pass) {
-      loginError.textContent = 'Неверное имя или пароль';
-      return;
-    }
-
-    currentUser = { name, role: user.role };
-    loginError.textContent = '';
-    loginName.value = '';
-    loginPass.value = '';
-
-    loginScreen.classList.add('hidden');
-    appScreen.classList.remove('hidden');
-    currentUserEl.textContent = '👤 ' + name +
-      ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
-
-    if (user.role === 'admin') {
-      adminPanel.classList.remove('hidden');
-      if (deadline) {
-        const off = deadline.getTimezoneOffset() * 60000;
-        deadlineInput.value = new Date(deadline.getTime() - off)
-          .toISOString().slice(0, 16);
-      }
-    } else {
-      adminPanel.classList.add('hidden');
-    }
-
-    fillProducts();
-    renderDeadline();
-    renderOrders();
-  });
-
-  logoutBtn.addEventListener('click', () => {
-    currentUser = null;
+  if (editingIndex === idx) {
     resetForm();
-    appScreen.classList.add('hidden');
-    loginScreen.classList.remove('hidden');
-  });
+  } else if (editingIndex > idx) {
+    editingIndex--;
+  }
 
-  saveBtn.addEventListener('click', () => {
-    if (!isEditable()) {
-      alert('Срок приёма правок истёк');
+  saveOrders();
+  renderOrders();
+}
+
+// ──────────────────────────────────────────────
+//  События
+// ──────────────────────────────────────────────
+
+loginBtn.addEventListener('click', () => {
+  const name = loginName.value.trim();
+  const pass = loginPass.value;
+  const user = USERS[name];
+
+  if (!user || user.password !== pass) {
+    loginError.textContent = 'Неверное имя или пароль';
+    return;
+  }
+
+  // Проверка времени начала для не-админов
+  if (user.role !== 'admin' && !isOrderingOpen()) {
+    loginError.textContent = 'Заказывать можно только с ' + startTime.toLocaleString('ru-RU');
+    return;
+  }
+
+  currentUser = { name, role: user.role };
+  loginError.textContent = '';
+  loginName.value = '';
+  loginPass.value = '';
+
+  loginScreen.classList.add('hidden');
+  appScreen.classList.remove('hidden');
+  currentUserEl.textContent = '👤 ' + name +
+    ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
+
+  if (user.role === 'admin') {
+    adminPanel.classList.remove('hidden');
+    orderFormSection.classList.add('hidden');
+    if (deadline) deadlineInput.value = toLocalInputValue(deadline);
+    if (startTime) startInput.value = toLocalInputValue(startTime);
+  } else {
+    adminPanel.classList.add('hidden');
+    orderFormSection.classList.remove('hidden');
+  }
+
+  fillProducts();
+  renderDeadline();
+  renderOrders();
+});
+
+logoutBtn.addEventListener('click', () => {
+  currentUser = null;
+  resetForm();
+  appScreen.classList.add('hidden');
+  loginScreen.classList.remove('hidden');
+  renderStartWarning();
+});
+
+saveBtn.addEventListener('click', () => {
+  if (!isOrderingOpen()) {
+    alert('Приём заказов ещё не начался');
+    return;
+  }
+  if (!isEditable()) {
+    alert('Срок приёма правок истёк');
+    return;
+  }
+
+  const product = productSelect.value;
+  const kg = parseFloat(kgInput.value);
+
+  if (!product || isNaN(kg) || kg <= 0) {
+    alert('Выберите товар и укажите количество больше 0');
+    return;
+  }
+
+  if (!orders[currentUser.name]) {
+    orders[currentUser.name] = {
+      user: currentUser.name,
+      items: [],
+      date: new Date().toLocaleString('ru-RU'),
+      editedAt: '',
+    };
+  }
+
+  const myOrder = orders[currentUser.name];
+
+  if (editingIndex >= 0) {
+    myOrder.items[editingIndex].product = product;
+    myOrder.items[editingIndex].kg = kg;
+    myOrder.editedAt = new Date().toLocaleString('ru-RU');
+    resetForm();
+  } else {
+    // Проверка на дубликат
+    const existing = myOrder.items.findIndex(i => i.product === product);
+    if (existing >= 0) {
+      alert('Этот товар уже в заказе. Отредактируйте его вместо добавления нового.');
       return;
     }
+    myOrder.items.push({ product, kg });
+    myOrder.editedAt = new Date().toLocaleString('ru-RU');
+    kgInput.value = '';
+  }
 
-    const product = productSelect.value;
-    const kg = parseFloat(kgInput.value);
+  saveOrders();
+  renderOrders();
+});
 
-    if (!product || isNaN(kg) || kg <= 0) {
-      alert('Выберите товар и укажите количество больше 0');
-      return;
-    }
+cancelEditBtn.addEventListener('click', resetForm);
 
-    if (editingId) {
-      const order = orders.find(o => o.id === editingId);
-      if (order) {
-        order.product = product;
-        order.kg = kg;
-        order.editedAt = new Date().toLocaleString('ru-RU');
-      }
-      resetForm();
-    } else {
-      orders.push({
-        id: Date.now() + '_' + currentUser.name,
-        product: product,
-        kg: kg,
-        user: currentUser.name,
-        date: new Date().toLocaleString('ru-RU'),
-      });
-      kgInput.value = '';
-    }
+// ── Время начала (админ) ──
 
-    saveOrders();
-    renderOrders();
-  });
+setStartBtn.addEventListener('click', () => {
+  if (!startInput.value) {
+    alert('Выберите дату и время');
+    return;
+  }
+  startTime = new Date(startInput.value);
+  localStorage.setItem('orderStartTime', startTime.toISOString());
+  renderStartWarning();
+  alert('Начало заказов: ' + startTime.toLocaleString('ru-RU'));
+});
 
-  cancelEditBtn.addEventListener('click', resetForm);
+clearStartBtn.addEventListener('click', () => {
+  startTime = null;
+  localStorage.removeItem('orderStartTime');
+  startInput.value = '';
+  renderStartWarning();
+  alert('Ограничение на начало заказов снято.');
+});
 
-  setDeadlineBtn.addEventListener('click', () => {
-    if (!deadlineInput.value) {
-      alert('Выберите дату и время');
-      return;
-    }
-    deadline = new Date(deadlineInput.value);
-    localStorage.setItem('orderDeadline', deadline.toISOString());
-    renderDeadline();
-    renderOrders();
-    alert('Дедлайн установлен: ' + deadline.toLocaleString('ru-RU'));
-  });
+// ── Дедлайн (админ) ──
 
-  exportBtn.addEventListener('click', () => {
-    if (orders.length === 0) {
-      alert('Нет заказов для выгрузки');
-      return;
-    }
+setDeadlineBtn.addEventListener('click', () => {
+  if (!deadlineInput.value) {
+    alert('Выберите дату и время');
+    return;
+  }
+  deadline = new Date(deadlineInput.value);
+  localStorage.setItem('orderDeadline', deadline.toISOString());
+  renderDeadline();
+  renderOrders();
+  alert('Дедлайн установлен: ' + deadline.toLocaleString('ru-RU'));
+});
 
-    const allOrdersData = orders.map(o => ({
-      'Товар': o.product,
-      'Кг': o.kg,
-      'Заказчик': o.user,
-      'Дата': o.date,
-    }));
+clearDeadlineBtn.addEventListener('click', () => {
+  deadline = null;
+  localStorage.removeItem('orderDeadline');
+  deadlineInput.value = '';
+  renderDeadline();
+  renderOrders();
+  alert('Дедлайн снят.');
+});
 
-    const summary = {};
-    orders.forEach(o => {
-      if (!summary[o.product]) summary[o.product] = { totalKg: 0, count: 0 };
-      summary[o.product].totalKg += o.kg;
-      summary[o.product].count += 1;
+// ── Экспорт в Excel (админ) ──
+
+exportBtn.addEventListener('click', () => {
+  const orderEntries = Object.values(orders);
+  if (orderEntries.length === 0) {
+    alert('Нет заказов для выгрузки');
+    return;
+  }
+
+  // Лист 1: матрица — строки = пользователи, столбцы = товары
+  const matrixData = orderEntries.map(order => {
+    const row = { 'Заказчик': order.user, 'Дата': order.editedAt || order.date };
+    PRODUCTS.forEach(p => {
+      const item = order.items.find(i => i.product === p);
+      row[p] = item ? item.kg : '';
     });
-
-    const summaryData = Object.entries(summary).map(([product, s]) => ({
-      'Товар': product,
-      'Всего, кг': s.totalKg.toFixed(2),
-      'Кол-во заказов': s.count,
-    }));
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(allOrdersData), 'Все заказы');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Сводка');
-    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    return row;
   });
 
-  clearBtn.addEventListener('click', () => {
-    if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
-    orders = [];
-    saveOrders();
-    renderOrders();
+  // Лист 2: сводка по товарам
+  const summary = {};
+  orderEntries.forEach(order => {
+    order.items.forEach(item => {
+      if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
+      summary[item.product].totalKg += item.kg;
+      summary[item.product].users += 1;
+    });
   });
-  </script>
+
+  const summaryData = Object.entries(summary).map(([product, s]) => ({
+    'Товар': product,
+    'Всего, кг': s.totalKg.toFixed(2),
+    'Заказчиков': s.users,
+  }));
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Сводка');
+  XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+});
+
+// ── Очистка заказов (админ) ──
+
+clearBtn.addEventListener('click', () => {
+  if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
+  orders = {};
+  saveOrders();
+  renderOrders();
+});
+
+// ── Инициализация ──
+
+renderStartWarning();
+</script>
 </body>
 </html>
