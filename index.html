@@ -26,7 +26,7 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 .container {
-  max-width: 820px; margin: 0 auto;
+  max-width: 860px; margin: 0 auto;
   background: var(--surface); color: var(--text);
   padding: 20px; border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
@@ -86,28 +86,31 @@ button:disabled { background: #ccc; cursor: not-allowed; color: #888; }
   font-weight: 700; font-size: 15px; text-align: center;
 }
 
-/* Таблица с прокруткой */
 .table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   margin-top: 12px;
 }
-table { width: 100%; border-collapse: collapse; min-width: 400px; }
+table { width: 100%; border-collapse: collapse; min-width: 380px; }
 th, td {
   border: 1px solid var(--border); padding: 8px 10px; text-align: left;
   word-break: break-word;
 }
 th { background: var(--th-bg); white-space: nowrap; }
 tr:nth-child(even) { background: var(--even-row); }
+td.num { text-align: right; white-space: nowrap; }
 
 hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 .hidden { display: none; }
-.admin-section { margin-bottom: 20px; }
+.admin-section { margin-bottom: 22px; }
 .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
 .btn-row button { margin-bottom: 0; }
 .settings-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
 .settings-row label { flex: 1; min-width: 180px; }
 .settings-row button { margin-bottom: 0; white-space: nowrap; }
+.markup-label { margin-top: 14px; }
+.markup-label input { max-width: 160px; }
+.price-input { max-width: 130px; }
 
 @media (max-width: 520px) {
   body { padding: 8px; }
@@ -198,6 +201,25 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     <h2>Админ-панель</h2>
 
     <div class="admin-section">
+      <h3>Цены и наценка</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Цена, руб/кг</th>
+            </tr>
+          </thead>
+          <tbody id="prices-body"></tbody>
+        </table>
+      </div>
+      <label class="markup-label">Наценка за перевозку, %:
+        <input type="number" id="markup-input" step="0.1" min="0" inputmode="decimal" />
+      </label>
+      <button type="button" id="save-prices">Сохранить цены и наценку</button>
+    </div>
+
+    <div class="admin-section">
       <h3>Время начала приёма заказов</h3>
       <div class="settings-row">
         <label>Открыть заказы с:
@@ -224,6 +246,22 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
       <div class="btn-row">
         <button id="export-excel" type="button">Итоги → Excel</button>
         <button id="clear-orders" class="danger-btn" type="button">Очистить все заказы</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Кто сколько должен</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Заказчик</th>
+              <th>Товаров</th>
+              <th>Сумма с наценкой, руб</th>
+            </tr>
+          </thead>
+          <tbody id="debts-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -299,9 +337,13 @@ const clearDeadlineBtn = $('clear-deadline');
 const startInput       = $('start-input');
 const setStartBtn      = $('set-start');
 const clearStartBtn    = $('clear-start');
+const pricesBody       = $('prices-body');
+const markupInput      = $('markup-input');
+const savePricesBtn    = $('save-prices');
 const exportBtn        = $('export-excel');
 const clearBtn         = $('clear-orders');
 const adminPanel       = $('admin-panel');
+const debtsBody        = $('debts-body');
 const currentUserEl    = $('current-user');
 const logoutBtn        = $('logout-btn');
 const themeToggleLogin = $('theme-toggle-login');
@@ -318,6 +360,15 @@ let orders = {};
 try {
   orders = JSON.parse(storage.getItem('orders')) || {};
 } catch (e) { orders = {}; }
+
+// Цены: { "Картофель": 45, ... }
+let prices = {};
+try {
+  prices = JSON.parse(storage.getItem('prices')) || {};
+} catch (e) { prices = {}; }
+
+// Наценка за перевозку, %
+let markup = parseFloat(storage.getItem('markup')) || 0;
 
 let deadline = null;
 try {
@@ -392,6 +443,34 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+function fmtRub(x) {
+  return x.toFixed(2).replace('.', ',');
+}
+
+function fmtKg(x) {
+  return String(x).replace('.', ',');
+}
+
+function withMarkup(amount) {
+  return amount * (1 + markup / 100);
+}
+
+// Стоимость заказа пользователя (с наценкой)
+function userTotal(order) {
+  let sum = 0;
+  (order.items || []).forEach(i => {
+    sum += (i.kg || 0) * (prices[i.product] || 0);
+  });
+  return withMarkup(sum);
+}
+
+// Список только реально заказанных товаров
+function getOrderedProducts() {
+  return PRODUCTS.filter(p =>
+    Object.values(orders).some(o => (o.items || []).some(i => i.product === p))
+  );
+}
+
 function renderDeadline() {
   if (!deadline) {
     deadlineBox.classList.add('hidden');
@@ -450,9 +529,51 @@ function fillProducts() {
   PRODUCTS.forEach(p => {
     const opt = document.createElement('option');
     opt.value = p;
-    opt.textContent = p;
+    opt.textContent = prices[p] > 0 ? p + ' — ' + fmtRub(prices[p]) + ' руб/кг' : p;
     productSelect.appendChild(opt);
   });
+}
+
+function renderPrices() {
+  pricesBody.innerHTML = '';
+  PRODUCTS.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + escapeHtml(p) + '</td>';
+    const td = document.createElement('td');
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.step = '0.01';
+    inp.min = '0';
+    inp.inputMode = 'decimal';
+    inp.className = 'price-input';
+    inp.dataset.product = p;
+    inp.value = prices[p] !== undefined ? prices[p] : '';
+    td.appendChild(inp);
+    tr.appendChild(td);
+    pricesBody.appendChild(tr);
+  });
+  markupInput.value = markup > 0 ? markup : '';
+}
+
+function renderDebts() {
+  debtsBody.innerHTML = '';
+  const entries = Object.values(orders);
+
+  if (entries.length === 0) {
+    debtsBody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--note);">Нет заказов</td></tr>';
+    return;
+  }
+
+  entries
+    .sort((a, b) => a.user.localeCompare(b.user))
+    .forEach(order => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(order.user) + '</td>' +
+        '<td class="num">' + (order.items || []).length + '</td>' +
+        '<td class="num">' + fmtRub(userTotal(order)) + '</td>';
+      debtsBody.appendChild(tr);
+    });
 }
 
 function renderOrders() {
@@ -479,6 +600,7 @@ function renderOrders() {
 
     if (rows.length === 0) {
       ordersBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
+      renderDebts();
       return;
     }
 
@@ -486,15 +608,16 @@ function renderOrders() {
 
     rows.forEach(r => {
       const tr = document.createElement('tr');
-      const tdUser = '<td>' + escapeHtml(r.user) + '</td>';
-      const tdDate = '<td>' + escapeHtml(r.date) + '</td>';
       tr.innerHTML =
         '<td>' + escapeHtml(r.product) + '</td>' +
-        '<td>' + r.kg + '</td>' +
-        tdUser + tdDate +
+        '<td class="num">' + fmtKg(r.kg) + '</td>' +
+        '<td>' + escapeHtml(r.user) + '</td>' +
+        '<td>' + escapeHtml(r.date) + '</td>' +
         '<td></td>';
       ordersBody.appendChild(tr);
     });
+
+    renderDebts();
 
   } else {
     ordersTitle.textContent = 'Мой заказ';
@@ -511,9 +634,10 @@ function renderOrders() {
 
     items.forEach((item, idx) => {
       const tr = document.createElement('tr');
+      const price = prices[item.product] || 0;
       tr.innerHTML =
         '<td>' + escapeHtml(item.product) + '</td>' +
-        '<td>' + item.kg + '</td>' +
+        '<td class="num">' + fmtKg(item.kg) + '</td>' +
         '<td></td>';
 
       if (editable) {
@@ -592,9 +716,7 @@ function deleteItem(idx) {
 }
 
 // ──────────────────────────────────────────────
-//  Экспорт: сначала пробуем XLSX-библиотеку,
-//  если не вышло — генерируем CSV (открывается
-//  в Excel без библиотек).
+//  Загрузка XLSX-библиотеки (лениво)
 // ──────────────────────────────────────────────
 
 function loadXlsxLib() {
@@ -630,45 +752,85 @@ function downloadFile(content, filename, mime) {
   setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 200);
 }
 
-function exportToCsv() {
-  const orderEntries = Object.values(orders);
-  if (orderEntries.length === 0) {
-    alert('Нет заказов для выгрузки');
-    return;
-  }
+// ──────────────────────────────────────────────
+//  Данные итогов
+// ──────────────────────────────────────────────
 
-  // Лист 1: матрица
-  const header = ['Заказчик', 'Дата'].concat(PRODUCTS);
-  const lines = [header.join(';')];
+function buildSummary() {
+  const entries = Object.values(orders);
+  const ordered = getOrderedProducts();
 
-  orderEntries.forEach(order => {
-    const row = [
-      '"' + order.user + '"',
-      '"' + (order.editedAt || order.date) + '"'
-    ];
-    PRODUCTS.forEach(p => {
-      const item = (order.items || []).find(i => i.product === p);
-      row.push(item ? String(item.kg).replace('.', ',') : '');
+  // По товарам
+  const byProduct = ordered.map(p => {
+    let totalKg = 0;
+    entries.forEach(o => {
+      const item = (o.items || []).find(i => i.product === p);
+      if (item) totalKg += item.kg;
     });
+    const price = prices[p] || 0;
+    const cost = totalKg * price;
+    return {
+      product: p,
+      totalKg: totalKg,
+      price: price,
+      cost: cost,
+      costWithMarkup: withMarkup(cost),
+    };
+  });
+
+  // По людям
+  const byUser = entries
+    .map(o => ({
+      user: o.user,
+      items: (o.items || []).filter(i => ordered.includes(i.product)),
+      total: userTotal(o),
+    }))
+    .sort((a, b) => a.user.localeCompare(b.user));
+
+  return { ordered, byProduct, byUser };
+}
+
+function exportToCsv() {
+  const { ordered, byProduct, byUser } = buildSummary();
+
+  const lines = [];
+
+  // Блок 1: заказы по людям
+  lines.push('ЗАКАЗЫ');
+  lines.push(['Заказчик'].concat(ordered, ['Итого с наценкой, руб']).join(';'));
+  byUser.forEach(u => {
+    const row = ['"' + u.user + '"'];
+    ordered.forEach(p => {
+      const item = u.items.find(i => i.product === p);
+      row.push(item ? fmtKg(item.kg) : '');
+    });
+    row.push('"' + fmtRub(u.total) + '"');
     lines.push(row.join(';'));
   });
 
-  // Пустая строка-разделитель
   lines.push('');
+  lines.push('Наценка: ' + fmtRub(markup) + '%');
 
-  // Сводка
-  lines.push('СВОДКА');
-  lines.push('Товар;Всего, кг;Заказчиков');
-  const summary = {};
-  orderEntries.forEach(order => {
-    (order.items || []).forEach(item => {
-      if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
-      summary[item.product].totalKg += item.kg;
-      summary[item.product].users += 1;
-    });
+  // Блок 2: сводка по товарам
+  lines.push('');
+  lines.push('СВОДКА ПО ТОВАРАМ');
+  lines.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб;С наценкой, руб');
+  byProduct.forEach(r => {
+    lines.push(
+      '"' + r.product + '";' +
+      fmtKg(r.totalKg) + ';' +
+      fmtRub(r.price) + ';' +
+      '"' + fmtRub(r.cost) + '";' +
+      '"' + fmtRub(r.costWithMarkup) + '"'
+    );
   });
-  Object.entries(summary).forEach(([product, s]) => {
-    lines.push('"' + product + '";' + s.totalKg.toFixed(2).replace('.', ',') + ';' + s.users);
+
+  // Блок 3: долги
+  lines.push('');
+  lines.push('КТО СКОЛЬКО ДОЛЖЕН');
+  lines.push('Заказчик;Сумма с наценкой, руб');
+  byUser.forEach(u => {
+    lines.push('"' + u.user + '";"' + fmtRub(u.total) + '"');
   });
 
   const csv = lines.join('\n');
@@ -677,9 +839,17 @@ function exportToCsv() {
 }
 
 function exportToExcel() {
-  const orderEntries = Object.values(orders);
-  if (orderEntries.length === 0) {
+  const entries = Object.values(orders);
+  if (entries.length === 0) {
     alert('Нет заказов для выгрузки');
+    return;
+  }
+
+  // Проверка цен
+  const ordered = getOrderedProducts();
+  const missing = ordered.filter(p => !(prices[p] > 0));
+  if (missing.length > 0) {
+    alert('Сначала укажите цены для товаров: ' + missing.join(', '));
     return;
   }
 
@@ -688,39 +858,48 @@ function exportToExcel() {
   exportBtn.textContent = 'Загрузка...';
 
   loadXlsxLib().then(() => {
-    const matrixData = orderEntries.map(order => {
-      const row = { 'Заказчик': order.user, 'Дата': order.editedAt || order.date };
-      PRODUCTS.forEach(p => {
-        const item = (order.items || []).find(i => i.product === p);
+    const { ordered: ord, byProduct, byUser } = buildSummary();
+
+    // Лист 1: заказы по людям (только заказанные товары)
+    const matrixData = byUser.map(u => {
+      const row = { 'Заказчик': u.user };
+      ord.forEach(p => {
+        const item = u.items.find(i => i.product === p);
         row[p] = item ? item.kg : '';
       });
+      row['Итого с наценкой, руб'] = parseFloat(u.total.toFixed(2));
       return row;
     });
 
-    const summary = {};
-    orderEntries.forEach(order => {
-      (order.items || []).forEach(item => {
-        if (!summary[item.product]) summary[item.product] = { totalKg: 0, users: 0 };
-        summary[item.product].totalKg += item.kg;
-        summary[item.product].users += 1;
-      });
-    });
-
-    const summaryData = Object.entries(summary).map(([product, s]) => ({
-      'Товар': product,
-      'Всего, кг': s.totalKg.toFixed(2),
-      'Заказчиков': s.users,
+    // Лист 2: сводка по товарам
+    const productData = byProduct.map(r => ({
+      'Товар': r.product,
+      'Всего, кг': parseFloat(r.totalKg.toFixed(2)),
+      'Цена, руб/кг': r.price,
+      'Стоимость, руб': parseFloat(r.cost.toFixed(2)),
+      'С наценкой, руб': parseFloat(r.costWithMarkup.toFixed(2)),
     }));
+
+    // Лист 3: кто сколько должен
+    const debtsData = byUser.map(u => ({
+      'Заказчик': u.user,
+      'Сумма с наценкой, руб': parseFloat(u.total.toFixed(2)),
+    }));
+
+    // Лист 4: настройки
+    const settingsData = [{ 'Наценка, %': markup }];
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), 'Сводка');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(productData), 'Сводка');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(debtsData), 'Долги');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(settingsData), 'Настройки');
+
     XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
 
     exportBtn.disabled = false;
     exportBtn.textContent = oldText;
   }).catch(() => {
-    // Не удалось загрузить библиотеку — выгружаем CSV
     exportToCsv();
     exportBtn.disabled = false;
     exportBtn.textContent = oldText;
@@ -763,6 +942,7 @@ loginForm.addEventListener('submit', e => {
     orderFormSection.classList.add('hidden');
     if (deadline) deadlineInput.value = toLocalInputValue(deadline);
     if (startTime) startInput.value = toLocalInputValue(startTime);
+    renderPrices();
   } else {
     adminPanel.classList.add('hidden');
     orderFormSection.classList.remove('hidden');
@@ -832,6 +1012,44 @@ saveBtn.addEventListener('click', () => {
 
 cancelEditBtn.addEventListener('click', resetForm);
 
+// ── Цены и наценка (админ) ──
+
+savePricesBtn.addEventListener('click', () => {
+  let ok = true;
+  pricesBody.querySelectorAll('input[data-product]').forEach(inp => {
+    const val = parseFloat((inp.value || '').replace(',', '.'));
+    if (isNaN(val) || val < 0) {
+      inp.style.borderColor = 'var(--danger)';
+      ok = false;
+    } else {
+      inp.style.borderColor = '';
+      prices[inp.dataset.product] = val;
+    }
+  });
+
+  const mk = parseFloat((markupInput.value || '0').replace(',', '.'));
+  if (isNaN(mk) || mk < 0) {
+    markupInput.style.borderColor = 'var(--danger)';
+    ok = false;
+  } else {
+    markupInput.style.borderColor = '';
+    markup = mk;
+  }
+
+  if (!ok) {
+    alert('Проверьте значения: цена и наценка должны быть числами от 0 и выше');
+    return;
+  }
+
+  storage.setItem('prices', JSON.stringify(prices));
+  storage.setItem('markup', String(markup));
+  fillProducts();
+  renderDebts();
+  alert('Сохранено. Наценка: ' + fmtRub(markup) + '%');
+});
+
+// ── Время начала (админ) ──
+
 setStartBtn.addEventListener('click', () => {
   if (!startInput.value) {
     alert('Выберите дату и время');
@@ -850,6 +1068,8 @@ clearStartBtn.addEventListener('click', () => {
   renderStartWarning();
   alert('Ограничение на начало заказов снято.');
 });
+
+// ── Дедлайн (админ) ──
 
 setDeadlineBtn.addEventListener('click', () => {
   if (!deadlineInput.value) {
@@ -871,6 +1091,8 @@ clearDeadlineBtn.addEventListener('click', () => {
   renderOrders();
   alert('Дедлайн снят.');
 });
+
+// ── Экспорт (админ) ──
 
 exportBtn.addEventListener('click', exportToExcel);
 
