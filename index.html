@@ -21,27 +21,20 @@
   --sb-hover: #64748b; --tfoot-bg: #0f172a; --tfoot-text: #e0e0e0;
   --nav-bg: #1e293b; --nav-active: #3b82f6;
 }
-
 body {
-  font-family: Arial, sans-serif;
-  color: var(--text);
+  font-family: Arial, sans-serif; color: var(--text);
   padding: 12px; margin: 0;
   background-image: url('bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: var(--bg);
-  min-height: 100vh;
+  background-size: cover; background-position: center;
+  background-repeat: no-repeat; background-attachment: fixed;
+  background-color: var(--bg); min-height: 100vh;
 }
-
 .container {
   max-width: 900px; margin: 0 auto;
   background: var(--surface); color: var(--text);
   padding: 20px; border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
-
 h1, h2, h3 { color: var(--text); margin-top: 0; }
 .header {
   display: flex; justify-content: space-between;
@@ -49,8 +42,7 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
 }
 .user-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sync-info { font-size: 12px; color: var(--note); }
-.sync-ok { color: #1a7f37; }
-.sync-err { color: var(--danger); }
+.sync-ok { color: #1a7f37; } .sync-err { color: var(--danger); }
 .theme-btn {
   padding: 6px 12px; font-size: 18px;
   background: var(--sb-bg); color: #fff;
@@ -63,11 +55,7 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
   border: none; border-radius: 5px; cursor: pointer; margin: 0;
 }
 .small-btn:hover { background: var(--sb-hover); }
-
-.nav-tabs {
-  display: flex; gap: 0; margin-bottom: 16px;
-  border-bottom: 2px solid var(--border);
-}
+.nav-tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 2px solid var(--border); }
 .nav-tab {
   background: transparent; color: var(--text);
   border: none; border-bottom: 3px solid transparent;
@@ -75,14 +63,8 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
   cursor: pointer; border-radius: 0;
 }
 .nav-tab:hover { background: var(--nav-bg); }
-.nav-tab.active {
-  color: var(--primary); border-bottom-color: var(--nav-active);
-  font-weight: 700;
-}
-
-.login-form, .order-form {
-  display: flex; flex-direction: column; gap: 12px; max-width: 380px;
-}
+.nav-tab.active { color: var(--primary); border-bottom-color: var(--nav-active); font-weight: 700; }
+.login-form, .order-form { display: flex; flex-direction: column; gap: 12px; max-width: 380px; }
 label { display: block; font-weight: 600; }
 .hint { font-weight: 400; font-size: 13px; color: var(--note); }
 input, select {
@@ -103,38 +85,26 @@ button:disabled { background: #ccc; cursor: not-allowed; color: #888; }
 .form-buttons { display: flex; gap: 8px; align-items: center; }
 .error { color: var(--danger); font-size: 14px; min-height: 20px; }
 .note { color: var(--note); font-size: 13px; }
-
 .start-warning {
   color: var(--danger); font-size: 24px; font-weight: 700;
   text-align: center; margin: 20px 0; padding: 24px 16px;
   border: 3px solid var(--danger); border-radius: 10px;
   background: var(--dl-bg); line-height: 1.5;
 }
-
 .deadline-box {
   margin: 14px 0; padding: 12px 16px;
   border: 2px solid var(--danger); border-radius: 8px;
   background: var(--dl-bg); color: var(--danger);
   font-weight: 700; font-size: 15px; text-align: center;
 }
-
-.table-wrap {
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-  margin-top: 12px;
-}
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; }
 table { width: 100%; border-collapse: collapse; min-width: 380px; }
-th, td {
-  border: 1px solid var(--border); padding: 8px 10px; text-align: left;
-  word-break: break-word;
-}
+th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; word-break: break-word; }
 th { background: var(--th-bg); white-space: nowrap; }
 tr:nth-child(even) { background: var(--even-row); }
 td.num, th.num { text-align: right; white-space: nowrap; }
 tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 700; }
-
-hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 .hidden { display: none; }
-
 .admin-section { margin-bottom: 22px; }
 .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
 .btn-row button { margin-bottom: 0; }
@@ -142,21 +112,18 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 .settings-row label { flex: 1; min-width: 180px; }
 .settings-row button { margin-bottom: 0; white-space: nowrap; }
 .price-input { max-width: 130px; }
+.name-input { min-width: 160px; }
 .total-note { margin-top: 8px; font-weight: 700; }
-
+.prod-actions { display: flex; gap: 4px; }
 #js-error {
   position: fixed; left: 8px; right: 8px; bottom: 8px;
   background: #dc3545; color: #fff;
   padding: 10px 14px; border-radius: 8px;
   font-size: 13px; z-index: 9999; word-break: break-word;
 }
-
 @media (max-width: 520px) {
-  body { padding: 8px; }
-  .container { padding: 16px; border-radius: 8px; }
-  h1 { font-size: 20px; }
-  h2 { font-size: 17px; }
-  h3 { font-size: 15px; }
+  body { padding: 8px; } .container { padding: 16px; border-radius: 8px; }
+  h1 { font-size: 20px; } h2 { font-size: 17px; } h3 { font-size: 15px; }
   th, td { padding: 6px 8px; font-size: 14px; }
   .start-warning { font-size: 20px; padding: 18px 12px; }
   .deadline-box { font-size: 13px; padding: 10px 12px; }
@@ -166,10 +133,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 </style>
 </head>
 <body>
-
 <div id="js-error" class="hidden"></div>
 
-<!-- ────── Экран входа ────── -->
+<!-- Экран входа -->
 <div id="login-screen" class="container">
   <div class="header">
     <h1>Вход</h1>
@@ -179,103 +145,63 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     ЗАКАЗЫ ПРИНИМАЮТСЯ С<br><span id="start-time-display"></span>
   </div>
   <div class="login-form">
-    <label>Имя:
-      <input type="text" id="login-name" autocomplete="username" placeholder="Ваше имя" />
-    </label>
-    <label>Пароль:
-      <input type="password" id="login-pass" autocomplete="current-password" placeholder="Пароль" />
-    </label>
+    <label>Имя:<input type="text" id="login-name" autocomplete="username" placeholder="Ваше имя" /></label>
+    <label>Пароль:<input type="password" id="login-pass" autocomplete="current-password" placeholder="Пароль" /></label>
     <button type="button" id="login-btn">Войти</button>
     <p id="login-error" class="error"></p>
   </div>
 </div>
 
-<!-- ────── Основной экран ────── -->
+<!-- Основной экран -->
 <div id="app-screen" class="container hidden">
   <div class="header">
     <h1>Приём заказов</h1>
     <div class="user-info">
       <span id="sync-status" class="sync-info"></span>
-      <button id="sync-btn" class="small-btn" type="button" title="Обновить данные">🔄</button>
+      <button id="sync-btn" class="small-btn" type="button" title="Обновить">🔄</button>
       <span id="current-user"></span>
       <button id="logout-btn" class="small-btn" type="button">Выйти</button>
       <button class="theme-btn" id="theme-toggle-app" type="button">🌙</button>
     </div>
   </div>
-
   <div id="nav-tabs" class="nav-tabs hidden">
     <button type="button" class="nav-tab active" id="nav-orders">Заказы</button>
     <button type="button" class="nav-tab" id="nav-settings">Настройки</button>
   </div>
+  <div id="deadline-box" class="deadline-box hidden"><span id="deadline-text"></span></div>
 
-  <div id="deadline-box" class="deadline-box hidden">
-    <span id="deadline-text"></span>
-  </div>
-
-  <!-- ── Вкладка «Заказы» ── -->
+  <!-- Вкладка «Заказы» -->
   <div id="view-orders">
     <div id="order-form-section" class="order-form">
       <h2 id="form-title">Добавить товар в заказ</h2>
-      <label>Товар:
-        <span class="hint"> (цена за прошлый раз)</span><br />
-        <select id="product"></select>
-      </label>
-      <label>Количество (кг):
-        <input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="кг" />
-      </label>
+      <label>Товар:<span class="hint"> (цена за прошлый раз)</span><br /><select id="product"></select></label>
+      <label>Количество (кг):<input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="кг" /></label>
       <div class="form-buttons">
         <button type="button" id="save-order">Добавить</button>
         <button type="button" id="cancel-edit" class="small-btn hidden">Отменить</button>
       </div>
       <p id="form-note" class="note"></p>
     </div>
-
     <div id="user-orders-section">
       <h2 id="orders-title">Мой заказ</h2>
       <div class="table-wrap">
         <table id="orders-table">
-          <thead>
-            <tr>
-              <th>Товар</th>
-              <th class="num">Кг</th>
-              <th class="num">Цена, руб/кг</th>
-              <th class="num">Стоимость, руб</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="orders-body"></tbody>
-          <tfoot id="orders-foot"></tfoot>
+          <thead><tr><th>Товар</th><th class="num">Кг</th><th class="num">Цена, руб/кг</th><th class="num">Стоимость, руб</th><th></th></tr></thead>
+          <tbody id="orders-body"></tbody><tfoot id="orders-foot"></tfoot>
         </table>
       </div>
       <p id="user-total-note" class="total-note"></p>
     </div>
-
     <div id="admin-orders-section" class="hidden">
       <div class="admin-section">
         <h3>Заказы</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr id="matrix-head"></tr></thead>
-            <tbody id="matrix-body"></tbody>
-            <tfoot id="matrix-foot"></tfoot>
-          </table>
-        </div>
+        <div class="table-wrap"><table><thead><tr id="matrix-head"></tr></thead><tbody id="matrix-body"></tbody><tfoot id="matrix-foot"></tfoot></table></div>
       </div>
       <div class="admin-section">
         <h3>Сводка по товарам</h3>
         <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Товар</th>
-                <th class="num">Всего, кг</th>
-                <th class="num">Цена, руб/кг</th>
-                <th class="num">Стоимость, руб</th>
-              </tr>
-            </thead>
-            <tbody id="product-summary-body"></tbody>
-            <tfoot id="product-summary-foot"></tfoot>
-          </table>
+          <table><thead><tr><th>Товар</th><th class="num">Всего, кг</th><th class="num">Цена, руб/кг</th><th class="num">Стоимость, руб</th></tr></thead>
+          <tbody id="product-summary-body"></tbody><tfoot id="product-summary-foot"></tfoot></table>
         </div>
       </div>
       <div class="admin-section">
@@ -288,27 +214,26 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     </div>
   </div>
 
-  <!-- ── Вкладка «Настройки» (только админ) ── -->
+  <!-- Вкладка «Настройки» -->
   <div id="view-settings" class="hidden">
     <div class="admin-section">
       <h3>Товары и цены</h3>
-      <p class="note">Цены загружаются из Firebase. Измените и нажмите «Сохранить».</p>
+      <p class="note">Редактируйте названия и цены, добавляйте и удаляйте строки. Не забудьте нажать «Сохранить».</p>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr><th>Товар</th><th class="num">Цена, руб/кг</th></tr>
-          </thead>
+          <thead><tr><th>Название товара</th><th class="num">Цена, руб/кг</th><th></th></tr></thead>
           <tbody id="prices-body"></tbody>
         </table>
       </div>
-      <button type="button" id="save-prices" style="margin-top:10px">Сохранить цены</button>
+      <div class="btn-row" style="margin-top:10px">
+        <button type="button" id="add-product" class="small-btn">+ Добавить товар</button>
+        <button type="button" id="save-prices">Сохранить товары и цены</button>
+      </div>
     </div>
     <div class="admin-section">
       <h3>Время начала приёма заказов</h3>
       <div class="settings-row">
-        <label>Открыть заказы с:
-          <input type="datetime-local" id="start-input" />
-        </label>
+        <label>Открыть заказы с:<input type="datetime-local" id="start-input" /></label>
         <button type="button" id="set-start">Установить</button>
         <button type="button" id="clear-start" class="small-btn">Сбросить</button>
       </div>
@@ -316,9 +241,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     <div class="admin-section">
       <h3>Дедлайн правок</h3>
       <div class="settings-row">
-        <label>Закрыть правки после:
-          <input type="datetime-local" id="deadline-input" />
-        </label>
+        <label>Закрыть правки после:<input type="datetime-local" id="deadline-input" /></label>
         <button type="button" id="set-deadline">Установить</button>
         <button type="button" id="clear-deadline" class="small-btn">Сбросить</button>
       </div>
@@ -329,10 +252,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
 <script>
 window.onerror = function (msg, src, line) {
   var el = document.getElementById('js-error');
-  if (el) {
-    el.textContent = 'Ошибка скрипта: ' + msg + ' (строка ' + line + ')';
-    el.classList.remove('hidden');
-  }
+  if (el) { el.textContent = 'Ошибка скрипта: ' + msg + ' (строка ' + line + ')'; el.classList.remove('hidden'); }
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -340,29 +260,20 @@ window.onerror = function (msg, src, line) {
 // ═══════════════════════════════════════════════════════════════
 
 const CONFIG = {
-
-  // URL твоей базы Firebase
   DB_URL: 'https://orders-kostroma-default-rtdb.europe-west1.firebasedatabase.app',
-
-  // Фоновая картинка вокруг окна
   BG_IMAGE: 'bg.jpg',
-
-  // Товары по умолчанию (используются при первом запуске,
-  // пока в Firebase ещё нет узла products)
   PRODUCTS: [
-    { name: 'Картофель',              price: 45 },
-    { name: 'Морковь',                price: 60 },
-    { name: 'Лук репчатый',            price: 50 },
-    { name: 'Капуста белокочанная',    price: 40 },
-    { name: 'Свёкла',                 price: 55 },
-    { name: 'Помидоры',                price: 120 },
-    { name: 'Огурцы',                 price: 100 },
-    { name: 'Яблоки',                 price: 80 },
-    { name: 'Груши',                  price: 90 },
-    { name: 'Мука пшеничная',          price: 65 },
+    { name: 'Картофель', price: 45 },
+    { name: 'Морковь', price: 60 },
+    { name: 'Лук репчатый', price: 50 },
+    { name: 'Капуста белокочанная', price: 40 },
+    { name: 'Свёкла', price: 55 },
+    { name: 'Помидоры', price: 120 },
+    { name: 'Огурцы', price: 100 },
+    { name: 'Яблоки', price: 80 },
+    { name: 'Груши', price: 90 },
+    { name: 'Мука пшеничная', price: 65 },
   ],
-
-  // Пользователи: логин → пароль и роль (admin или user)
   USERS: {
     admin: { password: 'admin123', role: 'admin' },
     ivan:  { password: 'ivan456',  role: 'user'  },
@@ -371,162 +282,66 @@ const CONFIG = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-//  ВНУТРЕННЯЯ ЛОГИКА
-// ═══════════════════════════════════════════════════════════════
 
-const DB_URL       = CONFIG.DB_URL;
+const DB_URL = CONFIG.DB_URL;
 const DEFAULT_PRODUCTS = CONFIG.PRODUCTS;
-const USERS        = CONFIG.USERS;
+const USERS = CONFIG.USERS;
 
-// Текущий список товаров (из Firebase)
 let products = [];
-
-// Словарь цена по имени товара
 let PRICE_MAP = {};
+function rebuildPriceMap() { PRICE_MAP = {}; products.forEach(p => { PRICE_MAP[p.name] = p.price; }); }
 
-function rebuildPriceMap() {
-  PRICE_MAP = {};
-  products.forEach(p => { PRICE_MAP[p.name] = p.price; });
-}
-
-// ── Хранилище (тема + кэш) ──
 const storage = (() => {
-  try {
-    const t = '__test__';
-    localStorage.setItem(t, t); localStorage.removeItem(t);
-    return localStorage;
-  } catch (e) {
-    const mem = {};
-    return {
-      getItem: k => (k in mem ? mem[k] : null),
-      setItem: (k, v) => { mem[k] = String(v); },
-      removeItem: k => { delete mem[k]; },
-    };
-  }
+  try { const t = '__test__'; localStorage.setItem(t, t); localStorage.removeItem(t); return localStorage; }
+  catch (e) { const m = {}; return { getItem: k => (k in m ? m[k] : null), setItem: (k,v) => { m[k] = String(v); }, removeItem: k => { delete m[k]; } }; }
 })();
 
-// ── DOM элементы ──
 const $ = id => document.getElementById(id);
+const loginScreen = $('login-screen'), appScreen = $('app-screen');
+const loginName = $('login-name'), loginPass = $('login-pass'), loginBtn = $('login-btn'), loginError = $('login-error');
+const startWarning = $('start-warning'), startTimeDisplay = $('start-time-display');
+const navTabs = $('nav-tabs'), navOrdersBtn = $('nav-orders'), navSettingsBtn = $('nav-settings');
+const viewOrders = $('view-orders'), viewSettings = $('view-settings');
+const orderFormSection = $('order-form-section'), userOrdersSection = $('user-orders-section'), adminOrdersSection = $('admin-orders-section');
+const productSelect = $('product'), kgInput = $('kg'), saveBtn = $('save-order'), cancelEditBtn = $('cancel-edit');
+const formTitle = $('form-title'), formNote = $('form-note');
+const ordersBody = $('orders-body'), ordersFoot = $('orders-foot'), userTotalNote = $('user-total-note');
+const deadlineBox = $('deadline-box'), deadlineText = $('deadline-text');
+const deadlineInput = $('deadline-input'), setDeadlineBtn = $('set-deadline'), clearDeadlineBtn = $('clear-deadline');
+const startInput = $('start-input'), setStartBtn = $('set-start'), clearStartBtn = $('clear-start');
+const pricesBody = $('prices-body'), savePricesBtn = $('save-prices'), addProductBtn = $('add-product');
+const matrixHead = $('matrix-head'), matrixBody = $('matrix-body'), matrixFoot = $('matrix-foot');
+const productSummaryBody = $('product-summary-body'), productSummaryFoot = $('product-summary-foot');
+const exportBtn = $('export-excel'), clearBtn = $('clear-orders');
+const currentUserEl = $('current-user'), logoutBtn = $('logout-btn');
+const themeToggleLogin = $('theme-toggle-login'), themeToggleApp = $('theme-toggle-app');
+const syncStatusEl = $('sync-status'), syncBtn = $('sync-btn');
 
-const loginScreen = $('login-screen');
-const appScreen   = $('app-screen');
-const loginName   = $('login-name');
-const loginPass   = $('login-pass');
-const loginBtn    = $('login-btn');
-const loginError  = $('login-error');
-const startWarning     = $('start-warning');
-const startTimeDisplay = $('start-time-display');
-const navTabs      = $('nav-tabs');
-const navOrdersBtn = $('nav-orders');
-const navSettingsBtn = $('nav-settings');
-const viewOrders   = $('view-orders');
-const viewSettings = $('view-settings');
-const orderFormSection  = $('order-form-section');
-const userOrdersSection  = $('user-orders-section');
-const adminOrdersSection = $('admin-orders-section');
-const productSelect = $('product');
-const kgInput       = $('kg');
-const saveBtn       = $('save-order');
-const cancelEditBtn = $('cancel-edit');
-const formTitle     = $('form-title');
-const formNote      = $('form-note');
-const ordersBody    = $('orders-body');
-const ordersFoot    = $('orders-foot');
-const userTotalNote = $('user-total-note');
-const deadlineBox   = $('deadline-box');
-const deadlineText  = $('deadline-text');
-const deadlineInput   = $('deadline-input');
-const setDeadlineBtn   = $('set-deadline');
-const clearDeadlineBtn = $('clear-deadline');
-const startInput     = $('start-input');
-const setStartBtn    = $('set-start');
-const clearStartBtn  = $('clear-start');
-const pricesBody     = $('prices-body');
-const savePricesBtn  = $('save-prices');
-const matrixHead     = $('matrix-head');
-const matrixBody     = $('matrix-body');
-const matrixFoot     = $('matrix-foot');
-const productSummaryBody = $('product-summary-body');
-const productSummaryFoot = $('product-summary-foot');
-const exportBtn  = $('export-excel');
-const clearBtn   = $('clear-orders');
-const currentUserEl  = $('current-user');
-const logoutBtn      = $('logout-btn');
-const themeToggleLogin = $('theme-toggle-login');
-const themeToggleApp   = $('theme-toggle-app');
-const syncStatusEl = $('sync-status');
-const syncBtn      = $('sync-btn');
+let currentUser = null, editingIndex = -1, lastSync = null, isUpdating = false;
+let orders = {}, deadline = null, startTime = null, wasEditable = true, wasOpen = true;
 
-// ── Состояние ──
-let currentUser = null;
-let editingIndex = -1;
-let lastSync = null;
-let isUpdating = false;
-
-let orders   = {};
-let deadline = null;
-let startTime = null;
-let wasEditable = true;
-let wasOpen = true;
-
-// ── Firebase: чтение и запись ──
-
+// ── Firebase ──
 function defaultCloudData() {
-  return {
-    products: DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price })),
-    orders: {},
-    deadline: null,
-    startTime: null,
-    lastUpdated: new Date().toISOString(),
-  };
+  return { products: DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price })), orders: {}, deadline: null, startTime: null, lastUpdated: new Date().toISOString() };
 }
-
 async function readCloudData() {
   const res = await fetch(DB_URL + '/data.json');
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200));
-  }
+  if (!res.ok) { const t = await res.text().catch(() => ''); throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200)); }
   const data = await res.json();
   if (!data) return defaultCloudData();
-  if (!data.products || !Array.isArray(data.products) || data.products.length === 0) {
-    data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price }));
-  }
+  if (!data.products || !Array.isArray(data.products) || data.products.length === 0) { data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price })); }
   return data;
 }
-
 async function writeCloudData(data) {
-  const res = await fetch(DB_URL + '/data.json', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200));
-  }
+  const res = await fetch(DB_URL + '/data.json', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+  if (!res.ok) { const t = await res.text().catch(() => ''); throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200)); }
 }
-
 async function updateCloudData(mutator) {
-  if (isUpdating) {
-    await new Promise(r => setTimeout(r, 600));
-    return updateCloudData(mutator);
-  }
-  isUpdating = true;
-  updateSyncStatus('syncing');
-  try {
-    const data = await readCloudData();
-    mutator(data);
-    data.lastUpdated = new Date().toISOString();
-    await writeCloudData(data);
-    applyCloudData(data);
-    rerenderAll();
-    return data;
-  } finally {
-    isUpdating = false;
-  }
+  if (isUpdating) { await new Promise(r => setTimeout(r, 600)); return updateCloudData(mutator); }
+  isUpdating = true; updateSyncStatus('syncing');
+  try { const data = await readCloudData(); mutator(data); data.lastUpdated = new Date().toISOString(); await writeCloudData(data); applyCloudData(data); rerenderAll(); return data; }
+  finally { isUpdating = false; }
 }
-
 function applyCloudData(data) {
   if (data.products && Array.isArray(data.products)) products = data.products;
   rebuildPriceMap();
@@ -534,720 +349,222 @@ function applyCloudData(data) {
   deadline = data.deadline ? new Date(data.deadline) : null;
   startTime = data.startTime ? new Date(data.startTime) : null;
   storage.setItem('cloudCache', JSON.stringify(data));
-  lastSync = new Date();
-  updateSyncStatus('ok');
+  lastSync = new Date(); updateSyncStatus('ok');
 }
-
 function rerenderAll() {
   if (!currentUser) return;
-  fillProducts();
-  renderOrders();
-  renderDeadline();
-  if (currentUser.role === 'admin') {
-    renderPricesTable();
-    if (deadline) deadlineInput.value = toLocalInputValue(deadline);
-    if (startTime) startInput.value = toLocalInputValue(startTime);
-  }
+  fillProducts(); renderOrders(); renderDeadline();
+  if (currentUser.role === 'admin') { renderPricesTable(); if (deadline) deadlineInput.value = toLocalInputValue(deadline); if (startTime) startInput.value = toLocalInputValue(startTime); }
   renderStartWarning();
 }
-
 async function syncFromCloud() {
-  if (isUpdating) return;
-  updateSyncStatus('syncing');
-  try {
-    const data = await readCloudData();
-    applyCloudData(data);
-    rerenderAll();
-    updateSyncStatus('ok');
-  } catch (e) {
-    try {
-      const cache = JSON.parse(storage.getItem('cloudCache'));
-      if (cache) applyCloudData(cache);
-    } catch (e2) {}
-    updateSyncStatus('err');
-  }
+  if (isUpdating) return; updateSyncStatus('syncing');
+  try { const data = await readCloudData(); applyCloudData(data); rerenderAll(); updateSyncStatus('ok'); }
+  catch (e) { try { const c = JSON.parse(storage.getItem('cloudCache')); if (c) applyCloudData(c); } catch (e2) {} updateSyncStatus('err'); }
 }
-
 function updateSyncStatus(state) {
   if (!syncStatusEl) return;
-  if (state === 'ok') {
-    syncStatusEl.textContent = '🔄 ' + (lastSync ? lastSync.toLocaleTimeString('ru-RU') : '');
-    syncStatusEl.className = 'sync-info sync-ok';
-  } else if (state === 'syncing') {
-    syncStatusEl.textContent = '🔄 Синхронизация...';
-    syncStatusEl.className = 'sync-info';
-  } else {
-    syncStatusEl.textContent = '⚠️ Нет связи';
-    syncStatusEl.className = 'sync-info sync-err';
-  }
+  if (state === 'ok') { syncStatusEl.textContent = '🔄 ' + (lastSync ? lastSync.toLocaleTimeString('ru-RU') : ''); syncStatusEl.className = 'sync-info sync-ok'; }
+  else if (state === 'syncing') { syncStatusEl.textContent = '🔄 Синхронизация...'; syncStatusEl.className = 'sync-info'; }
+  else { syncStatusEl.textContent = '⚠️ Нет связи'; syncStatusEl.className = 'sync-info sync-err'; }
 }
 
 // ── Тема ──
 let theme = storage.getItem('theme') || 'light';
-
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', theme);
-  const icon = theme === 'dark' ? '☀️' : '🌙';
-  themeToggleLogin.textContent = icon;
-  themeToggleApp.textContent = icon;
-}
-
-function toggleTheme() {
-  theme = theme === 'dark' ? 'light' : 'dark';
-  storage.setItem('theme', theme);
-  applyTheme();
-}
-
-themeToggleLogin.addEventListener('click', toggleTheme);
-themeToggleApp.addEventListener('click', toggleTheme);
+function applyTheme() { document.documentElement.setAttribute('data-theme', theme); const i = theme === 'dark' ? '☀️' : '🌙'; themeToggleLogin.textContent = i; themeToggleApp.textContent = i; }
+function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; storage.setItem('theme', theme); applyTheme(); }
+themeToggleLogin.addEventListener('click', toggleTheme); themeToggleApp.addEventListener('click', toggleTheme);
 
 // ── Утилиты ──
-
 function isOrderingOpen() { return !startTime || Date.now() >= startTime.getTime(); }
 function isEditable() { return !deadline || Date.now() < deadline.getTime(); }
-
-function formatCountdown(ms) {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const d = Math.floor(total / 86400);
-  const h = Math.floor((total % 86400) / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  const p = n => String(n).padStart(2, '0');
-  return (d > 0 ? d + ' дн ' : '') + p(h) + ':' + p(m) + ':' + p(s);
-}
-
-function toLocalInputValue(date) {
-  const off = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - off).toISOString().slice(0, 16);
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
+function formatCountdown(ms) { const t = Math.max(0, Math.floor(ms/1000)); const d = Math.floor(t/86400), h = Math.floor((t%86400)/3600), m = Math.floor((t%3600)/60), s = t%60; const p = n => String(n).padStart(2,'0'); return (d>0?d+' дн ':'')+p(h)+':'+p(m)+':'+p(s); }
+function toLocalInputValue(date) { const o = date.getTimezoneOffset()*60000; return new Date(date.getTime()-o).toISOString().slice(0,16); }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function fmtRub(x) { return x.toFixed(2).replace('.', ','); }
 function fmtKg(x) { return String(x).replace('.', ','); }
-
-function userTotal(order) {
-  let sum = 0;
-  (order.items || []).forEach(i => { sum += (i.kg || 0) * (PRICE_MAP[i.product] || 0); });
-  return sum;
-}
-
-function getOrderedProducts() {
-  return products.filter(p =>
-    Object.values(orders).some(o => (o.items || []).some(i => i.product === p.name))
-  );
-}
-
+function userTotal(order) { let s = 0; (order.items||[]).forEach(i => { s += (i.kg||0) * (PRICE_MAP[i.product]||0); }); return s; }
+function getOrderedProducts() { return products.filter(p => Object.values(orders).some(o => (o.items||[]).some(i => i.product === p.name))); }
 function buildSummary() {
-  const entries = Object.values(orders);
-  const ordered = getOrderedProducts();
-
-  const byProduct = ordered.map(p => {
-    let totalKg = 0;
-    entries.forEach(o => {
-      const item = (o.items || []).find(i => i.product === p.name);
-      if (item) totalKg += item.kg;
-    });
-    const price = p.price;
-    const cost = totalKg * price;
-    return { product: p.name, totalKg, price, cost };
-  });
-
-  const byUser = entries
-    .map(o => ({
-      user: o.user,
-      items: (o.items || []).filter(i => ordered.some(p => p.name === i.product)),
-      total: userTotal(o),
-    }))
-    .sort((a, b) => a.user.localeCompare(b.user));
-
-  const grandTotal = byUser.reduce((s, u) => s + u.total, 0);
+  const entries = Object.values(orders), ordered = getOrderedProducts();
+  const byProduct = ordered.map(p => { let tk = 0; entries.forEach(o => { const it = (o.items||[]).find(i => i.product === p.name); if (it) tk += it.kg; }); return { product: p.name, totalKg: tk, price: p.price, cost: tk * p.price }; });
+  const byUser = entries.map(o => ({ user: o.user, items: (o.items||[]).filter(i => ordered.some(p => p.name === i.product)), total: userTotal(o) })).sort((a,b) => a.user.localeCompare(b.user));
+  const grandTotal = byUser.reduce((s,u) => s + u.total, 0);
   return { ordered, byProduct, byUser, grandTotal };
 }
 
 // ── Рендер ──
-
 function renderDeadline() {
   if (!deadline) { deadlineBox.classList.add('hidden'); return; }
   deadlineBox.classList.remove('hidden');
-  if (Date.now() < deadline.getTime()) {
-    deadlineText.textContent = '⏰ Правки до ' + deadline.toLocaleString('ru-RU') +
-      '  |  Осталось: ' + formatCountdown(deadline.getTime() - Date.now());
-  } else {
-    deadlineText.textContent = '⛔ Время истекло (' + deadline.toLocaleString('ru-RU') + '). Правки закрыты.';
-  }
+  if (Date.now() < deadline.getTime()) deadlineText.textContent = '⏰ Правки до ' + deadline.toLocaleString('ru-RU') + '  |  Осталось: ' + formatCountdown(deadline.getTime() - Date.now());
+  else deadlineText.textContent = '⛔ Время истекло (' + deadline.toLocaleString('ru-RU') + '). Правки закрыты.';
 }
-
-function renderStartWarning() {
-  if (!startTime || Date.now() >= startTime.getTime()) {
-    startWarning.classList.add('hidden'); return;
-  }
-  startWarning.classList.remove('hidden');
-  startTimeDisplay.textContent = startTime.toLocaleString('ru-RU');
-}
-
-function fillProducts() {
-  productSelect.innerHTML = '';
-  products.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p.name;
-    opt.textContent = p.name + ' — ' + fmtRub(p.price) + ' руб/кг';
-    productSelect.appendChild(opt);
-  });
-}
+function renderStartWarning() { if (!startTime || Date.now() >= startTime.getTime()) { startWarning.classList.add('hidden'); return; } startWarning.classList.remove('hidden'); startTimeDisplay.textContent = startTime.toLocaleString('ru-RU'); }
+function fillProducts() { productSelect.innerHTML = ''; products.forEach(p => { const o = document.createElement('option'); o.value = p.name; o.textContent = p.name + ' — ' + fmtRub(p.price) + ' руб/кг'; productSelect.appendChild(o); }); }
 
 function renderPricesTable() {
   pricesBody.innerHTML = '';
-  products.forEach(p => {
+  products.forEach((p, idx) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + escapeHtml(p.name) + '</td>';
-    const td = document.createElement('td');
-    td.className = 'num';
-    const inp = document.createElement('input');
-    inp.type = 'number'; inp.step = '0.01'; inp.min = '0';
-    inp.inputMode = 'decimal'; inp.className = 'price-input';
-    inp.dataset.product = p.name;
-    inp.value = p.price !== undefined ? p.price : '';
-    td.appendChild(inp); tr.appendChild(td);
+    const tdName = document.createElement('td');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.className = 'name-input'; nameInp.value = p.name; nameInp.dataset.idx = idx; nameInp.dataset.field = 'name';
+    tdName.appendChild(nameInp); tr.appendChild(tdName);
+    const tdPrice = document.createElement('td'); tdPrice.className = 'num';
+    const priceInp = document.createElement('input');
+    priceInp.type = 'number'; priceInp.step = '0.01'; priceInp.min = '0'; priceInp.inputMode = 'decimal'; priceInp.className = 'price-input';
+    priceInp.value = p.price !== undefined ? p.price : ''; priceInp.dataset.idx = idx; priceInp.dataset.field = 'price';
+    tdPrice.appendChild(priceInp); tr.appendChild(tdPrice);
+    const tdAct = document.createElement('td');
+    const delBtn = document.createElement('button'); delBtn.textContent = '🗑'; delBtn.className = 'small-btn danger-btn'; delBtn.title = 'Удалить товар';
+    delBtn.addEventListener('click', () => removeProductRow(idx));
+    tdAct.appendChild(delBtn); tr.appendChild(tdAct);
     pricesBody.appendChild(tr);
   });
 }
 
+function removeProductRow(idx) {
+  products.splice(idx, 1);
+  renderPricesTable();
+}
+
+addProductBtn.addEventListener('click', () => {
+  products.push({ name: '', price: 0 });
+  renderPricesTable();
+  // Фокус на новое поле названия
+  const rows = pricesBody.querySelectorAll('tr');
+  if (rows.length > 0) { const inp = rows[rows.length - 1].querySelector('input[data-field="name"]'); if (inp) inp.focus(); }
+});
+
+savePricesBtn.addEventListener('click', async () => {
+  // Собираем данные из таблицы
+  const newProducts = [];
+  let ok = true;
+  pricesBody.querySelectorAll('tr').forEach(tr => {
+    const nameInp = tr.querySelector('input[data-field="name"]');
+    const priceInp = tr.querySelector('input[data-field="price"]');
+    const name = (nameInp.value || '').trim();
+    const price = parseFloat((priceInp.value || '').replace(',', '.'));
+    if (!name) { nameInp.style.borderColor = 'var(--danger)'; ok = false; }
+    else if (isNaN(price) || price < 0) { priceInp.style.borderColor = 'var(--danger)'; ok = false; }
+    else { nameInp.style.borderColor = ''; priceInp.style.borderColor = ''; newProducts.push({ name: name, price: price }); }
+  });
+  if (!ok) { alert('Проверьте: все названия должны быть заполнены, цены — числами от 0 и выше.'); return; }
+  if (newProducts.length === 0) { alert('Список товаров пуст. Добавьте хотя бы один.'); return; }
+  // Проверка дубликатов названий
+  const names = newProducts.map(p => p.name);
+  const dup = names.filter((n, i) => names.indexOf(n) !== i);
+  if (dup.length > 0) { alert('Дубликат названия: ' + dup.join(', ') + '. Исправьте.'); return; }
+
+  savePricesBtn.disabled = true; const oldT = savePricesBtn.textContent; savePricesBtn.textContent = 'Сохранение...';
+  try {
+    await updateCloudData(data => { data.products = newProducts; });
+    alert('Товары и цены сохранены.');
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
+  finally { savePricesBtn.disabled = false; savePricesBtn.textContent = oldT; }
+});
+
 function renderOrders() {
   if (!currentUser) return;
   if (currentUser.role === 'admin') { renderAdminOrders(); return; }
-
-  ordersBody.innerHTML = '';
-  ordersFoot.innerHTML = '';
-  userTotalNote.textContent = '';
-
+  ordersBody.innerHTML = ''; ordersFoot.innerHTML = ''; userTotalNote.textContent = '';
   const editable = isEditable() && isOrderingOpen();
-  const myOrder = orders[currentUser.name];
-  const items = myOrder ? (myOrder.items || []) : [];
-
-  if (items.length === 0) {
-    ordersBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--note);">Ваш заказ пуст. Добавьте товары.</td></tr>';
-    return;
-  }
-
-  let sumTotal = 0;
+  const myOrder = orders[currentUser.name]; const items = myOrder ? (myOrder.items || []) : [];
+  if (items.length === 0) { ordersBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--note);">Ваш заказ пуст. Добавьте товары.</td></tr>'; return; }
+  let sum = 0;
   items.forEach((item, idx) => {
-    const price = PRICE_MAP[item.product] || 0;
-    const cost = item.kg * price;
-    sumTotal += cost;
-
+    const price = PRICE_MAP[item.product] || 0; const cost = item.kg * price; sum += cost;
     const tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td>' + escapeHtml(item.product) + '</td>' +
-      '<td class="num">' + fmtKg(item.kg) + '</td>' +
-      '<td class="num">' + (price > 0 ? fmtRub(price) : '—') + '</td>' +
-      '<td class="num">' + fmtRub(cost) + '</td>' +
-      '<td></td>';
-
+    tr.innerHTML = '<td>' + escapeHtml(item.product) + '</td><td class="num">' + fmtKg(item.kg) + '</td><td class="num">' + (price > 0 ? fmtRub(price) : '—') + '</td><td class="num">' + fmtRub(cost) + '</td><td></td>';
     if (editable) {
       const cell = tr.lastElementChild;
-      const editBtn = document.createElement('button');
-      editBtn.textContent = '✎'; editBtn.className = 'small-btn';
-      editBtn.title = 'Редактировать'; editBtn.style.marginRight = '4px';
-      editBtn.addEventListener('click', () => startEditItem(idx));
-
-      const delBtn = document.createElement('button');
-      delBtn.textContent = '🗑'; delBtn.className = 'small-btn danger-btn';
-      delBtn.title = 'Удалить';
-      delBtn.addEventListener('click', () => deleteItem(idx));
-
-      cell.append(editBtn, delBtn);
+      const eb = document.createElement('button'); eb.textContent = '✎'; eb.className = 'small-btn'; eb.style.marginRight = '4px'; eb.title = 'Редактировать'; eb.addEventListener('click', () => startEditItem(idx));
+      const db = document.createElement('button'); db.textContent = '🗑'; db.className = 'small-btn danger-btn'; db.title = 'Удалить'; db.addEventListener('click', () => deleteItem(idx));
+      cell.append(eb, db);
     }
     ordersBody.appendChild(tr);
   });
-
-  const footTr = document.createElement('tr');
-  footTr.innerHTML =
-    '<td>ИТОГО</td><td></td><td></td>' +
-    '<td class="num">' + fmtRub(sumTotal) + '</td><td></td>';
-  ordersFoot.appendChild(footTr);
-
-  userTotalNote.textContent = 'Сумма: ' + fmtRub(sumTotal) + ' руб';
+  const ft = document.createElement('tr'); ft.innerHTML = '<td>ИТОГО</td><td></td><td></td><td class="num">' + fmtRub(sum) + '</td><td></td>'; ordersFoot.appendChild(ft);
+  userTotalNote.textContent = 'Сумма: ' + fmtRub(sum) + ' руб';
 }
 
 function renderAdminOrders() {
   const s = buildSummary();
-
   matrixHead.innerHTML = '';
-  const thU = document.createElement('th');
-  thU.textContent = 'Заказчик';
-  matrixHead.appendChild(thU);
-  s.ordered.forEach(p => {
-    const th = document.createElement('th');
-    th.className = 'num'; th.textContent = p.name;
-    matrixHead.appendChild(th);
-  });
-  const thTotal = document.createElement('th');
-  thTotal.className = 'num'; thTotal.textContent = 'Итого, руб';
-  matrixHead.appendChild(thTotal);
-
+  const thU = document.createElement('th'); thU.textContent = 'Заказчик'; matrixHead.appendChild(thU);
+  s.ordered.forEach(p => { const th = document.createElement('th'); th.className = 'num'; th.textContent = p.name; matrixHead.appendChild(th); });
+  const thT = document.createElement('th'); thT.className = 'num'; thT.textContent = 'Итого, руб'; matrixHead.appendChild(thT);
   matrixBody.innerHTML = '';
-  if (s.byUser.length === 0) {
-    matrixBody.innerHTML = '<tr><td colspan="' + (s.ordered.length + 2) + '" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
-  } else {
-    s.byUser.forEach(u => {
-      const tr = document.createElement('tr');
-      let html = '<td>' + escapeHtml(u.user) + '</td>';
-      s.ordered.forEach(p => {
-        const item = u.items.find(i => i.product === p.name);
-        html += '<td class="num">' + (item ? fmtKg(item.kg) : '') + '</td>';
-      });
-      html += '<td class="num">' + fmtRub(u.total) + '</td>';
-      tr.innerHTML = html;
-      matrixBody.appendChild(tr);
-    });
-  }
-
+  if (s.byUser.length === 0) matrixBody.innerHTML = '<tr><td colspan="' + (s.ordered.length + 2) + '" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
+  else s.byUser.forEach(u => { const tr = document.createElement('tr'); let h = '<td>' + escapeHtml(u.user) + '</td>'; s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); h += '<td class="num">' + (it ? fmtKg(it.kg) : '') + '</td>'; }); h += '<td class="num">' + fmtRub(u.total) + '</td>'; tr.innerHTML = h; matrixBody.appendChild(tr); });
   matrixFoot.innerHTML = '';
-  const footTr = document.createElement('tr');
-  let fhtml = '<td>ИТОГО, кг</td>';
-  s.ordered.forEach(p => {
-    const row = s.byProduct.find(r => r.product === p.name);
-    fhtml += '<td class="num">' + (row && row.totalKg > 0 ? fmtKg(row.totalKg) : '') + '</td>';
-  });
-  fhtml += '<td class="num">' + fmtRub(s.grandTotal) + '</td>';
-  footTr.innerHTML = fhtml;
-  matrixFoot.appendChild(footTr);
-
+  const ft = document.createElement('tr'); let fh = '<td>ИТОГО, кг</td>'; s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); fh += '<td class="num">' + (r && r.totalKg > 0 ? fmtKg(r.totalKg) : '') + '</td>'; }); fh += '<td class="num">' + fmtRub(s.grandTotal) + '</td>'; ft.innerHTML = fh; matrixFoot.appendChild(ft);
   productSummaryBody.innerHTML = '';
-  if (s.byProduct.length === 0) {
-    productSummaryBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--note);">Нет данных</td></tr>';
-  } else {
-    s.byProduct.forEach(r => {
-      const tr = document.createElement('tr');
-      tr.innerHTML =
-        '<td>' + escapeHtml(r.product) + '</td>' +
-        '<td class="num">' + fmtKg(r.totalKg) + '</td>' +
-        '<td class="num">' + fmtRub(r.price) + '</td>' +
-        '<td class="num">' + fmtRub(r.cost) + '</td>';
-      productSummaryBody.appendChild(tr);
-    });
-  }
-
-  const sumKg = s.byProduct.reduce((a, r) => a + r.totalKg, 0);
-  const sumCost = s.byProduct.reduce((a, r) => a + r.cost, 0);
-
+  if (s.byProduct.length === 0) productSummaryBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--note);">Нет данных</td></tr>';
+  else s.byProduct.forEach(r => { const tr = document.createElement('tr'); tr.innerHTML = '<td>' + escapeHtml(r.product) + '</td><td class="num">' + fmtKg(r.totalKg) + '</td><td class="num">' + fmtRub(r.price) + '</td><td class="num">' + fmtRub(r.cost) + '</td>'; productSummaryBody.appendChild(tr); });
+  const sk = s.byProduct.reduce((a,r) => a + r.totalKg, 0), sc = s.byProduct.reduce((a,r) => a + r.cost, 0);
   productSummaryFoot.innerHTML = '';
-  const psTr = document.createElement('tr');
-  psTr.innerHTML =
-    '<td>ИТОГО</td>' +
-    '<td class="num">' + fmtKg(sumKg) + '</td><td></td>' +
-    '<td class="num">' + fmtRub(sumCost) + '</td>';
-  productSummaryFoot.appendChild(psTr);
+  const ps = document.createElement('tr'); ps.innerHTML = '<td>ИТОГО</td><td class="num">' + fmtKg(sk) + '</td><td></td><td class="num">' + fmtRub(sc) + '</td>'; productSummaryFoot.appendChild(ps);
 }
 
-function startEditItem(idx) {
-  const myOrder = orders[currentUser.name];
-  if (!myOrder || !isEditable() || !isOrderingOpen()) return;
-  const item = myOrder.items[idx];
-  if (!item) return;
-  editingIndex = idx;
-  productSelect.value = item.product;
-  kgInput.value = item.kg;
-  formTitle.textContent = 'Редактировать товар';
-  saveBtn.textContent = 'Сохранить';
-  cancelEditBtn.classList.remove('hidden');
-  formNote.textContent = 'Режим правки.';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+function startEditItem(idx) { const o = orders[currentUser.name]; if (!o || !isEditable() || !isOrderingOpen()) return; const it = o.items[idx]; if (!it) return; editingIndex = idx; productSelect.value = it.product; kgInput.value = it.kg; formTitle.textContent = 'Редактировать товар'; saveBtn.textContent = 'Сохранить'; cancelEditBtn.classList.remove('hidden'); formNote.textContent = 'Режим правки.'; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function resetForm() { editingIndex = -1; kgInput.value = ''; formTitle.textContent = 'Добавить товар в заказ'; saveBtn.textContent = 'Добавить'; cancelEditBtn.classList.add('hidden'); formNote.textContent = ''; }
 
-function resetForm() {
-  editingIndex = -1;
-  kgInput.value = '';
-  formTitle.textContent = 'Добавить товар в заказ';
-  saveBtn.textContent = 'Добавить';
-  cancelEditBtn.classList.add('hidden');
-  formNote.textContent = '';
-}
-
-// ── Навигация ──
-
-function switchView(which) {
-  if (which === 'orders') {
-    navOrdersBtn.classList.add('active');
-    navSettingsBtn.classList.remove('active');
-    viewOrders.classList.remove('hidden');
-    viewSettings.classList.add('hidden');
-    renderOrders();
-  } else {
-    navSettingsBtn.classList.add('active');
-    navOrdersBtn.classList.remove('active');
-    viewSettings.classList.remove('hidden');
-    viewOrders.classList.add('hidden');
-  }
-}
-
-navOrdersBtn.addEventListener('click', () => switchView('orders'));
-navSettingsBtn.addEventListener('click', () => switchView('settings'));
-
-// ── Вход / Выход ──
+function switchView(w) { if (w === 'orders') { navOrdersBtn.classList.add('active'); navSettingsBtn.classList.remove('active'); viewOrders.classList.remove('hidden'); viewSettings.classList.add('hidden'); renderOrders(); } else { navSettingsBtn.classList.add('active'); navOrdersBtn.classList.remove('active'); viewSettings.classList.remove('hidden'); viewOrders.classList.add('hidden'); } }
+navOrdersBtn.addEventListener('click', () => switchView('orders')); navSettingsBtn.addEventListener('click', () => switchView('settings'));
 
 function doLogin() {
-  const name = loginName.value.trim();
-  const pass = loginPass.value;
-  const user = USERS[name];
-
-  if (!user || user.password !== pass) {
-    loginError.textContent = 'Неверное имя или пароль'; return;
-  }
-  if (user.role !== 'admin' && !isOrderingOpen()) {
-    loginError.textContent = 'Заказывать можно только с ' + (startTime ? startTime.toLocaleString('ru-RU') : ''); return;
-  }
-
-  currentUser = { name: name, role: user.role };
-  loginError.textContent = '';
-  loginName.value = ''; loginPass.value = '';
-  loginScreen.classList.add('hidden');
-  appScreen.classList.remove('hidden');
-  currentUserEl.textContent = '👤 ' + name +
-    ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
-
-  if (user.role === 'admin') {
-    navTabs.classList.remove('hidden');
-    orderFormSection.classList.add('hidden');
-    userOrdersSection.classList.add('hidden');
-    adminOrdersSection.classList.remove('hidden');
-    if (deadline) deadlineInput.value = toLocalInputValue(deadline);
-    if (startTime) startInput.value = toLocalInputValue(startTime);
-    renderPricesTable();
-    switchView('orders');
-  } else {
-    navTabs.classList.add('hidden');
-    orderFormSection.classList.remove('hidden');
-    userOrdersSection.classList.remove('hidden');
-    adminOrdersSection.classList.add('hidden');
-  }
-
-  fillProducts();
-  renderDeadline();
-  renderOrders();
-  syncFromCloud();
+  const name = loginName.value.trim(), pass = loginPass.value, user = USERS[name];
+  if (!user || user.password !== pass) { loginError.textContent = 'Неверное имя или пароль'; return; }
+  if (user.role !== 'admin' && !isOrderingOpen()) { loginError.textContent = 'Заказывать можно только с ' + (startTime ? startTime.toLocaleString('ru-RU') : ''); return; }
+  currentUser = { name: name, role: user.role }; loginError.textContent = ''; loginName.value = ''; loginPass.value = '';
+  loginScreen.classList.add('hidden'); appScreen.classList.remove('hidden');
+  currentUserEl.textContent = '👤 ' + name + ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
+  if (user.role === 'admin') { navTabs.classList.remove('hidden'); orderFormSection.classList.add('hidden'); userOrdersSection.classList.add('hidden'); adminOrdersSection.classList.remove('hidden'); if (deadline) deadlineInput.value = toLocalInputValue(deadline); if (startTime) startInput.value = toLocalInputValue(startTime); renderPricesTable(); switchView('orders'); }
+  else { navTabs.classList.add('hidden'); orderFormSection.classList.remove('hidden'); userOrdersSection.classList.remove('hidden'); adminOrdersSection.classList.add('hidden'); }
+  fillProducts(); renderDeadline(); renderOrders(); syncFromCloud();
 }
-
 loginBtn.addEventListener('click', doLogin);
 loginName.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-logoutBtn.addEventListener('click', () => {
-  currentUser = null;
-  resetForm();
-  appScreen.classList.add('hidden');
-  loginScreen.classList.remove('hidden');
-  renderStartWarning();
-});
-
+logoutBtn.addEventListener('click', () => { currentUser = null; resetForm(); appScreen.classList.add('hidden'); loginScreen.classList.remove('hidden'); renderStartWarning(); });
 syncBtn.addEventListener('click', () => { syncFromCloud(); });
-
-// ── Заказы ──
 
 saveBtn.addEventListener('click', async () => {
   if (!isOrderingOpen()) { alert('Приём заказов ещё не начался'); return; }
   if (!isEditable()) { alert('Срок приёма правок истёк'); return; }
-  const product = productSelect.value;
-  const kg = parseFloat((kgInput.value || '').replace(',', '.'));
+  const product = productSelect.value; const kg = parseFloat((kgInput.value || '').replace(',', '.'));
   if (!product || isNaN(kg) || kg <= 0) { alert('Выберите товар и укажите количество больше 0'); return; }
-
-  if (editingIndex < 0) {
-    const myOrder = orders[currentUser.name];
-    if (myOrder && myOrder.items.findIndex(i => i.product === product) >= 0) {
-      alert('Этот товар уже в заказе. Отредактируйте его.'); return;
-    }
-  }
-
-  saveBtn.disabled = true;
-  const oldText = saveBtn.textContent;
-  saveBtn.textContent = 'Сохранение...';
-
-  try {
-    await updateCloudData(data => {
-      if (!data.orders) data.orders = {};
-      if (!data.orders[currentUser.name]) {
-        data.orders[currentUser.name] = { user: currentUser.name, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' };
-      }
-      const myOrder = data.orders[currentUser.name];
-      if (editingIndex >= 0) {
-        myOrder.items[editingIndex].product = product;
-        myOrder.items[editingIndex].kg = kg;
-        myOrder.editedAt = new Date().toLocaleString('ru-RU');
-      } else {
-        myOrder.items.push({ product: product, kg: kg });
-        myOrder.editedAt = new Date().toLocaleString('ru-RU');
-      }
-    });
-
-    if (editingIndex >= 0) resetForm();
-    else kgInput.value = '';
-  } catch (e) {
-    alert('Не удалось сохранить заказ: ' + e.message);
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = oldText;
-  }
+  if (editingIndex < 0) { const o = orders[currentUser.name]; if (o && o.items.findIndex(i => i.product === product) >= 0) { alert('Этот товар уже в заказе. Отредактируйте его.'); return; } }
+  saveBtn.disabled = true; const oldT = saveBtn.textContent; saveBtn.textContent = 'Сохранение...';
+  try { await updateCloudData(data => { if (!data.orders) data.orders = {}; if (!data.orders[currentUser.name]) data.orders[currentUser.name] = { user: currentUser.name, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' }; const o = data.orders[currentUser.name]; if (editingIndex >= 0) { o.items[editingIndex].product = product; o.items[editingIndex].kg = kg; o.editedAt = new Date().toLocaleString('ru-RU'); } else { o.items.push({ product: product, kg: kg }); o.editedAt = new Date().toLocaleString('ru-RU'); } }); if (editingIndex >= 0) resetForm(); else kgInput.value = ''; }
+  catch (e) { alert('Не удалось сохранить: ' + e.message); } finally { saveBtn.disabled = false; saveBtn.textContent = oldT; }
 });
-
 cancelEditBtn.addEventListener('click', resetForm);
 
 async function deleteItem(idx) {
-  if (!isEditable() || !isOrderingOpen()) return;
-  if (!confirm('Удалить этот товар из заказа?')) return;
-
-  try {
-    await updateCloudData(data => {
-      const myOrder = data.orders && data.orders[currentUser.name];
-      if (!myOrder) return;
-      myOrder.items.splice(idx, 1);
-      if (myOrder.items.length === 0) {
-        delete data.orders[currentUser.name];
-      } else {
-        myOrder.editedAt = new Date().toLocaleString('ru-RU');
-      }
-    });
-
-    if (editingIndex === idx) resetForm();
-    else if (editingIndex > idx) editingIndex--;
-  } catch (e) {
-    alert('Не удалось удалить: ' + e.message);
-  }
+  if (!isEditable() || !isOrderingOpen()) return; if (!confirm('Удалить этот товар из заказа?')) return;
+  try { await updateCloudData(data => { const o = data.orders && data.orders[currentUser.name]; if (!o) return; o.items.splice(idx, 1); if (o.items.length === 0) delete data.orders[currentUser.name]; else o.editedAt = new Date().toLocaleString('ru-RU'); }); if (editingIndex === idx) resetForm(); else if (editingIndex > idx) editingIndex--; }
+  catch (e) { alert('Не удалось удалить: ' + e.message); }
 }
 
-// ── Цены (админ → Firebase) ──
-
-savePricesBtn.addEventListener('click', async () => {
-  const newProducts = [];
-  let ok = true;
-  pricesBody.querySelectorAll('tr').forEach(tr => {
-    const name = tr.querySelector('td').textContent;
-    const inp = tr.querySelector('input[data-product]');
-    const val = parseFloat((inp.value || '').replace(',', '.'));
-    if (isNaN(val) || val < 0) { inp.style.borderColor = 'var(--danger)'; ok = false; }
-    else { inp.style.borderColor = ''; newProducts.push({ name: name, price: val }); }
-  });
-  if (!ok) { alert('Проверьте значения: цены должны быть числами от 0 и выше'); return; }
-
-  savePricesBtn.disabled = true;
-  const oldText = savePricesBtn.textContent;
-  savePricesBtn.textContent = 'Сохранение...';
-
-  try {
-    await updateCloudData(data => {
-      data.products = newProducts;
-    });
-    alert('Цены сохранены. У всех пользователей обновятся в течение 30 секунд.');
-  } catch (e) {
-    alert('Не удалось сохранить цены: ' + e.message);
-  } finally {
-    savePricesBtn.disabled = false;
-    savePricesBtn.textContent = oldText;
-  }
-});
-
-// ── Время начала ──
-
-setStartBtn.addEventListener('click', async () => {
-  if (!startInput.value) { alert('Выберите дату и время'); return; }
-  const newStart = new Date(startInput.value).toISOString();
-  try {
-    await updateCloudData(data => { data.startTime = newStart; });
-    alert('Начало заказов установлено.');
-  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
-});
-
-clearStartBtn.addEventListener('click', async () => {
-  try {
-    await updateCloudData(data => { data.startTime = null; });
-    startInput.value = '';
-    alert('Ограничение снято.');
-  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
-});
-
-// ── Дедлайн ──
-
-setDeadlineBtn.addEventListener('click', async () => {
-  if (!deadlineInput.value) { alert('Выберите дату и время'); return; }
-  const newDeadline = new Date(deadlineInput.value).toISOString();
-  try {
-    await updateCloudData(data => { data.deadline = newDeadline; });
-    alert('Дедлайн установлен.');
-  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
-});
-
-clearDeadlineBtn.addEventListener('click', async () => {
-  try {
-    await updateCloudData(data => { data.deadline = null; });
-    deadlineInput.value = '';
-    alert('Дедлайн снят.');
-  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
-});
-
-// ── Очистка всех заказов ──
-
-clearBtn.addEventListener('click', async () => {
-  if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
-  try {
-    await updateCloudData(data => { data.orders = {}; });
-  } catch (e) { alert('Не удалось очистить: ' + e.message); }
-});
+setStartBtn.addEventListener('click', async () => { if (!startInput.value) { alert('Выберите дату и время'); return; } try { await updateCloudData(data => { data.startTime = new Date(startInput.value).toISOString(); }); alert('Начало заказов установлено.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
+clearStartBtn.addEventListener('click', async () => { try { await updateCloudData(data => { data.startTime = null; }); startInput.value = ''; alert('Ограничение снято.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
+setDeadlineBtn.addEventListener('click', async () => { if (!deadlineInput.value) { alert('Выберите дату и время'); return; } try { await updateCloudData(data => { data.deadline = new Date(deadlineInput.value).toISOString(); }); alert('Дедлайн установлен.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
+clearDeadlineBtn.addEventListener('click', async () => { try { await updateCloudData(data => { data.deadline = null; }); deadlineInput.value = ''; alert('Дедлайн снят.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
+clearBtn.addEventListener('click', async () => { if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return; try { await updateCloudData(data => { data.orders = {}; }); } catch (e) { alert('Не удалось очистить: ' + e.message); } });
 
 // ── Экспорт ──
-
-function loadXlsxLib() {
-  return new Promise((resolve, reject) => {
-    if (window.XLSX) { resolve(); return; }
-    const urls = [
-      'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
-    ];
-    let i = 0;
-    const tryNext = () => {
-      if (i >= urls.length) { reject(new Error('not loaded')); return; }
-      const s = document.createElement('script');
-      s.src = urls[i++];
-      s.onload = resolve;
-      s.onerror = () => { s.remove(); tryNext(); };
-      document.head.appendChild(s);
-    };
-    tryNext();
-  });
-}
-
-function downloadFile(content, filename, mime) {
-  const blob = new Blob(['\uFEFF' + content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 200);
-}
-
-function exportToCsv() {
-  const s = buildSummary();
-  const lines = [];
-  lines.push('ЗАКАЗЫ');
-  lines.push(['Заказчик'].concat(s.ordered.map(p => p.name), ['Итого, руб']).join(';'));
-  s.byUser.forEach(u => {
-    const row = ['"' + u.user + '"'];
-    s.ordered.forEach(p => {
-      const item = u.items.find(i => i.product === p.name);
-      row.push(item ? fmtKg(item.kg) : '');
-    });
-    row.push('"' + fmtRub(u.total) + '"');
-    lines.push(row.join(';'));
-  });
-  const totRow = ['"ИТОГО, кг"'];
-  s.ordered.forEach(p => {
-    const r = s.byProduct.find(x => x.product === p.name);
-    totRow.push(r && r.totalKg > 0 ? fmtKg(r.totalKg) : '');
-  });
-  totRow.push('"' + fmtRub(s.grandTotal) + '"');
-  lines.push(totRow.join(';'));
-  lines.push(''); lines.push('СВОДКА ПО ТОВАРАМ');
-  lines.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб');
-  s.byProduct.forEach(r => {
-    lines.push('"' + r.product + '";' + fmtKg(r.totalKg) + ';' + fmtRub(r.price) + ';"' + fmtRub(r.cost) + '"');
-  });
-  const sumKg = s.byProduct.reduce((a, r) => a + r.totalKg, 0);
-  const sumCost = s.byProduct.reduce((a, r) => a + r.cost, 0);
-  lines.push('"ИТОГО";' + fmtKg(sumKg) + ';;"' + fmtRub(sumCost) + '"');
-  lines.push(''); lines.push('КТО СКОЛЬКО ДОЛЖЕН');
-  lines.push('Заказчик;Сумма, руб');
-  s.byUser.forEach(u => { lines.push('"' + u.user + '";"' + fmtRub(u.total) + '"'); });
-  lines.push('"ИТОГО";"' + fmtRub(s.grandTotal) + '"');
-  downloadFile(lines.join('\n'), 'itogi_' + new Date().toISOString().slice(0, 10) + '.csv', 'text/csv;charset=utf-8');
-}
-
-function exportToExcel() {
-  const entries = Object.values(orders);
-  if (entries.length === 0) { alert('Нет заказов для выгрузки'); return; }
-
-  exportBtn.disabled = true;
-  const oldText = exportBtn.textContent;
-  exportBtn.textContent = 'Загрузка...';
-
-  loadXlsxLib().then(() => {
-    const s = buildSummary();
-    const matrixData = s.byUser.map(u => {
-      const row = { 'Заказчик': u.user };
-      s.ordered.forEach(p => {
-        const item = u.items.find(i => i.product === p.name);
-        row[p.name] = item ? item.kg : '';
-      });
-      row['Итого, руб'] = parseFloat(u.total.toFixed(2));
-      return row;
-    });
-    const totalRow = { 'Заказчик': 'ИТОГО, кг' };
-    s.ordered.forEach(p => {
-      const r = s.byProduct.find(x => x.product === p.name);
-      totalRow[p.name] = r && r.totalKg > 0 ? parseFloat(r.totalKg.toFixed(2)) : '';
-    });
-    totalRow['Итого, руб'] = parseFloat(s.grandTotal.toFixed(2));
-    matrixData.push(totalRow);
-
-    const productData = s.byProduct.map(r => ({
-      'Товар': r.product,
-      'Всего, кг': parseFloat(r.totalKg.toFixed(2)),
-      'Цена, руб/кг': r.price,
-      'Стоимость, руб': parseFloat(r.cost.toFixed(2)),
-    }));
-    productData.push({
-      'Товар': 'ИТОГО',
-      'Всего, кг': parseFloat(s.byProduct.reduce((a, r) => a + r.totalKg, 0).toFixed(2)),
-      'Цена, руб/кг': '',
-      'Стоимость, руб': parseFloat(s.byProduct.reduce((a, r) => a + r.cost, 0).toFixed(2)),
-    });
-
-    const debtsData = s.byUser.map(u => ({
-      'Заказчик': u.user,
-      'Сумма, руб': parseFloat(u.total.toFixed(2)),
-    }));
-    debtsData.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': parseFloat(s.grandTotal.toFixed(2)) });
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matrixData), 'Заказы');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(productData), 'Сводка');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(debtsData), 'Долги');
-    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-    exportBtn.disabled = false; exportBtn.textContent = oldText;
-  }).catch(() => {
-    exportToCsv();
-    exportBtn.disabled = false; exportBtn.textContent = oldText;
-  });
-}
-
+function loadXlsxLib() { return new Promise((resolve, reject) => { if (window.XLSX) { resolve(); return; } const urls = ['https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js']; let i = 0; const tn = () => { if (i >= urls.length) { reject(new Error('not loaded')); return; } const s = document.createElement('script'); s.src = urls[i++]; s.onload = resolve; s.onerror = () => { s.remove(); tn(); }; document.head.appendChild(s); }; tn(); }); }
+function downloadFile(content, filename, mime) { const b = new Blob(['\uFEFF' + content], { type: mime }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 200); }
+function exportToCsv() { const s = buildSummary(); const l = []; l.push('ЗАКАЗЫ'); l.push(['Заказчик'].concat(s.ordered.map(p => p.name), ['Итого, руб']).join(';')); s.byUser.forEach(u => { const r = ['"' + u.user + '"']; s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); r.push(it ? fmtKg(it.kg) : ''); }); r.push('"' + fmtRub(u.total) + '"'); l.push(r.join(';')); }); const tr = ['"ИТОГО, кг"']; s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); tr.push(r && r.totalKg > 0 ? fmtKg(r.totalKg) : ''); }); tr.push('"' + fmtRub(s.grandTotal) + '"'); l.push(tr.join(';')); l.push(''); l.push('СВОДКА ПО ТОВАРАМ'); l.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб'); s.byProduct.forEach(r => { l.push('"' + r.product + '";' + fmtKg(r.totalKg) + ';' + fmtRub(r.price) + ';"' + fmtRub(r.cost) + '"'); }); const sk = s.byProduct.reduce((a,r)=>a+r.totalKg,0), sc = s.byProduct.reduce((a,r)=>a+r.cost,0); l.push('"ИТОГО";' + fmtKg(sk) + ';;"' + fmtRub(sc) + '"'); l.push(''); l.push('КТО СКОЛЬКО ДОЛЖЕН'); l.push('Заказчик;Сумма, руб'); s.byUser.forEach(u => l.push('"' + u.user + '";"' + fmtRub(u.total) + '"')); l.push('"ИТОГО";"' + fmtRub(s.grandTotal) + '"'); downloadFile(l.join('\n'), 'itogi_' + new Date().toISOString().slice(0,10) + '.csv', 'text/csv;charset=utf-8'); }
+function exportToExcel() { if (Object.values(orders).length === 0) { alert('Нет заказов для выгрузки'); return; } exportBtn.disabled = true; const oldT = exportBtn.textContent; exportBtn.textContent = 'Загрузка...'; loadXlsxLib().then(() => { const s = buildSummary(); const md = s.byUser.map(u => { const r = { 'Заказчик': u.user }; s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); r[p.name] = it ? it.kg : ''; }); r['Итого, руб'] = parseFloat(u.total.toFixed(2)); return r; }); const tr = { 'Заказчик': 'ИТОГО, кг' }; s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); tr[p.name] = r && r.totalKg > 0 ? parseFloat(r.totalKg.toFixed(2)) : ''; }); tr['Итого, руб'] = parseFloat(s.grandTotal.toFixed(2)); md.push(tr); const pd = s.byProduct.map(r => ({ 'Товар': r.product, 'Всего, кг': parseFloat(r.totalKg.toFixed(2)), 'Цена, руб/кг': r.price, 'Стоимость, руб': parseFloat(r.cost.toFixed(2)) })); pd.push({ 'Товар': 'ИТОГО', 'Всего, кг': parseFloat(s.byProduct.reduce((a,r)=>a+r.totalKg,0).toFixed(2)), 'Цена, руб/кг': '', 'Стоимость, руб': parseFloat(s.byProduct.reduce((a,r)=>a+r.cost,0).toFixed(2)) }); const dd = s.byUser.map(u => ({ 'Заказчик': u.user, 'Сумма, руб': parseFloat(u.total.toFixed(2)) })); dd.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': parseFloat(s.grandTotal.toFixed(2)) }); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(md), 'Заказы'); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pd), 'Сводка'); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dd), 'Долги'); XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0,10) + '.xlsx'); exportBtn.disabled = false; exportBtn.textContent = oldT; }).catch(() => { exportToCsv(); exportBtn.disabled = false; exportBtn.textContent = oldT; }); }
 exportBtn.addEventListener('click', exportToExcel);
 
-// ── Таймеры ──
-
-setInterval(() => {
-  renderStartWarning();
-  if (!currentUser) return;
-  renderDeadline();
-  const open = isOrderingOpen();
-  const editable = isEditable();
-  saveBtn.disabled = !editable || !open;
-  if (!open) { formNote.textContent = 'Приём заказов ещё не начался.'; }
-  else if (!editable) { formNote.textContent = 'Срок истёк — добавление и правка закрыты.'; }
-  else if (editingIndex < 0) { formNote.textContent = ''; }
-  if (wasEditable !== editable || wasOpen !== open) {
-    renderOrders();
-    wasEditable = editable; wasOpen = open;
-  }
-}, 1000);
-
+setInterval(() => { renderStartWarning(); if (!currentUser) return; renderDeadline(); const open = isOrderingOpen(), ed = isEditable(); saveBtn.disabled = !ed || !open; if (!open) formNote.textContent = 'Приём заказов ещё не начался.'; else if (!ed) formNote.textContent = 'Срок истёк — добавление и правка закрыты.'; else if (editingIndex < 0) formNote.textContent = ''; if (wasEditable !== ed || wasOpen !== open) { renderOrders(); wasEditable = ed; wasOpen = open; } }, 1000);
 setInterval(() => { syncFromCloud(); }, 30000);
-
-// ── Инициализация ──
-
-applyTheme();
-syncFromCloud();
+applyTheme(); syncFromCloud();
 </script>
 </body>
 </html>
