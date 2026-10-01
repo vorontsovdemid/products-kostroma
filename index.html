@@ -134,7 +134,6 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
 <body>
 <div id="js-error" class="hidden"></div>
 
-<!-- Экран входа -->
 <div id="login-screen" class="container">
   <div class="header">
     <h1>Вход</h1>
@@ -151,7 +150,6 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   </div>
 </div>
 
-<!-- Основной экран -->
 <div id="app-screen" class="container hidden">
   <div class="header">
     <h1>Приём заказов</h1>
@@ -169,7 +167,6 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   </div>
   <div id="deadline-box" class="deadline-box hidden"><span id="deadline-text"></span></div>
 
-  <!-- Вкладка «Заказы» -->
   <div id="view-orders">
     <div id="order-form-section" class="order-form">
       <h2 id="form-title">Добавить товар в заказ</h2>
@@ -213,7 +210,6 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
     </div>
   </div>
 
-  <!-- Вкладка «Настройки» -->
   <div id="view-settings" class="hidden">
     <div class="admin-section">
       <h3>Товары и цены</h3>
@@ -255,7 +251,22 @@ window.onerror = function (msg, src, line) {
 };
 
 // ═══════════════════════════════════════════════════════════════
-//  ★ КОНФИГУРАЦИЯ — МЕНЯЙ ТОЛЬКО ЗДЕСЬ ★
+//  ★★★  ПОЛЬЗОВАТЕЛИ — МЕНЯЙ ЗДЕСЬ  ★★★
+//
+//  Логин (на русском) : пароль, роль
+// ═══════════════════════════════════════════════════════════════
+
+const USERS = {
+  'admin': { password: 'admin123', role: 'admin' },
+  'Пётр':          { password: 'petr456',  role: 'user'  },
+  'Анна':          { password: 'anna789',  role: 'user'  },
+  'Светлана':      { password: 'svet123',  role: 'user'  },
+  'Дмитрий':       { password: 'dim123',   role: 'user'  },
+  'Елена':         { password: 'elena456', role: 'user'  },
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  ★  ОСТАЛЬНЫЕ НАСТРОЙКИ  ★
 // ═══════════════════════════════════════════════════════════════
 
 const CONFIG = {
@@ -273,13 +284,6 @@ const CONFIG = {
     { name: 'Груши', price: 90 },
     { name: 'Мука пшеничная', price: 65 },
   ],
-  USERS: {
-    admin:  { password: 'admin123', role: 'admin', displayName: 'Администратор' },
-    petr:   { password: 'petr456',  role: 'user',  displayName: 'Пётр Иванов' },
-    anna:   { password: 'anna789',  role: 'user',  displayName: 'Анна Смирнова' },
-    svetlana: { password: 'svet123', role: 'user', displayName: 'Светлана Петрова' },
-    dmitry: { password: 'dim123',  role: 'user',  displayName: 'Дмитрий Соколов' },
-  },
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -288,7 +292,6 @@ const CONFIG = {
 
 const DB_URL = CONFIG.DB_URL;
 const DEFAULT_PRODUCTS = CONFIG.PRODUCTS;
-const USERS = CONFIG.USERS;
 
 let products = [];
 let PRICE_MAP = {};
@@ -406,7 +409,6 @@ function toLocalInputValue(date) { const o = date.getTimezoneOffset()*60000; ret
 function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function fmtRub(x) { return x.toFixed(2).replace('.', ','); }
 function fmtKg(x) { return String(x).replace('.', ','); }
-function getDisplayName(login) { const u = USERS[login]; if (u && u.displayName) return u.displayName; return login; }
 function userTotal(order) { let s = 0; (order.items || []).forEach(i => { s += (i.kg || 0) * (PRICE_MAP[i.product] || 0); }); return s; }
 function getOrderedProducts() { return products.filter(p => Object.values(orders).some(o => (o.items || []).some(i => i.product === p.name))); }
 
@@ -419,10 +421,9 @@ function buildSummary() {
   });
   const byUser = entries.map(o => ({
     user: o.user,
-    displayName: o.displayName || getDisplayName(o.user),
     items: (o.items || []).filter(i => ordered.some(p => p.name === i.product)),
     total: userTotal(o)
-  })).sort((a, b) => a.displayName.localeCompare(b.displayName));
+  })).sort((a, b) => a.user.localeCompare(b.user));
   const grandTotal = byUser.reduce((s, u) => s + u.total, 0);
   return { ordered, byProduct, byUser, grandTotal };
 }
@@ -541,7 +542,7 @@ function renderAdminOrders() {
   if (s.byUser.length === 0) matrixBody.innerHTML = '<tr><td colspan="' + (s.ordered.length + 2) + '" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
   else s.byUser.forEach(u => {
     const tr = document.createElement('tr');
-    let h = '<td>' + escapeHtml(u.displayName) + '</td>';
+    let h = '<td>' + escapeHtml(u.user) + '</td>';
     s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); h += '<td class="num">' + (it ? fmtKg(it.kg) : '') + '</td>'; });
     h += '<td class="num">' + fmtRub(u.total) + '</td>';
     tr.innerHTML = h; matrixBody.appendChild(tr);
@@ -597,10 +598,10 @@ function doLogin() {
   const name = loginName.value.trim(), pass = loginPass.value, user = USERS[name];
   if (!user || user.password !== pass) { loginError.textContent = 'Неверный логин или пароль'; return; }
   if (user.role !== 'admin' && !isOrderingOpen()) { loginError.textContent = 'Заказывать можно только с ' + (startTime ? startTime.toLocaleString('ru-RU') : ''); return; }
-  currentUser = { name: name, displayName: user.displayName || name, role: user.role };
+  currentUser = { name: name, role: user.role };
   loginError.textContent = ''; loginName.value = ''; loginPass.value = '';
   loginScreen.classList.add('hidden'); appScreen.classList.remove('hidden');
-  currentUserEl.textContent = '👤 ' + currentUser.displayName + ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
+  currentUserEl.textContent = '👤 ' + currentUser.name + ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
   if (user.role === 'admin') {
     navTabs.classList.remove('hidden'); orderFormSection.classList.add('hidden');
     userOrdersSection.classList.add('hidden'); adminOrdersSection.classList.remove('hidden');
@@ -630,10 +631,9 @@ saveBtn.addEventListener('click', async () => {
     await updateCloudData(data => {
       if (!data.orders) data.orders = {};
       if (!data.orders[currentUser.name]) {
-        data.orders[currentUser.name] = { user: currentUser.name, displayName: currentUser.displayName, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' };
+        data.orders[currentUser.name] = { user: currentUser.name, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' };
       }
       const o = data.orders[currentUser.name];
-      o.displayName = currentUser.displayName;
       if (editingIndex >= 0) { o.items[editingIndex].product = product; o.items[editingIndex].kg = kg; o.editedAt = new Date().toLocaleString('ru-RU'); }
       else { o.items.push({ product: product, kg: kg }); o.editedAt = new Date().toLocaleString('ru-RU'); }
     });
@@ -709,33 +709,29 @@ function downloadFile(content, filename, mime) {
   setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 200);
 }
 
-// ── Общая функция для обоих экспортов ──
-// Возвращает три массива данных: ordersData, summaryData, debtsData
-// Все берётся из Firebase (переменные products и orders)
 function buildExportData() {
   const s = buildSummary();
-  const userNames = s.byUser.map(u => u.displayName);
+  const userNames = s.byUser.map(u => u.user);
 
-  // ── Лист «Заказы»: товары в строках, заказчики в столбцах ──
+  // Лист «Заказы»: товары в строках, заказчики в столбцах
   const ordersData = [];
   s.byProduct.forEach(r => {
     const row = { 'Товар': r.product };
     userNames.forEach(un => {
-      const u = s.byUser.find(uu => uu.displayName === un);
+      const u = s.byUser.find(uu => uu.user === un);
       const it = (u.items || []).find(i => i.product === r.product);
       row[un] = it ? it.kg : 0;
     });
     ordersData.push(row);
   });
-  // Строка ИТОГО
   const totalRow = { 'Товар': 'ИТОГО, кг' };
   userNames.forEach(un => {
-    const u = s.byUser.find(uu => uu.displayName === un);
+    const u = s.byUser.find(uu => uu.user === un);
     totalRow[un] = (u.items || []).reduce((sum, i) => sum + (i.kg || 0), 0);
   });
   ordersData.push(totalRow);
 
-  // ── Лист «Сводка» ──
+  // Лист «Сводка»
   const summaryData = s.byProduct.map(r => ({
     'Товар': r.product,
     'Всего, кг': r.totalKg,
@@ -749,15 +745,12 @@ function buildExportData() {
     'Стоимость, руб': s.byProduct.reduce((a, r) => a + r.cost, 0)
   });
 
-  // ── Лист «Долги» ──
+  // Лист «Долги»
   const debtsData = s.byUser.map(u => ({
-    'Заказчик': u.displayName,
+    'Заказчик': u.user,
     'Сумма, руб': u.total
   }));
-  debtsData.push({
-    'Заказчик': 'ИТОГО',
-    'Сумма, руб': s.grandTotal
-  });
+  debtsData.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': s.grandTotal });
 
   return { ordersData, summaryData, debtsData, userNames };
 }
@@ -766,7 +759,6 @@ function exportToCsv() {
   const { ordersData, summaryData, debtsData, userNames } = buildExportData();
   const lines = [];
 
-  // Лист «Заказы» — товары в строках
   lines.push('ЗАКАЗЫ');
   lines.push(['Товар'].concat(userNames).join(';'));
   ordersData.forEach(row => {
@@ -800,7 +792,6 @@ function exportToExcel() {
   loadXlsxLib().then(() => {
     const { ordersData, summaryData, debtsData } = buildExportData();
 
-    // Округляем числа
     const ordersRounded = ordersData.map(row => {
       const r = { 'Товар': row['Товар'] };
       Object.keys(row).forEach(k => {
@@ -832,7 +823,7 @@ function exportToExcel() {
 }
 exportBtn.addEventListener('click', exportToExcel);
 
-// ── Таймер (только дедлайн, без принудительной синхронизации) ──
+// ── Таймер ──
 setInterval(() => {
   renderStartWarning();
   if (!currentUser) return;
