@@ -283,6 +283,8 @@ const CONFIG = {
 };
 
 // ═══════════════════════════════════════════════════════════════
+//  ВНУТРЕННЯЯ ЛОГИКА
+// ═══════════════════════════════════════════════════════════════
 
 const DB_URL = CONFIG.DB_URL;
 const DEFAULT_PRODUCTS = CONFIG.PRODUCTS;
@@ -436,10 +438,7 @@ function renderPricesTable() {
   });
 }
 
-function removeProductRow(idx) {
-  products.splice(idx, 1);
-  renderPricesTable();
-}
+function removeProductRow(idx) { products.splice(idx, 1); renderPricesTable(); }
 
 addProductBtn.addEventListener('click', () => {
   products.push({ name: '', price: 0 });
@@ -449,8 +448,7 @@ addProductBtn.addEventListener('click', () => {
 });
 
 savePricesBtn.addEventListener('click', async () => {
-  const newProducts = [];
-  let ok = true;
+  const newProducts = []; let ok = true;
   pricesBody.querySelectorAll('tr').forEach(tr => {
     const nameInp = tr.querySelector('input[data-field="name"]');
     const priceInp = tr.querySelector('input[data-field="price"]');
@@ -465,7 +463,6 @@ savePricesBtn.addEventListener('click', async () => {
   const names = newProducts.map(p => p.name);
   const dup = names.filter((n, i) => names.indexOf(n) !== i);
   if (dup.length > 0) { alert('Дубликат названия: ' + dup.join(', ') + '. Исправьте.'); return; }
-
   savePricesBtn.disabled = true; const oldT = savePricesBtn.textContent; savePricesBtn.textContent = 'Сохранение...';
   try { await updateCloudData(data => { data.products = newProducts; }); alert('Товары и цены сохранены.'); }
   catch (e) { alert('Не удалось сохранить: ' + e.message); }
@@ -600,23 +597,38 @@ function exportToExcel() {
   exportBtn.disabled = true; const oldT = exportBtn.textContent; exportBtn.textContent = 'Загрузка...';
   loadXlsxLib().then(() => {
     const s = buildSummary();
-    const productHeaders = s.ordered.map(p => p.name);
-    const md = s.byUser.map(u => {
-      const row = { 'Заказчик': u.displayName };
-      productHeaders.forEach(pName => { const it = u.items.find(i => i.product === pName); row[pName] = it ? it.kg : ''; });
-      row['Итого, руб'] = parseFloat(u.total.toFixed(2));
-      return row;
+
+    // Лист «Заказы»: товары — строки, заказчики — столбцы
+    const userNames = s.byUser.map(u => u.displayName);
+    const ordersSheetData = [];
+    s.byProduct.forEach(r => {
+      const row = { 'Товар': r.product };
+      userNames.forEach(un => {
+        const u = s.byUser.find(uu => uu.displayName === un);
+        const it = (u.items || []).find(i => i.product === r.product);
+        row[un] = it ? parseFloat(it.kg.toFixed(2)) : 0;
+      });
+      ordersSheetData.push(row);
     });
-    const tr = { 'Заказчик': 'ИТОГО, кг' };
-    productHeaders.forEach(pName => { const r = s.byProduct.find(x => x.product === pName); tr[pName] = r && r.totalKg > 0 ? parseFloat(r.totalKg.toFixed(2)) : ''; });
-    tr['Итого, руб'] = parseFloat(s.grandTotal.toFixed(2));
-    md.push(tr);
+    // Строка ИТОГО
+    const totalRow = { 'Товар': 'ИТОГО, кг' };
+    userNames.forEach(un => {
+      totalRow[un] = s.byUser
+        .filter(u => u.displayName === un)
+        .reduce((acc, u) => acc + (u.items || []).reduce((sum, i) => sum + (i.kg || 0), 0), 0);
+    });
+    ordersSheetData.push(totalRow);
+
+    // Лист «Сводка»
     const pd = s.byProduct.map(r => ({ 'Товар': r.product, 'Всего, кг': parseFloat(r.totalKg.toFixed(2)), 'Цена, руб/кг': r.price, 'Стоимость, руб': parseFloat(r.cost.toFixed(2)) }));
     pd.push({ 'Товар': 'ИТОГО', 'Всего, кг': parseFloat(s.byProduct.reduce((a,r)=>a+r.totalKg,0).toFixed(2)), 'Цена, руб/кг': '', 'Стоимость, руб': parseFloat(s.byProduct.reduce((a,r)=>a+r.cost,0).toFixed(2)) });
+
+    // Лист «Долги»
     const dd = s.byUser.map(u => ({ 'Заказчик': u.displayName, 'Сумма, руб': parseFloat(u.total.toFixed(2)) }));
     dd.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': parseFloat(s.grandTotal.toFixed(2)) });
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(md), 'Заказы');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ordersSheetData), 'Заказы');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pd), 'Сводка');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dd), 'Долги');
     XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0,10) + '.xlsx');
