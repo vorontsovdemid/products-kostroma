@@ -332,7 +332,9 @@ async function readCloudData() {
   if (!res.ok) { const t = await res.text().catch(() => ''); throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200)); }
   const data = await res.json();
   if (!data) return defaultCloudData();
-  if (!data.products || !Array.isArray(data.products) || data.products.length === 0) { data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price })); }
+  if (!data.products || !Array.isArray(data.products) || data.products.length === 0) {
+    data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price }));
+  }
   return data;
 }
 async function writeCloudData(data) {
@@ -342,8 +344,15 @@ async function writeCloudData(data) {
 async function updateCloudData(mutator) {
   if (isUpdating) { await new Promise(r => setTimeout(r, 600)); return updateCloudData(mutator); }
   isUpdating = true; updateSyncStatus('syncing');
-  try { const data = await readCloudData(); mutator(data); data.lastUpdated = new Date().toISOString(); await writeCloudData(data); applyCloudData(data); rerenderAll(); return data; }
-  finally { isUpdating = false; }
+  try {
+    const data = await readCloudData();
+    mutator(data);
+    data.lastUpdated = new Date().toISOString();
+    await writeCloudData(data);
+    applyCloudData(data);
+    rerenderAll();
+    return data;
+  } finally { isUpdating = false; }
 }
 function applyCloudData(data) {
   if (data.products && Array.isArray(data.products)) products = data.products;
@@ -357,13 +366,24 @@ function applyCloudData(data) {
 function rerenderAll() {
   if (!currentUser) return;
   fillProducts(); renderOrders(); renderDeadline();
-  if (currentUser.role === 'admin') { renderPricesTable(); if (deadline) deadlineInput.value = toLocalInputValue(deadline); if (startTime) startInput.value = toLocalInputValue(startTime); }
+  if (currentUser.role === 'admin') {
+    renderPricesTable();
+    if (deadline) deadlineInput.value = toLocalInputValue(deadline);
+    if (startTime) startInput.value = toLocalInputValue(startTime);
+  }
   renderStartWarning();
 }
 async function syncFromCloud() {
   if (isUpdating) return; updateSyncStatus('syncing');
-  try { const data = await readCloudData(); applyCloudData(data); rerenderAll(); updateSyncStatus('ok'); }
-  catch (e) { try { const c = JSON.parse(storage.getItem('cloudCache')); if (c) applyCloudData(c); } catch (e2) {} updateSyncStatus('err'); }
+  try {
+    const data = await readCloudData();
+    applyCloudData(data);
+    rerenderAll();
+    updateSyncStatus('ok');
+  } catch (e) {
+    try { const c = JSON.parse(storage.getItem('cloudCache')); if (c) applyCloudData(c); } catch (e2) {}
+    updateSyncStatus('err');
+  }
 }
 function updateSyncStatus(state) {
   if (!syncStatusEl) return;
@@ -386,24 +406,24 @@ function toLocalInputValue(date) { const o = date.getTimezoneOffset()*60000; ret
 function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function fmtRub(x) { return x.toFixed(2).replace('.', ','); }
 function fmtKg(x) { return String(x).replace('.', ','); }
-
-function getDisplayName(login) {
-  const u = USERS[login];
-  if (u && u.displayName) return u.displayName;
-  return login;
-}
-
-function userTotal(order) {
-  let s = 0;
-  (order.items || []).forEach(i => { s += (i.kg || 0) * (PRICE_MAP[i.product] || 0); });
-  return s;
-}
+function getDisplayName(login) { const u = USERS[login]; if (u && u.displayName) return u.displayName; return login; }
+function userTotal(order) { let s = 0; (order.items || []).forEach(i => { s += (i.kg || 0) * (PRICE_MAP[i.product] || 0); }); return s; }
 function getOrderedProducts() { return products.filter(p => Object.values(orders).some(o => (o.items || []).some(i => i.product === p.name))); }
+
 function buildSummary() {
   const entries = Object.values(orders), ordered = getOrderedProducts();
-  const byProduct = ordered.map(p => { let tk = 0; entries.forEach(o => { const it = (o.items || []).find(i => i.product === p.name); if (it) tk += it.kg; }); return { product: p.name, totalKg: tk, price: p.price, cost: tk * p.price }; });
-  const byUser = entries.map(o => ({ user: o.user, displayName: o.displayName || getDisplayName(o.user), items: (o.items || []).filter(i => ordered.some(p => p.name === i.product)), total: userTotal(o) })).sort((a,b) => a.displayName.localeCompare(b.displayName));
-  const grandTotal = byUser.reduce((s,u) => s + u.total, 0);
+  const byProduct = ordered.map(p => {
+    let tk = 0;
+    entries.forEach(o => { const it = (o.items || []).find(i => i.product === p.name); if (it) tk += it.kg; });
+    return { product: p.name, totalKg: tk, price: p.price, cost: tk * p.price };
+  });
+  const byUser = entries.map(o => ({
+    user: o.user,
+    displayName: o.displayName || getDisplayName(o.user),
+    items: (o.items || []).filter(i => ordered.some(p => p.name === i.product)),
+    total: userTotal(o)
+  })).sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const grandTotal = byUser.reduce((s, u) => s + u.total, 0);
   return { ordered, byProduct, byUser, grandTotal };
 }
 
@@ -411,11 +431,25 @@ function buildSummary() {
 function renderDeadline() {
   if (!deadline) { deadlineBox.classList.add('hidden'); return; }
   deadlineBox.classList.remove('hidden');
-  if (Date.now() < deadline.getTime()) deadlineText.textContent = '⏰ Правки до ' + deadline.toLocaleString('ru-RU') + '  |  Осталось: ' + formatCountdown(deadline.getTime() - Date.now());
-  else deadlineText.textContent = '⛔ Время истекло (' + deadline.toLocaleString('ru-RU') + '). Правки закрыты.';
+  if (Date.now() < deadline.getTime())
+    deadlineText.textContent = '⏰ Правки до ' + deadline.toLocaleString('ru-RU') + '  |  Осталось: ' + formatCountdown(deadline.getTime() - Date.now());
+  else
+    deadlineText.textContent = '⛔ Время истекло (' + deadline.toLocaleString('ru-RU') + '). Правки закрыты.';
 }
-function renderStartWarning() { if (!startTime || Date.now() >= startTime.getTime()) { startWarning.classList.add('hidden'); return; } startWarning.classList.remove('hidden'); startTimeDisplay.textContent = startTime.toLocaleString('ru-RU'); }
-function fillProducts() { productSelect.innerHTML = ''; products.forEach(p => { const o = document.createElement('option'); o.value = p.name; o.textContent = p.name + ' — ' + fmtRub(p.price) + ' руб/кг'; productSelect.appendChild(o); }); }
+function renderStartWarning() {
+  if (!startTime || Date.now() >= startTime.getTime()) { startWarning.classList.add('hidden'); return; }
+  startWarning.classList.remove('hidden');
+  startTimeDisplay.textContent = startTime.toLocaleString('ru-RU');
+}
+function fillProducts() {
+  productSelect.innerHTML = '';
+  products.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.name;
+    o.textContent = p.name + ' — ' + fmtRub(p.price) + ' руб/кг';
+    productSelect.appendChild(o);
+  });
+}
 
 function renderPricesTable() {
   pricesBody.innerHTML = '';
@@ -423,15 +457,19 @@ function renderPricesTable() {
     const tr = document.createElement('tr');
     const tdName = document.createElement('td');
     const nameInp = document.createElement('input');
-    nameInp.type = 'text'; nameInp.className = 'name-input'; nameInp.value = p.name; nameInp.dataset.idx = idx; nameInp.dataset.field = 'name';
+    nameInp.type = 'text'; nameInp.className = 'name-input'; nameInp.value = p.name;
+    nameInp.dataset.idx = idx; nameInp.dataset.field = 'name';
     tdName.appendChild(nameInp); tr.appendChild(tdName);
     const tdPrice = document.createElement('td'); tdPrice.className = 'num';
     const priceInp = document.createElement('input');
-    priceInp.type = 'number'; priceInp.step = '0.01'; priceInp.min = '0'; priceInp.inputMode = 'decimal'; priceInp.className = 'price-input';
-    priceInp.value = p.price !== undefined ? p.price : ''; priceInp.dataset.idx = idx; priceInp.dataset.field = 'price';
+    priceInp.type = 'number'; priceInp.step = '0.01'; priceInp.min = '0';
+    priceInp.inputMode = 'decimal'; priceInp.className = 'price-input';
+    priceInp.value = p.price !== undefined ? p.price : '';
+    priceInp.dataset.idx = idx; priceInp.dataset.field = 'price';
     tdPrice.appendChild(priceInp); tr.appendChild(tdPrice);
     const tdAct = document.createElement('td');
-    const delBtn = document.createElement('button'); delBtn.textContent = '🗑'; delBtn.className = 'small-btn danger-btn'; delBtn.title = 'Удалить товар';
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '🗑'; delBtn.className = 'small-btn danger-btn'; delBtn.title = 'Удалить товар';
     delBtn.addEventListener('click', () => removeProductRow(idx));
     tdAct.appendChild(delBtn); tr.appendChild(tdAct);
     pricesBody.appendChild(tr);
@@ -501,22 +539,59 @@ function renderAdminOrders() {
   const thT = document.createElement('th'); thT.className = 'num'; thT.textContent = 'Итого, руб'; matrixHead.appendChild(thT);
   matrixBody.innerHTML = '';
   if (s.byUser.length === 0) matrixBody.innerHTML = '<tr><td colspan="' + (s.ordered.length + 2) + '" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
-  else s.byUser.forEach(u => { const tr = document.createElement('tr'); let h = '<td>' + escapeHtml(u.displayName) + '</td>'; s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); h += '<td class="num">' + (it ? fmtKg(it.kg) : '') + '</td>'; }); h += '<td class="num">' + fmtRub(u.total) + '</td>'; tr.innerHTML = h; matrixBody.appendChild(tr); });
+  else s.byUser.forEach(u => {
+    const tr = document.createElement('tr');
+    let h = '<td>' + escapeHtml(u.displayName) + '</td>';
+    s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); h += '<td class="num">' + (it ? fmtKg(it.kg) : '') + '</td>'; });
+    h += '<td class="num">' + fmtRub(u.total) + '</td>';
+    tr.innerHTML = h; matrixBody.appendChild(tr);
+  });
   matrixFoot.innerHTML = '';
-  const ft = document.createElement('tr'); let fh = '<td>ИТОГО, кг</td>'; s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); fh += '<td class="num">' + (r && r.totalKg > 0 ? fmtKg(r.totalKg) : '') + '</td>'; }); fh += '<td class="num">' + fmtRub(s.grandTotal) + '</td>'; ft.innerHTML = fh; matrixFoot.appendChild(ft);
+  const ft = document.createElement('tr');
+  let fh = '<td>ИТОГО, кг</td>';
+  s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); fh += '<td class="num">' + (r && r.totalKg > 0 ? fmtKg(r.totalKg) : '') + '</td>'; });
+  fh += '<td class="num">' + fmtRub(s.grandTotal) + '</td>';
+  ft.innerHTML = fh; matrixFoot.appendChild(ft);
   productSummaryBody.innerHTML = '';
   if (s.byProduct.length === 0) productSummaryBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--note);">Нет данных</td></tr>';
-  else s.byProduct.forEach(r => { const tr = document.createElement('tr'); tr.innerHTML = '<td>' + escapeHtml(r.product) + '</td><td class="num">' + fmtKg(r.totalKg) + '</td><td class="num">' + fmtRub(r.price) + '</td><td class="num">' + fmtRub(r.cost) + '</td>'; productSummaryBody.appendChild(tr); });
-  const sk = s.byProduct.reduce((a,r) => a + r.totalKg, 0), sc = s.byProduct.reduce((a,r) => a + r.cost, 0);
+  else s.byProduct.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + escapeHtml(r.product) + '</td><td class="num">' + fmtKg(r.totalKg) + '</td><td class="num">' + fmtRub(r.price) + '</td><td class="num">' + fmtRub(r.cost) + '</td>';
+    productSummaryBody.appendChild(tr);
+  });
+  const sk = s.byProduct.reduce((a, r) => a + r.totalKg, 0), sc = s.byProduct.reduce((a, r) => a + r.cost, 0);
   productSummaryFoot.innerHTML = '';
-  const ps = document.createElement('tr'); ps.innerHTML = '<td>ИТОГО</td><td class="num">' + fmtKg(sk) + '</td><td></td><td class="num">' + fmtRub(sc) + '</td>'; productSummaryFoot.appendChild(ps);
+  const ps = document.createElement('tr');
+  ps.innerHTML = '<td>ИТОГО</td><td class="num">' + fmtKg(sk) + '</td><td></td><td class="num">' + fmtRub(sc) + '</td>';
+  productSummaryFoot.appendChild(ps);
 }
 
-function startEditItem(idx) { const o = orders[currentUser.name]; if (!o || !isEditable() || !isOrderingOpen()) return; const it = o.items[idx]; if (!it) return; editingIndex = idx; productSelect.value = it.product; kgInput.value = it.kg; formTitle.textContent = 'Редактировать товар'; saveBtn.textContent = 'Сохранить'; cancelEditBtn.classList.remove('hidden'); formNote.textContent = 'Режим правки.'; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-function resetForm() { editingIndex = -1; kgInput.value = ''; formTitle.textContent = 'Добавить товар в заказ'; saveBtn.textContent = 'Добавить'; cancelEditBtn.classList.add('hidden'); formNote.textContent = ''; }
+function startEditItem(idx) {
+  const o = orders[currentUser.name];
+  if (!o || !isEditable() || !isOrderingOpen()) return;
+  const it = o.items[idx]; if (!it) return;
+  editingIndex = idx; productSelect.value = it.product; kgInput.value = it.kg;
+  formTitle.textContent = 'Редактировать товар'; saveBtn.textContent = 'Сохранить';
+  cancelEditBtn.classList.remove('hidden'); formNote.textContent = 'Режим правки.';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function resetForm() {
+  editingIndex = -1; kgInput.value = '';
+  formTitle.textContent = 'Добавить товар в заказ'; saveBtn.textContent = 'Добавить';
+  cancelEditBtn.classList.add('hidden'); formNote.textContent = '';
+}
 
-function switchView(w) { if (w === 'orders') { navOrdersBtn.classList.add('active'); navSettingsBtn.classList.remove('active'); viewOrders.classList.remove('hidden'); viewSettings.classList.add('hidden'); renderOrders(); } else { navSettingsBtn.classList.add('active'); navOrdersBtn.classList.remove('active'); viewSettings.classList.remove('hidden'); viewOrders.classList.add('hidden'); } }
-navOrdersBtn.addEventListener('click', () => switchView('orders')); navSettingsBtn.addEventListener('click', () => switchView('settings'));
+function switchView(w) {
+  if (w === 'orders') {
+    navOrdersBtn.classList.add('active'); navSettingsBtn.classList.remove('active');
+    viewOrders.classList.remove('hidden'); viewSettings.classList.add('hidden'); renderOrders();
+  } else {
+    navSettingsBtn.classList.add('active'); navOrdersBtn.classList.remove('active');
+    viewSettings.classList.remove('hidden'); viewOrders.classList.add('hidden');
+  }
+}
+navOrdersBtn.addEventListener('click', () => switchView('orders'));
+navSettingsBtn.addEventListener('click', () => switchView('settings'));
 
 function doLogin() {
   const name = loginName.value.trim(), pass = loginPass.value, user = USERS[name];
@@ -526,8 +601,16 @@ function doLogin() {
   loginError.textContent = ''; loginName.value = ''; loginPass.value = '';
   loginScreen.classList.add('hidden'); appScreen.classList.remove('hidden');
   currentUserEl.textContent = '👤 ' + currentUser.displayName + ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
-  if (user.role === 'admin') { navTabs.classList.remove('hidden'); orderFormSection.classList.add('hidden'); userOrdersSection.classList.add('hidden'); adminOrdersSection.classList.remove('hidden'); if (deadline) deadlineInput.value = toLocalInputValue(deadline); if (startTime) startInput.value = toLocalInputValue(startTime); renderPricesTable(); switchView('orders'); }
-  else { navTabs.classList.add('hidden'); orderFormSection.classList.remove('hidden'); userOrdersSection.classList.remove('hidden'); adminOrdersSection.classList.add('hidden'); }
+  if (user.role === 'admin') {
+    navTabs.classList.remove('hidden'); orderFormSection.classList.add('hidden');
+    userOrdersSection.classList.add('hidden'); adminOrdersSection.classList.remove('hidden');
+    if (deadline) deadlineInput.value = toLocalInputValue(deadline);
+    if (startTime) startInput.value = toLocalInputValue(startTime);
+    renderPricesTable(); switchView('orders');
+  } else {
+    navTabs.classList.add('hidden'); orderFormSection.classList.remove('hidden');
+    userOrdersSection.classList.remove('hidden'); adminOrdersSection.classList.add('hidden');
+  }
   fillProducts(); renderDeadline(); renderOrders(); syncFromCloud();
 }
 loginBtn.addEventListener('click', doLogin);
@@ -562,78 +645,190 @@ cancelEditBtn.addEventListener('click', resetForm);
 
 async function deleteItem(idx) {
   if (!isEditable() || !isOrderingOpen()) return; if (!confirm('Удалить этот товар из заказа?')) return;
-  try { await updateCloudData(data => { const o = data.orders && data.orders[currentUser.name]; if (!o) return; o.items.splice(idx, 1); if (o.items.length === 0) delete data.orders[currentUser.name]; else o.editedAt = new Date().toLocaleString('ru-RU'); }); if (editingIndex === idx) resetForm(); else if (editingIndex > idx) editingIndex--; }
+  try {
+    await updateCloudData(data => {
+      const o = data.orders && data.orders[currentUser.name]; if (!o) return;
+      o.items.splice(idx, 1);
+      if (o.items.length === 0) delete data.orders[currentUser.name];
+      else o.editedAt = new Date().toLocaleString('ru-RU');
+    });
+    if (editingIndex === idx) resetForm(); else if (editingIndex > idx) editingIndex--;
+  }
   catch (e) { alert('Не удалось удалить: ' + e.message); }
 }
 
-setStartBtn.addEventListener('click', async () => { if (!startInput.value) { alert('Выберите дату и время'); return; } try { await updateCloudData(data => { data.startTime = new Date(startInput.value).toISOString(); }); alert('Начало заказов установлено.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
-clearStartBtn.addEventListener('click', async () => { try { await updateCloudData(data => { data.startTime = null; }); startInput.value = ''; alert('Ограничение снято.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
-setDeadlineBtn.addEventListener('click', async () => { if (!deadlineInput.value) { alert('Выберите дату и время'); return; } try { await updateCloudData(data => { data.deadline = new Date(deadlineInput.value).toISOString(); }); alert('Дедлайн установлен.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
-clearDeadlineBtn.addEventListener('click', async () => { try { await updateCloudData(data => { data.deadline = null; }); deadlineInput.value = ''; alert('Дедлайн снят.'); } catch (e) { alert('Не удалось сохранить: ' + e.message); } });
-clearBtn.addEventListener('click', async () => { if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return; try { await updateCloudData(data => { data.orders = {}; }); } catch (e) { alert('Не удалось очистить: ' + e.message); } });
+setStartBtn.addEventListener('click', async () => {
+  if (!startInput.value) { alert('Выберите дату и время'); return; }
+  try { await updateCloudData(data => { data.startTime = new Date(startInput.value).toISOString(); }); alert('Начало заказов установлено.'); }
+  catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+clearStartBtn.addEventListener('click', async () => {
+  try { await updateCloudData(data => { data.startTime = null; }); startInput.value = ''; alert('Ограничение снято.'); }
+  catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+setDeadlineBtn.addEventListener('click', async () => {
+  if (!deadlineInput.value) { alert('Выберите дату и время'); return; }
+  try { await updateCloudData(data => { data.deadline = new Date(deadlineInput.value).toISOString(); }); alert('Дедлайн установлен.'); }
+  catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+clearDeadlineBtn.addEventListener('click', async () => {
+  try { await updateCloudData(data => { data.deadline = null; }); deadlineInput.value = ''; alert('Дедлайн снят.'); }
+  catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+clearBtn.addEventListener('click', async () => {
+  if (!confirm('Удалить все заказы? Действие нельзя отменить.')) return;
+  try { await updateCloudData(data => { data.orders = {}; }); }
+  catch (e) { alert('Не удалось очистить: ' + e.message); }
+});
 
 // ── Экспорт ──
-function loadXlsxLib() { return new Promise((resolve, reject) => { if (window.XLSX) { resolve(); return; } const urls = ['https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js']; let i = 0; const tn = () => { if (i >= urls.length) { reject(new Error('not loaded')); return; } const s = document.createElement('script'); s.src = urls[i++]; s.onload = resolve; s.onerror = () => { s.remove(); tn(); }; document.head.appendChild(s); }; tn(); }); }
-function downloadFile(content, filename, mime) { const b = new Blob(['\uFEFF' + content], { type: mime }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 200); }
-function exportToCsv() {
-  const s = buildSummary(); const l = [];
-  l.push('ЗАКАЗЫ');
-  l.push(['Заказчик'].concat(s.ordered.map(p => p.name), ['Итого, руб']).join(';'));
-  s.byUser.forEach(u => { const r = ['"' + u.displayName + '"']; s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); r.push(it ? fmtKg(it.kg) : ''); }); r.push('"' + fmtRub(u.total) + '"'); l.push(r.join(';')); });
-  const tr = ['"ИТОГО, кг"']; s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); tr.push(r && r.totalKg > 0 ? fmtKg(r.totalKg) : ''); }); tr.push('"' + fmtRub(s.grandTotal) + '"'); l.push(tr.join(';'));
-  l.push(''); l.push('СВОДКА ПО ТОВАРАМ');
-  l.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб');
-  s.byProduct.forEach(r => { l.push('"' + r.product + '";' + fmtKg(r.totalKg) + ';' + fmtRub(r.price) + ';"' + fmtRub(r.cost) + '"'); });
-  const sk = s.byProduct.reduce((a,r)=>a+r.totalKg,0), sc = s.byProduct.reduce((a,r)=>a+r.cost,0);
-  l.push('"ИТОГО";' + fmtKg(sk) + ';;"' + fmtRub(sc) + '"');
-  l.push(''); l.push('КТО СКОЛЬКО ДОЛЖЕН');
-  l.push('Заказчик;Сумма, руб');
-  s.byUser.forEach(u => l.push('"' + u.displayName + '";"' + fmtRub(u.total) + '"'));
-  l.push('"ИТОГО";"' + fmtRub(s.grandTotal) + '"');
-  downloadFile(l.join('\n'), 'itogi_' + new Date().toISOString().slice(0,10) + '.csv', 'text/csv;charset=utf-8');
+function loadXlsxLib() {
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) { resolve(); return; }
+    const urls = [
+      'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+    ];
+    let i = 0;
+    const tn = () => {
+      if (i >= urls.length) { reject(new Error('not loaded')); return; }
+      const s = document.createElement('script');
+      s.src = urls[i++]; s.onload = resolve;
+      s.onerror = () => { s.remove(); tn(); };
+      document.head.appendChild(s);
+    };
+    tn();
+  });
 }
+function downloadFile(content, filename, mime) {
+  const b = new Blob(['\uFEFF' + content], { type: mime });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 200);
+}
+
+// ── Общая функция для обоих экспортов ──
+// Возвращает три массива данных: ordersData, summaryData, debtsData
+// Все берётся из Firebase (переменные products и orders)
+function buildExportData() {
+  const s = buildSummary();
+  const userNames = s.byUser.map(u => u.displayName);
+
+  // ── Лист «Заказы»: товары в строках, заказчики в столбцах ──
+  const ordersData = [];
+  s.byProduct.forEach(r => {
+    const row = { 'Товар': r.product };
+    userNames.forEach(un => {
+      const u = s.byUser.find(uu => uu.displayName === un);
+      const it = (u.items || []).find(i => i.product === r.product);
+      row[un] = it ? it.kg : 0;
+    });
+    ordersData.push(row);
+  });
+  // Строка ИТОГО
+  const totalRow = { 'Товар': 'ИТОГО, кг' };
+  userNames.forEach(un => {
+    const u = s.byUser.find(uu => uu.displayName === un);
+    totalRow[un] = (u.items || []).reduce((sum, i) => sum + (i.kg || 0), 0);
+  });
+  ordersData.push(totalRow);
+
+  // ── Лист «Сводка» ──
+  const summaryData = s.byProduct.map(r => ({
+    'Товар': r.product,
+    'Всего, кг': r.totalKg,
+    'Цена, руб/кг': r.price,
+    'Стоимость, руб': r.cost
+  }));
+  summaryData.push({
+    'Товар': 'ИТОГО',
+    'Всего, кг': s.byProduct.reduce((a, r) => a + r.totalKg, 0),
+    'Цена, руб/кг': '',
+    'Стоимость, руб': s.byProduct.reduce((a, r) => a + r.cost, 0)
+  });
+
+  // ── Лист «Долги» ──
+  const debtsData = s.byUser.map(u => ({
+    'Заказчик': u.displayName,
+    'Сумма, руб': u.total
+  }));
+  debtsData.push({
+    'Заказчик': 'ИТОГО',
+    'Сумма, руб': s.grandTotal
+  });
+
+  return { ordersData, summaryData, debtsData, userNames };
+}
+
+function exportToCsv() {
+  const { ordersData, summaryData, debtsData, userNames } = buildExportData();
+  const lines = [];
+
+  // Лист «Заказы» — товары в строках
+  lines.push('ЗАКАЗЫ');
+  lines.push(['Товар'].concat(userNames).join(';'));
+  ordersData.forEach(row => {
+    const r = ['"' + row['Товар'] + '"'];
+    userNames.forEach(un => { r.push(row[un] ? fmtKg(row[un]) : '0'); });
+    lines.push(r.join(';'));
+  });
+
+  lines.push('');
+  lines.push('СВОДКА ПО ТОВАРАМ');
+  lines.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб');
+  summaryData.forEach(row => {
+    lines.push('"' + row['Товар'] + '";' + fmtKg(row['Всего, кг']) + ';' +
+      (row['Цена, руб/кг'] !== '' ? fmtRub(row['Цена, руб/кг']) : '') + ';"' +
+      fmtRub(row['Стоимость, руб']) + '"');
+  });
+
+  lines.push('');
+  lines.push('КТО СКОЛЬКО ДОЛЖЕН');
+  lines.push('Заказчик;Сумма, руб');
+  debtsData.forEach(row => {
+    lines.push('"' + row['Заказчик'] + '";"' + fmtRub(row['Сумма, руб']) + '"');
+  });
+
+  downloadFile(lines.join('\n'), 'itogi_' + new Date().toISOString().slice(0, 10) + '.csv', 'text/csv;charset=utf-8');
+}
+
 function exportToExcel() {
   if (Object.values(orders).length === 0) { alert('Нет заказов для выгрузки'); return; }
   exportBtn.disabled = true; const oldT = exportBtn.textContent; exportBtn.textContent = 'Загрузка...';
   loadXlsxLib().then(() => {
-    const s = buildSummary();
+    const { ordersData, summaryData, debtsData } = buildExportData();
 
-    // Лист «Заказы»: товары — строки, заказчики — столбцы
-    const userNames = s.byUser.map(u => u.displayName);
-    const ordersSheetData = [];
-    s.byProduct.forEach(r => {
-      const row = { 'Товар': r.product };
-      userNames.forEach(un => {
-        const u = s.byUser.find(uu => uu.displayName === un);
-        const it = (u.items || []).find(i => i.product === r.product);
-        row[un] = it ? parseFloat(it.kg.toFixed(2)) : 0;
+    // Округляем числа
+    const ordersRounded = ordersData.map(row => {
+      const r = { 'Товар': row['Товар'] };
+      Object.keys(row).forEach(k => {
+        if (k !== 'Товар') r[k] = row[k] ? parseFloat(row[k].toFixed(2)) : 0;
       });
-      ordersSheetData.push(row);
+      return r;
     });
-    // Строка ИТОГО
-    const totalRow = { 'Товар': 'ИТОГО, кг' };
-    userNames.forEach(un => {
-      totalRow[un] = s.byUser
-        .filter(u => u.displayName === un)
-        .reduce((acc, u) => acc + (u.items || []).reduce((sum, i) => sum + (i.kg || 0), 0), 0);
-    });
-    ordersSheetData.push(totalRow);
-
-    // Лист «Сводка»
-    const pd = s.byProduct.map(r => ({ 'Товар': r.product, 'Всего, кг': parseFloat(r.totalKg.toFixed(2)), 'Цена, руб/кг': r.price, 'Стоимость, руб': parseFloat(r.cost.toFixed(2)) }));
-    pd.push({ 'Товар': 'ИТОГО', 'Всего, кг': parseFloat(s.byProduct.reduce((a,r)=>a+r.totalKg,0).toFixed(2)), 'Цена, руб/кг': '', 'Стоимость, руб': parseFloat(s.byProduct.reduce((a,r)=>a+r.cost,0).toFixed(2)) });
-
-    // Лист «Долги»
-    const dd = s.byUser.map(u => ({ 'Заказчик': u.displayName, 'Сумма, руб': parseFloat(u.total.toFixed(2)) }));
-    dd.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': parseFloat(s.grandTotal.toFixed(2)) });
+    const summaryRounded = summaryData.map(row => ({
+      'Товар': row['Товар'],
+      'Всего, кг': parseFloat(row['Всего, кг'].toFixed(2)),
+      'Цена, руб/кг': row['Цена, руб/кг'] !== '' ? row['Цена, руб/кг'] : '',
+      'Стоимость, руб': parseFloat(row['Стоимость, руб'].toFixed(2))
+    }));
+    const debtsRounded = debtsData.map(row => ({
+      'Заказчик': row['Заказчик'],
+      'Сумма, руб': parseFloat(row['Сумма, руб'].toFixed(2))
+    }));
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ordersSheetData), 'Заказы');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pd), 'Сводка');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dd), 'Долги');
-    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0,10) + '.xlsx');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ordersRounded), 'Заказы');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryRounded), 'Сводка');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(debtsRounded), 'Долги');
+    XLSX.writeFile(wb, 'itogi_' + new Date().toISOString().slice(0, 10) + '.xlsx');
     exportBtn.disabled = false; exportBtn.textContent = oldT;
-  }).catch(() => { exportToCsv(); exportBtn.disabled = false; exportBtn.textContent = oldT; });
+  }).catch(() => {
+    exportToCsv();
+    exportBtn.disabled = false; exportBtn.textContent = oldT;
+  });
 }
 exportBtn.addEventListener('click', exportToExcel);
 
