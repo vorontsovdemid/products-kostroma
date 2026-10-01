@@ -7,7 +7,7 @@
 <style>
 :root {
   --bg: #f5f5f5; --surface: #fff; --text: #333; --border: #ddd;
-  --th-bg: #f0f0f0; --input-border: #ccc; --primary: #007bff;
+  --th-bg: #e0e0e0; --input-border: #ccc; --primary: #007bff;
   --primary-hover: #0056b3; --danger: #dc3545; --danger-hover: #b02a37;
   --note: #777; --even-row: #fafafa; --dl-bg: #fff5f5; --sb-bg: #999;
   --sb-hover: #777; --tfoot-bg: #e9ecef; --tfoot-text: #333;
@@ -15,7 +15,7 @@
 }
 [data-theme="dark"] {
   --bg: #1a1a2e; --surface: #16213e; --text: #e0e0e0; --border: #334155;
-  --th-bg: #1e293b; --input-border: #475569; --primary: #3b82f6;
+  --th-bg: #253048; --input-border: #475569; --primary: #3b82f6;
   --primary-hover: #2563eb; --danger: #ef4444; --danger-hover: #dc2626;
   --note: #94a3b8; --even-row: #1e293b; --dl-bg: #2d1b1b; --sb-bg: #475569;
   --sb-hover: #64748b; --tfoot-bg: #0f172a; --tfoot-text: #e0e0e0;
@@ -100,7 +100,7 @@ button:disabled { background: #ccc; cursor: not-allowed; color: #888; }
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; }
 table { width: 100%; border-collapse: collapse; min-width: 380px; }
 th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; word-break: break-word; }
-th { background: var(--th-bg); white-space: nowrap; }
+th { background: var(--th-bg); white-space: nowrap; color: var(--text); }
 tr:nth-child(even) { background: var(--even-row); }
 td.num, th.num { text-align: right; white-space: nowrap; }
 tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 700; }
@@ -259,13 +259,8 @@ window.onerror = function (msg, src, line) {
 // ═══════════════════════════════════════════════════════════════
 
 const CONFIG = {
-  // URL твоей базы Firebase
   DB_URL: 'https://orders-kostroma-default-rtdb.europe-west1.firebasedatabase.app',
-
-  // Фоновая картинка вокруг окна
   BG_IMAGE: 'bg.jpg',
-
-  // Товары по умолчанию (при первом запуске запишутся в Firebase)
   PRODUCTS: [
     { name: 'Картофель', price: 45 },
     { name: 'Морковь', price: 60 },
@@ -278,8 +273,6 @@ const CONFIG = {
     { name: 'Груши', price: 90 },
     { name: 'Мука пшеничная', price: 65 },
   ],
-
-  // Пользователи: логин (латиница) → пароль, роль, отображаемое имя (русское)
   USERS: {
     admin:  { password: 'admin123', role: 'admin', displayName: 'Администратор' },
     petr:   { password: 'petr456',  role: 'user',  displayName: 'Пётр Иванов' },
@@ -289,8 +282,6 @@ const CONFIG = {
   },
 };
 
-// ═══════════════════════════════════════════════════════════════
-//  ВНУТРЕННЯЯ ЛОГИКА
 // ═══════════════════════════════════════════════════════════════
 
 const DB_URL = CONFIG.DB_URL;
@@ -534,11 +525,7 @@ function doLogin() {
   const name = loginName.value.trim(), pass = loginPass.value, user = USERS[name];
   if (!user || user.password !== pass) { loginError.textContent = 'Неверный логин или пароль'; return; }
   if (user.role !== 'admin' && !isOrderingOpen()) { loginError.textContent = 'Заказывать можно только с ' + (startTime ? startTime.toLocaleString('ru-RU') : ''); return; }
-  currentUser = {
-    name: name,
-    displayName: user.displayName || name,
-    role: user.role
-  };
+  currentUser = { name: name, displayName: user.displayName || name, role: user.role };
   loginError.textContent = ''; loginName.value = ''; loginPass.value = '';
   loginScreen.classList.add('hidden'); appScreen.classList.remove('hidden');
   currentUserEl.textContent = '👤 ' + currentUser.displayName + ' (' + (user.role === 'admin' ? 'админ' : 'пользователь') + ')';
@@ -563,13 +550,7 @@ saveBtn.addEventListener('click', async () => {
     await updateCloudData(data => {
       if (!data.orders) data.orders = {};
       if (!data.orders[currentUser.name]) {
-        data.orders[currentUser.name] = {
-          user: currentUser.name,
-          displayName: currentUser.displayName,
-          items: [],
-          date: new Date().toLocaleString('ru-RU'),
-          editedAt: ''
-        };
+        data.orders[currentUser.name] = { user: currentUser.name, displayName: currentUser.displayName, items: [], date: new Date().toLocaleString('ru-RU'), editedAt: '' };
       }
       const o = data.orders[currentUser.name];
       o.displayName = currentUser.displayName;
@@ -619,49 +600,21 @@ function exportToExcel() {
   exportBtn.disabled = true; const oldT = exportBtn.textContent; exportBtn.textContent = 'Загрузка...';
   loadXlsxLib().then(() => {
     const s = buildSummary();
-
-    // Список названий товаров для колонок
     const productHeaders = s.ordered.map(p => p.name);
-
-    // Лист «Заказы»: сначала колонка «Заказчик», потом товары, потом «Итого, руб»
     const md = s.byUser.map(u => {
       const row = { 'Заказчик': u.displayName };
-      productHeaders.forEach(pName => {
-        const it = u.items.find(i => i.product === pName);
-        row[pName] = it ? it.kg : '';
-      });
+      productHeaders.forEach(pName => { const it = u.items.find(i => i.product === pName); row[pName] = it ? it.kg : ''; });
       row['Итого, руб'] = parseFloat(u.total.toFixed(2));
       return row;
     });
     const tr = { 'Заказчик': 'ИТОГО, кг' };
-    productHeaders.forEach(pName => {
-      const r = s.byProduct.find(x => x.product === pName);
-      tr[pName] = r && r.totalKg > 0 ? parseFloat(r.totalKg.toFixed(2)) : '';
-    });
+    productHeaders.forEach(pName => { const r = s.byProduct.find(x => x.product === pName); tr[pName] = r && r.totalKg > 0 ? parseFloat(r.totalKg.toFixed(2)) : ''; });
     tr['Итого, руб'] = parseFloat(s.grandTotal.toFixed(2));
     md.push(tr);
-
-    // Лист «Сводка»
-    const pd = s.byProduct.map(r => ({
-      'Товар': r.product,
-      'Всего, кг': parseFloat(r.totalKg.toFixed(2)),
-      'Цена, руб/кг': r.price,
-      'Стоимость, руб': parseFloat(r.cost.toFixed(2))
-    }));
-    pd.push({
-      'Товар': 'ИТОГО',
-      'Всего, кг': parseFloat(s.byProduct.reduce((a,r)=>a+r.totalKg,0).toFixed(2)),
-      'Цена, руб/кг': '',
-      'Стоимость, руб': parseFloat(s.byProduct.reduce((a,r)=>a+r.cost,0).toFixed(2))
-    });
-
-    // Лист «Долги»
-    const dd = s.byUser.map(u => ({
-      'Заказчик': u.displayName,
-      'Сумма, руб': parseFloat(u.total.toFixed(2))
-    }));
+    const pd = s.byProduct.map(r => ({ 'Товар': r.product, 'Всего, кг': parseFloat(r.totalKg.toFixed(2)), 'Цена, руб/кг': r.price, 'Стоимость, руб': parseFloat(r.cost.toFixed(2)) }));
+    pd.push({ 'Товар': 'ИТОГО', 'Всего, кг': parseFloat(s.byProduct.reduce((a,r)=>a+r.totalKg,0).toFixed(2)), 'Цена, руб/кг': '', 'Стоимость, руб': parseFloat(s.byProduct.reduce((a,r)=>a+r.cost,0).toFixed(2)) });
+    const dd = s.byUser.map(u => ({ 'Заказчик': u.displayName, 'Сумма, руб': parseFloat(u.total.toFixed(2)) }));
     dd.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': parseFloat(s.grandTotal.toFixed(2)) });
-
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(md), 'Заказы');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pd), 'Сводка');
