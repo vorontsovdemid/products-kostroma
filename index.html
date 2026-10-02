@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Продукты из Костромы</title>
+<title>Заказы на товар</title>
 <style>
 :root {
   --bg: #f5f5f5; --surface: #fff; --text: #333; --border: #ddd;
@@ -123,6 +123,7 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   font-size: 13px; z-index: 9999; word-break: break-word;
 }
 .product-row { display: flex; align-items: center; gap: 12px; }
+.product-label { flex-shrink: 0; font-weight: 600; white-space: nowrap; }
 .product-row select { flex: 1; }
 .product-thumb {
   width: 350px; height: 350px; border-radius: 8px;
@@ -186,12 +187,11 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   <div id="view-orders">
     <div id="order-form-section" class="order-form">
       <h2 id="form-title">Добавить товар в заказ</h2>
-      <label>Товар:<span class="hint"> (цена за прошлый раз)</span><br />
-        <div class="product-row">
-          <select id="product"></select>
-          <div id="product-thumb-wrap" class="product-thumb-wrap">🛒</div>
-        </div>
-      </label>
+      <div class="product-row">
+        <span class="product-label">Товар:<span class="hint"> (цена за прошлый раз)</span></span>
+        <select id="product"></select>
+        <div id="product-thumb-wrap" class="product-thumb-wrap">🛒</div>
+      </div>
       <label id="kg-label">Количество:<input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="" /></label>
       <div class="form-buttons">
         <button type="button" id="save-order">Добавить</button>
@@ -352,6 +352,21 @@ function updateKgLabel() {
 }
 
 productSelect.addEventListener('change', () => { updateProductThumb(); updateKgLabel(); });
+
+// ── Синхронизация полей ввода в массив products ──
+function syncInputsToProducts() {
+  pricesBody.querySelectorAll('tr').forEach(tr => {
+    const idx = parseInt(tr.querySelector('input[data-field="name"]').dataset.idx);
+    if (isNaN(idx) || !products[idx]) return;
+    const nameInp = tr.querySelector('input[data-field="name"]');
+    const priceInp = tr.querySelector('input[data-field="price"]');
+    const unitInp = tr.querySelector('input[data-field="unit"]');
+    products[idx].name = nameInp.value.trim();
+    const price = parseFloat((priceInp.value || '').replace(',', '.'));
+    products[idx].price = isNaN(price) ? 0 : price;
+    products[idx].unit = unitInp.value.trim() || 'кг';
+  });
+}
 
 // ── Firebase ──
 function emptyCloudData() {
@@ -518,9 +533,14 @@ function renderPricesTable() {
   });
 }
 
-function removeProductRow(idx) { products.splice(idx, 1); renderPricesTable(); }
+function removeProductRow(idx) {
+  syncInputsToProducts();
+  products.splice(idx, 1);
+  renderPricesTable();
+}
 
 addProductBtn.addEventListener('click', () => {
+  syncInputsToProducts();
   products.push({ name: '', price: 0, unit: 'кг', image: '' });
   renderPricesTable();
   const rows = pricesBody.querySelectorAll('tr');
@@ -528,6 +548,7 @@ addProductBtn.addEventListener('click', () => {
 });
 
 savePricesBtn.addEventListener('click', async () => {
+  syncInputsToProducts();
   const newProducts = []; let ok = true;
   pricesBody.querySelectorAll('tr').forEach(tr => {
     const nameInp = tr.querySelector('input[data-field="name"]');
