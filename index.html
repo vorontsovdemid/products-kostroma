@@ -113,6 +113,7 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
 .settings-row button { margin-bottom: 0; white-space: nowrap; }
 .price-input { max-width: 130px; }
 .name-input { min-width: 160px; }
+.unit-input { max-width: 100px; }
 .total-note { margin-top: 8px; font-weight: 700; }
 #js-error {
   position: fixed; left: 8px; right: 8px; bottom: 8px;
@@ -120,16 +121,11 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   padding: 10px 14px; border-radius: 8px;
   font-size: 13px; z-index: 9999; word-break: break-word;
 }
-/* ★ Новые стили для картинки товара */
-.product-row {
-  display: flex; align-items: center; gap: 12px;
-}
+.product-row { display: flex; align-items: center; gap: 12px; }
 .product-row select { flex: 1; }
 .product-thumb {
-  width: 72px; height: 72px;
-  border-radius: 8px;
-  border: 1px solid var(--input-border);
-  object-fit: cover; flex-shrink: 0;
+  width: 72px; height: 72px; border-radius: 8px;
+  border: 1px solid var(--input-border); object-fit: cover; flex-shrink: 0;
   background: var(--bg);
 }
 .product-thumb-wrap {
@@ -195,7 +191,7 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
           <div id="product-thumb-wrap" class="product-thumb-wrap">🛒</div>
         </div>
       </label>
-      <label>Количество (кг):<input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="кг" /></label>
+      <label id="kg-label">Количество (кг):<input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="кг" /></label>
       <div class="form-buttons">
         <button type="button" id="save-order">Добавить</button>
         <button type="button" id="cancel-edit" class="small-btn hidden">Отменить</button>
@@ -206,7 +202,7 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
       <h2 id="orders-title">Мой заказ</h2>
       <div class="table-wrap">
         <table id="orders-table">
-          <thead><tr><th>Товар</th><th class="num">Кг</th><th class="num">Цена, руб/кг</th><th class="num">Стоимость, руб</th><th></th></tr></thead>
+          <thead><tr id="orders-head"></tr></thead>
           <tbody id="orders-body"></tbody><tfoot id="orders-foot"></tfoot>
         </table>
       </div>
@@ -220,7 +216,7 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
       <div class="admin-section">
         <h3>Сводка по товарам</h3>
         <div class="table-wrap">
-          <table><thead><tr><th>Товар</th><th class="num">Всего, кг</th><th class="num">Цена, руб/кг</th><th class="num">Стоимость, руб</th></tr></thead>
+          <table><thead><tr id="summary-head"></tr></thead>
           <tbody id="product-summary-body"></tbody><tfoot id="product-summary-foot"></tfoot></table>
         </div>
       </div>
@@ -236,11 +232,19 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
 
   <div id="view-settings" class="hidden">
     <div class="admin-section">
+      <h3>Единица измерения</h3>
+      <div class="settings-row">
+        <label>Единица:<input type="text" id="unit-input" class="unit-input" placeholder="кг" maxlength="10" /></label>
+        <button type="button" id="set-unit">Сохранить</button>
+      </div>
+      <p class="note">Используется во всех надписях, таблицах и экспорте. Например: кг, шт, литр, упаковка.</p>
+    </div>
+    <div class="admin-section">
       <h3>Товары и цены</h3>
       <p class="note">Редактируйте названия и цены, добавляйте и удаляйте строки. Не забудьте нажать «Сохранить».</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Название товара</th><th class="num">Цена, руб/кг</th><th></th></tr></thead>
+          <thead><tr><th>Название товара</th><th class="num" id="price-th">Цена, руб/кг</th><th></th></tr></thead>
           <tbody id="prices-body"></tbody>
         </table>
       </div>
@@ -274,10 +278,6 @@ window.onerror = function (msg, src, line) {
   if (el) { el.textContent = 'Ошибка скрипта: ' + msg + ' (строка ' + line + ')'; el.classList.remove('hidden'); }
 };
 
-// ═══════════════════════════════════════════════════════════════
-//  ★★★  ПОЛЬЗОВАТЕЛИ — МЕНЯЙ ЗДЕСЬ  ★★★
-// ═══════════════════════════════════════════════════════════════
-
 const USERS = {
   'Администратор': { password: 'admin123', role: 'admin' },
   'Пётр':          { password: 'petr456',  role: 'user'  },
@@ -287,13 +287,10 @@ const USERS = {
   'Елена':         { password: 'elena456', role: 'user'  },
 };
 
-// ═══════════════════════════════════════════════════════════════
-//  ★  ОСТАЛЬНЫЕ НАСТРОЙКИ  ★
-// ═══════════════════════════════════════════════════════════════
-
 const CONFIG = {
   DB_URL: 'https://orders-kostroma-default-rtdb.europe-west1.firebasedatabase.app',
   BG_IMAGE: 'bg.jpg',
+  UNIT: 'кг',
   PRODUCTS: [
     { name: 'Картофель', price: 45, image: 'images/kartofel.jpg' },
     { name: 'Морковь', price: 60, image: 'images/morkov.jpg' },
@@ -308,24 +305,20 @@ const CONFIG = {
   ],
 };
 
-// ═══════════════════════════════════════════════════════════════
-//  ВНУТРЕННЯЯ ЛОГИКА
-// ═══════════════════════════════════════════════════════════════
-
 const DB_URL = CONFIG.DB_URL;
 const DEFAULT_PRODUCTS = CONFIG.PRODUCTS;
+const DEFAULT_UNIT = CONFIG.UNIT;
 
 let products = [];
+let unit = DEFAULT_UNIT;
 let PRICE_MAP = {};
 let IMAGE_MAP = {};
 function rebuildPriceMap() {
-  PRICE_MAP = {};
-  IMAGE_MAP = {};
-  products.forEach(p => {
-    PRICE_MAP[p.name] = p.price;
-    IMAGE_MAP[p.name] = p.image || '';
-  });
+  PRICE_MAP = {}; IMAGE_MAP = {};
+  products.forEach(p => { PRICE_MAP[p.name] = p.price; IMAGE_MAP[p.name] = p.image || ''; });
 }
+function getUnit() { return unit || DEFAULT_UNIT; }
+function priceLabel() { return 'руб/' + getUnit(); }
 
 const storage = (() => {
   try { const t = '__test__'; localStorage.setItem(t, t); localStorage.removeItem(t); return localStorage; }
@@ -339,20 +332,21 @@ const startWarning = $('start-warning'), startTimeDisplay = $('start-time-displa
 const navTabs = $('nav-tabs'), navOrdersBtn = $('nav-orders'), navSettingsBtn = $('nav-settings');
 const viewOrders = $('view-orders'), viewSettings = $('view-settings');
 const orderFormSection = $('order-form-section'), userOrdersSection = $('user-orders-section'), adminOrdersSection = $('admin-orders-section');
-const productSelect = $('product'), kgInput = $('kg'), saveBtn = $('save-order'), cancelEditBtn = $('cancel-edit');
+const productSelect = $('product'), kgInput = $('kg'), kgLabel = $('kg-label'), saveBtn = $('save-order'), cancelEditBtn = $('cancel-edit');
 const formTitle = $('form-title'), formNote = $('form-note');
 const productThumbWrap = $('product-thumb-wrap');
-const ordersBody = $('orders-body'), ordersFoot = $('orders-foot'), userTotalNote = $('user-total-note');
+const ordersHead = $('orders-head'), ordersBody = $('orders-body'), ordersFoot = $('orders-foot'), userTotalNote = $('user-total-note');
 const deadlineBox = $('deadline-box'), deadlineText = $('deadline-text');
 const deadlineInput = $('deadline-input'), setDeadlineBtn = $('set-deadline'), clearDeadlineBtn = $('clear-deadline');
 const startInput = $('start-input'), setStartBtn = $('set-start'), clearStartBtn = $('clear-start');
-const pricesBody = $('prices-body'), savePricesBtn = $('save-prices'), addProductBtn = $('add-product');
+const pricesBody = $('prices-body'), savePricesBtn = $('save-prices'), addProductBtn = $('add-product'), priceTh = $('price-th');
 const matrixHead = $('matrix-head'), matrixBody = $('matrix-body'), matrixFoot = $('matrix-foot');
-const productSummaryBody = $('product-summary-body'), productSummaryFoot = $('product-summary-foot');
+const summaryHead = $('summary-head'), productSummaryBody = $('product-summary-body'), productSummaryFoot = $('product-summary-foot');
 const exportBtn = $('export-excel'), clearBtn = $('clear-orders');
 const currentUserEl = $('current-user'), logoutBtn = $('logout-btn');
 const themeToggleLogin = $('theme-toggle-login'), themeToggleApp = $('theme-toggle-app');
 const syncStatusEl = $('sync-status'), syncBtn = $('sync-btn');
+const unitInput = $('unit-input'), setUnitBtn = $('set-unit');
 
 let currentUser = null, editingIndex = -1, lastSync = null, isUpdating = false;
 let orders = {}, deadline = null, startTime = null, wasEditable = true, wasOpen = true;
@@ -369,9 +363,20 @@ function updateProductThumb() {
 }
 productSelect.addEventListener('change', updateProductThumb);
 
+// ── Обновление всех надписей с единицей ──
+function updateUnitLabels() {
+  const u = getUnit();
+  kgLabel.innerHTML = 'Количество (' + escapeHtml(u) + '):<input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="' + escapeHtml(u) + '" />';
+  priceTh.textContent = 'Цена, ' + priceLabel();
+  // Перепривязываем kgInput, т.к. innerHTML пересоздал элемент
+  // Сохраняем текущее значение
+  const prevKg = kgInput.value;
+  kgInput.value = prevKg;
+}
+
 // ── Firebase ──
 function defaultCloudData() {
-  return { products: DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price, image: p.image || '' })), orders: {}, deadline: null, startTime: null, lastUpdated: new Date().toISOString() };
+  return { products: DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price, image: p.image || '' })), orders: {}, deadline: null, startTime: null, unit: DEFAULT_UNIT, lastUpdated: new Date().toISOString() };
 }
 async function readCloudData() {
   const res = await fetch(DB_URL + '/data.json');
@@ -381,6 +386,7 @@ async function readCloudData() {
   if (!data.products || !Array.isArray(data.products) || data.products.length === 0) {
     data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price, image: p.image || '' }));
   }
+  if (!data.unit) data.unit = DEFAULT_UNIT;
   return data;
 }
 async function writeCloudData(data) {
@@ -406,16 +412,18 @@ function applyCloudData(data) {
   if (data.orders) orders = data.orders;
   deadline = data.deadline ? new Date(data.deadline) : null;
   startTime = data.startTime ? new Date(data.startTime) : null;
+  if (data.unit) unit = data.unit; else unit = DEFAULT_UNIT;
   storage.setItem('cloudCache', JSON.stringify(data));
   lastSync = new Date(); updateSyncStatus('ok');
 }
 function rerenderAll() {
   if (!currentUser) return;
-  fillProducts(); updateProductThumb(); renderOrders(); renderDeadline();
+  fillProducts(); updateProductThumb(); updateUnitLabels(); renderOrders(); renderDeadline();
   if (currentUser.role === 'admin') {
     renderPricesTable();
     if (deadline) deadlineInput.value = toLocalInputValue(deadline);
     if (startTime) startInput.value = toLocalInputValue(startTime);
+    unitInput.value = unit;
   }
   renderStartWarning();
 }
@@ -490,7 +498,7 @@ function fillProducts() {
   products.forEach(p => {
     const o = document.createElement('option');
     o.value = p.name;
-    o.textContent = p.name + ' — ' + fmtRub(p.price) + ' руб/кг';
+    o.textContent = p.name + ' — ' + fmtRub(p.price) + ' ' + priceLabel();
     productSelect.appendChild(o);
   });
   updateProductThumb();
@@ -540,7 +548,6 @@ savePricesBtn.addEventListener('click', async () => {
     if (!name) { nameInp.style.borderColor = 'var(--danger)'; ok = false; }
     else if (isNaN(price) || price < 0) { priceInp.style.borderColor = 'var(--danger)'; ok = false; }
     else { nameInp.style.borderColor = ''; priceInp.style.borderColor = '';
-      // Сохраняем существующий image, если товар уже был
       const existing = products.find(p => p.name === name);
       newProducts.push({ name: name, price: price, image: existing ? existing.image || '' : '' });
     }
@@ -556,9 +563,22 @@ savePricesBtn.addEventListener('click', async () => {
   finally { savePricesBtn.disabled = false; savePricesBtn.textContent = oldT; }
 });
 
+// ── Кнопка сохранения единицы ──
+setUnitBtn.addEventListener('click', async () => {
+  const u = (unitInput.value || '').trim();
+  if (!u) { alert('Укажите единицу измерения'); return; }
+  try {
+    await updateCloudData(data => { data.unit = u; });
+    alert('Единица измерения сохранена: ' + u);
+  } catch (e) { alert('Не удалось сохранить: ' + e.message); }
+});
+
 function renderOrders() {
   if (!currentUser) return;
   if (currentUser.role === 'admin') { renderAdminOrders(); return; }
+  const u = getUnit();
+  // Заголовки таблицы
+  ordersHead.innerHTML = '<th>Товар</th><th class="num">' + escapeHtml(u) + '</th><th class="num">Цена, ' + priceLabel() + '</th><th class="num">Стоимость, руб</th><th></th>';
   ordersBody.innerHTML = ''; ordersFoot.innerHTML = ''; userTotalNote.textContent = '';
   const editable = isEditable() && isOrderingOpen();
   const myOrder = orders[currentUser.name]; const items = myOrder ? (myOrder.items || []) : [];
@@ -581,6 +601,7 @@ function renderOrders() {
 }
 
 function renderAdminOrders() {
+  const u = getUnit();
   const s = buildSummary();
   matrixHead.innerHTML = '';
   const thU = document.createElement('th'); thU.textContent = 'Заказчик'; matrixHead.appendChild(thU);
@@ -588,19 +609,21 @@ function renderAdminOrders() {
   const thT = document.createElement('th'); thT.className = 'num'; thT.textContent = 'Итого, руб'; matrixHead.appendChild(thT);
   matrixBody.innerHTML = '';
   if (s.byUser.length === 0) matrixBody.innerHTML = '<tr><td colspan="' + (s.ordered.length + 2) + '" style="text-align:center;color:var(--note);">Заказов нет</td></tr>';
-  else s.byUser.forEach(u => {
+  else s.byUser.forEach(usr => {
     const tr = document.createElement('tr');
-    let h = '<td>' + escapeHtml(u.user) + '</td>';
-    s.ordered.forEach(p => { const it = u.items.find(i => i.product === p.name); h += '<td class="num">' + (it ? fmtKg(it.kg) : '') + '</td>'; });
-    h += '<td class="num">' + fmtRub(u.total) + '</td>';
+    let h = '<td>' + escapeHtml(usr.user) + '</td>';
+    s.ordered.forEach(p => { const it = usr.items.find(i => i.product === p.name); h += '<td class="num">' + (it ? fmtKg(it.kg) : '') + '</td>'; });
+    h += '<td class="num">' + fmtRub(usr.total) + '</td>';
     tr.innerHTML = h; matrixBody.appendChild(tr);
   });
   matrixFoot.innerHTML = '';
   const ft = document.createElement('tr');
-  let fh = '<td>ИТОГО, кг</td>';
+  let fh = '<td>ИТОГО, ' + escapeHtml(u) + '</td>';
   s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); fh += '<td class="num">' + (r && r.totalKg > 0 ? fmtKg(r.totalKg) : '') + '</td>'; });
   fh += '<td class="num">' + fmtRub(s.grandTotal) + '</td>';
   ft.innerHTML = fh; matrixFoot.appendChild(ft);
+
+  summaryHead.innerHTML = '<th>Товар</th><th class="num">Всего, ' + escapeHtml(u) + '</th><th class="num">Цена, ' + priceLabel() + '</th><th class="num">Стоимость, руб</th>';
   productSummaryBody.innerHTML = '';
   if (s.byProduct.length === 0) productSummaryBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--note);">Нет данных</td></tr>';
   else s.byProduct.forEach(r => {
@@ -655,12 +678,13 @@ function doLogin() {
     userOrdersSection.classList.add('hidden'); adminOrdersSection.classList.remove('hidden');
     if (deadline) deadlineInput.value = toLocalInputValue(deadline);
     if (startTime) startInput.value = toLocalInputValue(startTime);
+    unitInput.value = unit;
     renderPricesTable(); switchView('orders');
   } else {
     navTabs.classList.add('hidden'); orderFormSection.classList.remove('hidden');
     userOrdersSection.classList.remove('hidden'); adminOrdersSection.classList.add('hidden');
   }
-  fillProducts(); updateProductThumb(); renderDeadline(); renderOrders(); syncFromCloud();
+  fillProducts(); updateProductThumb(); updateUnitLabels(); renderDeadline(); renderOrders(); syncFromCloud();
 }
 loginBtn.addEventListener('click', doLogin);
 loginName.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -758,37 +782,39 @@ function downloadFile(content, filename, mime) {
 }
 
 function buildExportData() {
+  const u = getUnit();
   const s = buildSummary();
-  const userNames = s.byUser.map(u => u.user);
+  const userNames = s.byUser.map(usr => usr.user);
   const ordersData = [];
   s.byProduct.forEach(r => {
     const row = { 'Товар': r.product };
     userNames.forEach(un => {
-      const u = s.byUser.find(uu => uu.user === un);
-      const it = (u.items || []).find(i => i.product === r.product);
+      const usr = s.byUser.find(uu => uu.user === un);
+      const it = (usr.items || []).find(i => i.product === r.product);
       row[un] = it ? it.kg : 0;
     });
     ordersData.push(row);
   });
-  const totalRow = { 'Товар': 'ИТОГО, кг' };
+  const totalRow = { 'Товар': 'ИТОГО, ' + u };
   userNames.forEach(un => {
-    const u = s.byUser.find(uu => uu.user === un);
-    totalRow[un] = (u.items || []).reduce((sum, i) => sum + (i.kg || 0), 0);
+    const usr = s.byUser.find(uu => uu.user === un);
+    totalRow[un] = (usr.items || []).reduce((sum, i) => sum + (i.kg || 0), 0);
   });
   ordersData.push(totalRow);
   const summaryData = s.byProduct.map(r => ({
-    'Товар': r.product, 'Всего, кг': r.totalKg, 'Цена, руб/кг': r.price, 'Стоимость, руб': r.cost
+    'Товар': r.product, ['Всего, ' + u]: r.totalKg, ['Цена, руб/' + u]: r.price, 'Стоимость, руб': r.cost
   }));
   summaryData.push({
-    'Товар': 'ИТОГО', 'Всего, кг': s.byProduct.reduce((a, r) => a + r.totalKg, 0),
-    'Цена, руб/кг': '', 'Стоимость, руб': s.byProduct.reduce((a, r) => a + r.cost, 0)
+    'Товар': 'ИТОГО', ['Всего, ' + u]: s.byProduct.reduce((a, r) => a + r.totalKg, 0),
+    ['Цена, руб/' + u]: '', 'Стоимость, руб': s.byProduct.reduce((a, r) => a + r.cost, 0)
   });
-  const debtsData = s.byUser.map(u => ({ 'Заказчик': u.user, 'Сумма, руб': u.total }));
+  const debtsData = s.byUser.map(usr => ({ 'Заказчик': usr.user, 'Сумма, руб': usr.total }));
   debtsData.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': s.grandTotal });
   return { ordersData, summaryData, debtsData, userNames };
 }
 
 function exportToCsv() {
+  const u = getUnit();
   const { ordersData, summaryData, debtsData, userNames } = buildExportData();
   const lines = [];
   lines.push('ЗАКАЗЫ');
@@ -800,10 +826,10 @@ function exportToCsv() {
   });
   lines.push('');
   lines.push('СВОДКА ПО ТОВАРАМ');
-  lines.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб');
+  lines.push('Товар;Всего, ' + u + ';Цена, руб/' + u + ';Стоимость, руб');
   summaryData.forEach(row => {
-    lines.push('"' + row['Товар'] + '";' + fmtKg(row['Всего, кг']) + ';' +
-      (row['Цена, руб/кг'] !== '' ? fmtRub(row['Цена, руб/кг']) : '') + ';"' +
+    lines.push('"' + row['Товар'] + '";' + fmtKg(row['Всего, ' + u]) + ';' +
+      (row['Цена, руб/' + u] !== '' ? fmtRub(row['Цена, руб/' + u]) : '') + ';"' +
       fmtRub(row['Стоимость, руб']) + '"');
   });
   lines.push('');
@@ -825,11 +851,15 @@ function exportToExcel() {
       Object.keys(row).forEach(k => { if (k !== 'Товар') r[k] = row[k] ? parseFloat(row[k].toFixed(2)) : 0; });
       return r;
     });
-    const summaryRounded = summaryData.map(row => ({
-      'Товар': row['Товар'], 'Всего, кг': parseFloat(row['Всего, кг'].toFixed(2)),
-      'Цена, руб/кг': row['Цена, руб/кг'] !== '' ? row['Цена, руб/кг'] : '',
-      'Стоимость, руб': parseFloat(row['Стоимость, руб'].toFixed(2))
-    }));
+    const summaryRounded = summaryData.map(row => {
+      const r = {};
+      Object.keys(row).forEach(k => {
+        const v = row[k];
+        if (typeof v === 'number') r[k] = parseFloat(v.toFixed(2));
+        else r[k] = v;
+      });
+      return r;
+    });
     const debtsRounded = debtsData.map(row => ({
       'Заказчик': row['Заказчик'], 'Сумма, руб': parseFloat(row['Сумма, руб'].toFixed(2))
     }));
