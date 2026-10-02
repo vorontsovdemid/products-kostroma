@@ -64,7 +64,7 @@ h1, h2, h3 { color: var(--text); margin-top: 0; }
 }
 .nav-tab:hover { background: var(--nav-bg); }
 .nav-tab.active { color: var(--primary); border-bottom-color: var(--nav-active); font-weight: 700; }
-.login-form, .order-form { display: flex; flex-direction: column; gap: 12px; max-width: 380px; }
+.login-form, .order-form { display: flex; flex-direction: column; gap: 12px; max-width: 420px; }
 label { display: block; font-weight: 600; }
 .hint { font-weight: 400; font-size: 13px; color: var(--note); }
 input, select {
@@ -120,6 +120,24 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   padding: 10px 14px; border-radius: 8px;
   font-size: 13px; z-index: 9999; word-break: break-word;
 }
+/* ★ Новые стили для картинки товара */
+.product-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.product-row select { flex: 1; }
+.product-thumb {
+  width: 72px; height: 72px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  object-fit: cover; flex-shrink: 0;
+  background: var(--bg);
+}
+.product-thumb-wrap {
+  width: 72px; height: 72px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; border: 1px solid var(--input-border);
+  background: var(--bg); font-size: 36px;
+}
 @media (max-width: 520px) {
   body { padding: 8px; } .container { padding: 16px; border-radius: 8px; }
   h1 { font-size: 20px; } h2 { font-size: 17px; } h3 { font-size: 15px; }
@@ -128,6 +146,7 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   .deadline-box { font-size: 13px; padding: 10px 12px; }
   button { padding: 9px 14px; font-size: 14px; }
   .nav-tab { padding: 8px 12px; font-size: 14px; }
+  .product-thumb, .product-thumb-wrap { width: 56px; height: 56px; font-size: 28px; }
 }
 </style>
 </head>
@@ -170,7 +189,12 @@ tfoot td { background: var(--tfoot-bg); color: var(--tfoot-text); font-weight: 7
   <div id="view-orders">
     <div id="order-form-section" class="order-form">
       <h2 id="form-title">Добавить товар в заказ</h2>
-      <label>Товар:<span class="hint"> (цена за прошлый раз)</span><br /><select id="product"></select></label>
+      <label>Товар:<span class="hint"> (цена за прошлый раз)</span><br />
+        <div class="product-row">
+          <select id="product"></select>
+          <div id="product-thumb-wrap" class="product-thumb-wrap">🛒</div>
+        </div>
+      </label>
       <label>Количество (кг):<input type="number" id="kg" step="0.01" min="0.01" inputmode="decimal" placeholder="кг" /></label>
       <div class="form-buttons">
         <button type="button" id="save-order">Добавить</button>
@@ -252,12 +276,10 @@ window.onerror = function (msg, src, line) {
 
 // ═══════════════════════════════════════════════════════════════
 //  ★★★  ПОЛЬЗОВАТЕЛИ — МЕНЯЙ ЗДЕСЬ  ★★★
-//
-//  Логин (на русском) : пароль, роль
 // ═══════════════════════════════════════════════════════════════
 
 const USERS = {
-  'admin': { password: 'admin123', role: 'admin' },
+  'Администратор': { password: 'admin123', role: 'admin' },
   'Пётр':          { password: 'petr456',  role: 'user'  },
   'Анна':          { password: 'anna789',  role: 'user'  },
   'Светлана':      { password: 'svet123',  role: 'user'  },
@@ -273,16 +295,16 @@ const CONFIG = {
   DB_URL: 'https://orders-kostroma-default-rtdb.europe-west1.firebasedatabase.app',
   BG_IMAGE: 'bg.jpg',
   PRODUCTS: [
-    { name: 'Картофель', price: 45 },
-    { name: 'Морковь', price: 60 },
-    { name: 'Лук репчатый', price: 50 },
-    { name: 'Капуста белокочанная', price: 40 },
-    { name: 'Свёкла', price: 55 },
-    { name: 'Помидоры', price: 120 },
-    { name: 'Огурцы', price: 100 },
-    { name: 'Яблоки', price: 80 },
-    { name: 'Груши', price: 90 },
-    { name: 'Мука пшеничная', price: 65 },
+    { name: 'Картофель', price: 45, image: 'images/kartofel.jpg' },
+    { name: 'Морковь', price: 60, image: 'images/morkov.jpg' },
+    { name: 'Лук репчатый', price: 50, image: 'images/luk.jpg' },
+    { name: 'Капуста белокочанная', price: 40, image: 'images/kapusta.jpg' },
+    { name: 'Свёкла', price: 55, image: 'images/svekla.jpg' },
+    { name: 'Помидоры', price: 120, image: 'images/pomidory.jpg' },
+    { name: 'Огурцы', price: 100, image: 'images/ogurcy.jpg' },
+    { name: 'Яблоки', price: 80, image: 'images/yabloki.jpg' },
+    { name: 'Груши', price: 90, image: 'images/grushi.jpg' },
+    { name: 'Мука пшеничная', price: 65, image: 'images/muka.jpg' },
   ],
 };
 
@@ -295,7 +317,15 @@ const DEFAULT_PRODUCTS = CONFIG.PRODUCTS;
 
 let products = [];
 let PRICE_MAP = {};
-function rebuildPriceMap() { PRICE_MAP = {}; products.forEach(p => { PRICE_MAP[p.name] = p.price; }); }
+let IMAGE_MAP = {};
+function rebuildPriceMap() {
+  PRICE_MAP = {};
+  IMAGE_MAP = {};
+  products.forEach(p => {
+    PRICE_MAP[p.name] = p.price;
+    IMAGE_MAP[p.name] = p.image || '';
+  });
+}
 
 const storage = (() => {
   try { const t = '__test__'; localStorage.setItem(t, t); localStorage.removeItem(t); return localStorage; }
@@ -311,6 +341,7 @@ const viewOrders = $('view-orders'), viewSettings = $('view-settings');
 const orderFormSection = $('order-form-section'), userOrdersSection = $('user-orders-section'), adminOrdersSection = $('admin-orders-section');
 const productSelect = $('product'), kgInput = $('kg'), saveBtn = $('save-order'), cancelEditBtn = $('cancel-edit');
 const formTitle = $('form-title'), formNote = $('form-note');
+const productThumbWrap = $('product-thumb-wrap');
 const ordersBody = $('orders-body'), ordersFoot = $('orders-foot'), userTotalNote = $('user-total-note');
 const deadlineBox = $('deadline-box'), deadlineText = $('deadline-text');
 const deadlineInput = $('deadline-input'), setDeadlineBtn = $('set-deadline'), clearDeadlineBtn = $('clear-deadline');
@@ -326,9 +357,21 @@ const syncStatusEl = $('sync-status'), syncBtn = $('sync-btn');
 let currentUser = null, editingIndex = -1, lastSync = null, isUpdating = false;
 let orders = {}, deadline = null, startTime = null, wasEditable = true, wasOpen = true;
 
+// ── Картинка товара ──
+function updateProductThumb() {
+  const name = productSelect.value;
+  const img = IMAGE_MAP[name] || '';
+  if (img) {
+    productThumbWrap.innerHTML = '<img class="product-thumb" src="' + escapeHtml(img) + '" alt="' + escapeHtml(name) + '" onerror="this.parentElement.innerHTML=\'🛒\'" />';
+  } else {
+    productThumbWrap.innerHTML = '🛒';
+  }
+}
+productSelect.addEventListener('change', updateProductThumb);
+
 // ── Firebase ──
 function defaultCloudData() {
-  return { products: DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price })), orders: {}, deadline: null, startTime: null, lastUpdated: new Date().toISOString() };
+  return { products: DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price, image: p.image || '' })), orders: {}, deadline: null, startTime: null, lastUpdated: new Date().toISOString() };
 }
 async function readCloudData() {
   const res = await fetch(DB_URL + '/data.json');
@@ -336,7 +379,7 @@ async function readCloudData() {
   const data = await res.json();
   if (!data) return defaultCloudData();
   if (!data.products || !Array.isArray(data.products) || data.products.length === 0) {
-    data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price }));
+    data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price, image: p.image || '' }));
   }
   return data;
 }
@@ -368,7 +411,7 @@ function applyCloudData(data) {
 }
 function rerenderAll() {
   if (!currentUser) return;
-  fillProducts(); renderOrders(); renderDeadline();
+  fillProducts(); updateProductThumb(); renderOrders(); renderDeadline();
   if (currentUser.role === 'admin') {
     renderPricesTable();
     if (deadline) deadlineInput.value = toLocalInputValue(deadline);
@@ -406,7 +449,7 @@ function isOrderingOpen() { return !startTime || Date.now() >= startTime.getTime
 function isEditable() { return !deadline || Date.now() < deadline.getTime(); }
 function formatCountdown(ms) { const t = Math.max(0, Math.floor(ms/1000)); const d = Math.floor(t/86400), h = Math.floor((t%86400)/3600), m = Math.floor((t%3600)/60), s = t%60; const p = n => String(n).padStart(2,'0'); return (d>0?d+' дн ':'')+p(h)+':'+p(m)+':'+p(s); }
 function toLocalInputValue(date) { const o = date.getTimezoneOffset()*60000; return new Date(date.getTime()-o).toISOString().slice(0,16); }
-function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
 function fmtRub(x) { return x.toFixed(2).replace('.', ','); }
 function fmtKg(x) { return String(x).replace('.', ','); }
 function userTotal(order) { let s = 0; (order.items || []).forEach(i => { s += (i.kg || 0) * (PRICE_MAP[i.product] || 0); }); return s; }
@@ -450,6 +493,7 @@ function fillProducts() {
     o.textContent = p.name + ' — ' + fmtRub(p.price) + ' руб/кг';
     productSelect.appendChild(o);
   });
+  updateProductThumb();
 }
 
 function renderPricesTable() {
@@ -480,7 +524,7 @@ function renderPricesTable() {
 function removeProductRow(idx) { products.splice(idx, 1); renderPricesTable(); }
 
 addProductBtn.addEventListener('click', () => {
-  products.push({ name: '', price: 0 });
+  products.push({ name: '', price: 0, image: '' });
   renderPricesTable();
   const rows = pricesBody.querySelectorAll('tr');
   if (rows.length > 0) { const inp = rows[rows.length - 1].querySelector('input[data-field="name"]'); if (inp) inp.focus(); }
@@ -495,7 +539,11 @@ savePricesBtn.addEventListener('click', async () => {
     const price = parseFloat((priceInp.value || '').replace(',', '.'));
     if (!name) { nameInp.style.borderColor = 'var(--danger)'; ok = false; }
     else if (isNaN(price) || price < 0) { priceInp.style.borderColor = 'var(--danger)'; ok = false; }
-    else { nameInp.style.borderColor = ''; priceInp.style.borderColor = ''; newProducts.push({ name: name, price: price }); }
+    else { nameInp.style.borderColor = ''; priceInp.style.borderColor = '';
+      // Сохраняем существующий image, если товар уже был
+      const existing = products.find(p => p.name === name);
+      newProducts.push({ name: name, price: price, image: existing ? existing.image || '' : '' });
+    }
   });
   if (!ok) { alert('Проверьте: все названия должны быть заполнены, цены — числами от 0 и выше.'); return; }
   if (newProducts.length === 0) { alert('Список товаров пуст. Добавьте хотя бы один.'); return; }
@@ -571,7 +619,7 @@ function startEditItem(idx) {
   const o = orders[currentUser.name];
   if (!o || !isEditable() || !isOrderingOpen()) return;
   const it = o.items[idx]; if (!it) return;
-  editingIndex = idx; productSelect.value = it.product; kgInput.value = it.kg;
+  editingIndex = idx; productSelect.value = it.product; updateProductThumb(); kgInput.value = it.kg;
   formTitle.textContent = 'Редактировать товар'; saveBtn.textContent = 'Сохранить';
   cancelEditBtn.classList.remove('hidden'); formNote.textContent = 'Режим правки.';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -612,7 +660,7 @@ function doLogin() {
     navTabs.classList.add('hidden'); orderFormSection.classList.remove('hidden');
     userOrdersSection.classList.remove('hidden'); adminOrdersSection.classList.add('hidden');
   }
-  fillProducts(); renderDeadline(); renderOrders(); syncFromCloud();
+  fillProducts(); updateProductThumb(); renderDeadline(); renderOrders(); syncFromCloud();
 }
 loginBtn.addEventListener('click', doLogin);
 loginName.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -712,8 +760,6 @@ function downloadFile(content, filename, mime) {
 function buildExportData() {
   const s = buildSummary();
   const userNames = s.byUser.map(u => u.user);
-
-  // Лист «Заказы»: товары в строках, заказчики в столбцах
   const ordersData = [];
   s.byProduct.forEach(r => {
     const row = { 'Товар': r.product };
@@ -730,35 +776,21 @@ function buildExportData() {
     totalRow[un] = (u.items || []).reduce((sum, i) => sum + (i.kg || 0), 0);
   });
   ordersData.push(totalRow);
-
-  // Лист «Сводка»
   const summaryData = s.byProduct.map(r => ({
-    'Товар': r.product,
-    'Всего, кг': r.totalKg,
-    'Цена, руб/кг': r.price,
-    'Стоимость, руб': r.cost
+    'Товар': r.product, 'Всего, кг': r.totalKg, 'Цена, руб/кг': r.price, 'Стоимость, руб': r.cost
   }));
   summaryData.push({
-    'Товар': 'ИТОГО',
-    'Всего, кг': s.byProduct.reduce((a, r) => a + r.totalKg, 0),
-    'Цена, руб/кг': '',
-    'Стоимость, руб': s.byProduct.reduce((a, r) => a + r.cost, 0)
+    'Товар': 'ИТОГО', 'Всего, кг': s.byProduct.reduce((a, r) => a + r.totalKg, 0),
+    'Цена, руб/кг': '', 'Стоимость, руб': s.byProduct.reduce((a, r) => a + r.cost, 0)
   });
-
-  // Лист «Долги»
-  const debtsData = s.byUser.map(u => ({
-    'Заказчик': u.user,
-    'Сумма, руб': u.total
-  }));
+  const debtsData = s.byUser.map(u => ({ 'Заказчик': u.user, 'Сумма, руб': u.total }));
   debtsData.push({ 'Заказчик': 'ИТОГО', 'Сумма, руб': s.grandTotal });
-
   return { ordersData, summaryData, debtsData, userNames };
 }
 
 function exportToCsv() {
   const { ordersData, summaryData, debtsData, userNames } = buildExportData();
   const lines = [];
-
   lines.push('ЗАКАЗЫ');
   lines.push(['Товар'].concat(userNames).join(';'));
   ordersData.forEach(row => {
@@ -766,7 +798,6 @@ function exportToCsv() {
     userNames.forEach(un => { r.push(row[un] ? fmtKg(row[un]) : '0'); });
     lines.push(r.join(';'));
   });
-
   lines.push('');
   lines.push('СВОДКА ПО ТОВАРАМ');
   lines.push('Товар;Всего, кг;Цена руб/кг;Стоимость, руб');
@@ -775,14 +806,12 @@ function exportToCsv() {
       (row['Цена, руб/кг'] !== '' ? fmtRub(row['Цена, руб/кг']) : '') + ';"' +
       fmtRub(row['Стоимость, руб']) + '"');
   });
-
   lines.push('');
   lines.push('КТО СКОЛЬКО ДОЛЖЕН');
   lines.push('Заказчик;Сумма, руб');
   debtsData.forEach(row => {
     lines.push('"' + row['Заказчик'] + '";"' + fmtRub(row['Сумма, руб']) + '"');
   });
-
   downloadFile(lines.join('\n'), 'itogi_' + new Date().toISOString().slice(0, 10) + '.csv', 'text/csv;charset=utf-8');
 }
 
@@ -791,25 +820,19 @@ function exportToExcel() {
   exportBtn.disabled = true; const oldT = exportBtn.textContent; exportBtn.textContent = 'Загрузка...';
   loadXlsxLib().then(() => {
     const { ordersData, summaryData, debtsData } = buildExportData();
-
     const ordersRounded = ordersData.map(row => {
       const r = { 'Товар': row['Товар'] };
-      Object.keys(row).forEach(k => {
-        if (k !== 'Товар') r[k] = row[k] ? parseFloat(row[k].toFixed(2)) : 0;
-      });
+      Object.keys(row).forEach(k => { if (k !== 'Товар') r[k] = row[k] ? parseFloat(row[k].toFixed(2)) : 0; });
       return r;
     });
     const summaryRounded = summaryData.map(row => ({
-      'Товар': row['Товар'],
-      'Всего, кг': parseFloat(row['Всего, кг'].toFixed(2)),
+      'Товар': row['Товар'], 'Всего, кг': parseFloat(row['Всего, кг'].toFixed(2)),
       'Цена, руб/кг': row['Цена, руб/кг'] !== '' ? row['Цена, руб/кг'] : '',
       'Стоимость, руб': parseFloat(row['Стоимость, руб'].toFixed(2))
     }));
     const debtsRounded = debtsData.map(row => ({
-      'Заказчик': row['Заказчик'],
-      'Сумма, руб': parseFloat(row['Сумма, руб'].toFixed(2))
+      'Заказчик': row['Заказчик'], 'Сумма, руб': parseFloat(row['Сумма, руб'].toFixed(2))
     }));
-
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ordersRounded), 'Заказы');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryRounded), 'Сводка');
