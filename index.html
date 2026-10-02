@@ -282,22 +282,9 @@ const USERS = {
 const CONFIG = {
   DB_URL: 'https://orders-kostroma-default-rtdb.europe-west1.firebasedatabase.app',
   BG_IMAGE: 'bg.jpg',
-  PRODUCTS: [
-    { name: 'Картофель', price: 45, unit: 'кг', image: 'images/kartofel.jpg' },
-    { name: 'Морковь', price: 60, unit: 'кг', image: 'images/morkov.jpg' },
-    { name: 'Лук репчатый', price: 50, unit: 'кг', image: 'images/luk.jpg' },
-    { name: 'Капуста белокочанная', price: 40, unit: 'кг', image: 'images/kapusta.jpg' },
-    { name: 'Свёкла', price: 55, unit: 'кг', image: 'images/svekla.jpg' },
-    { name: 'Помидоры', price: 120, unit: 'кг', image: 'images/pomidory.jpg' },
-    { name: 'Огурцы', price: 100, unit: 'кг', image: 'images/ogurcy.jpg' },
-    { name: 'Яблоки', price: 80, unit: 'кг', image: 'images/yabloki.jpg' },
-    { name: 'Груши', price: 90, unit: 'кг', image: 'images/grushi.jpg' },
-    { name: 'Мука пшеничная', price: 65, unit: 'кг', image: 'images/muka.jpg' },
-  ],
 };
 
 const DB_URL = CONFIG.DB_URL;
-const DEFAULT_PRODUCTS = CONFIG.PRODUCTS;
 
 let products = [];
 let PRICE_MAP = {};
@@ -355,7 +342,7 @@ function updateProductThumb() {
   }
 }
 
-// ── Обновление подписи количества по выбранному товару ──
+// ── Подпись количества по выбранному товару ──
 function updateKgLabel() {
   const name = productSelect.value;
   const u = name ? getUnit(name) : '';
@@ -366,17 +353,16 @@ function updateKgLabel() {
 productSelect.addEventListener('change', () => { updateProductThumb(); updateKgLabel(); });
 
 // ── Firebase ──
-function defaultCloudData() {
-  return { products: DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price, unit: p.unit || 'кг', image: p.image || '' })), orders: {}, deadline: null, startTime: null, lastUpdated: new Date().toISOString() };
+function emptyCloudData() {
+  return { products: [], orders: {}, deadline: null, startTime: null, lastUpdated: new Date().toISOString() };
 }
 async function readCloudData() {
   const res = await fetch(DB_URL + '/data.json');
   if (!res.ok) { const t = await res.text().catch(() => ''); throw new Error('Firebase ' + res.status + ': ' + t.slice(0, 200)); }
   const data = await res.json();
-  if (!data) return defaultCloudData();
-  if (!data.products || !Array.isArray(data.products) || data.products.length === 0) {
-    data.products = DEFAULT_PRODUCTS.map(p => ({ name: p.name, price: p.price, unit: p.unit || 'кг', image: p.image || '' }));
-  }
+  if (!data) return emptyCloudData();
+  if (!data.products || !Array.isArray(data.products)) data.products = [];
+  if (!data.orders) data.orders = {};
   return data;
 }
 async function writeCloudData(data) {
@@ -483,6 +469,12 @@ function renderStartWarning() {
 }
 function fillProducts() {
   productSelect.innerHTML = '';
+  if (products.length === 0) {
+    const o = document.createElement('option');
+    o.value = ''; o.textContent = 'Нет товаров. Обратитесь к администратору.';
+    productSelect.appendChild(o);
+    updateProductThumb(); updateKgLabel(); return;
+  }
   products.forEach(p => {
     const o = document.createElement('option');
     o.value = p.name;
@@ -497,13 +489,11 @@ function renderPricesTable() {
   pricesBody.innerHTML = '';
   products.forEach((p, idx) => {
     const tr = document.createElement('tr');
-    // Название
     const tdName = document.createElement('td');
     const nameInp = document.createElement('input');
     nameInp.type = 'text'; nameInp.className = 'name-input'; nameInp.value = p.name;
     nameInp.dataset.idx = idx; nameInp.dataset.field = 'name';
     tdName.appendChild(nameInp); tr.appendChild(tdName);
-    // Цена
     const tdPrice = document.createElement('td'); tdPrice.className = 'num';
     const priceInp = document.createElement('input');
     priceInp.type = 'number'; priceInp.step = '0.01'; priceInp.min = '0';
@@ -511,16 +501,13 @@ function renderPricesTable() {
     priceInp.value = p.price !== undefined ? p.price : '';
     priceInp.dataset.idx = idx; priceInp.dataset.field = 'price';
     tdPrice.appendChild(priceInp); tr.appendChild(tdPrice);
-    // Единица измерения
     const tdUnit = document.createElement('td');
     const unitInp = document.createElement('input');
     unitInp.type = 'text'; unitInp.className = 'unit-input';
     unitInp.value = p.unit || 'кг';
     unitInp.dataset.idx = idx; unitInp.dataset.field = 'unit';
-    unitInp.maxLength = 10;
-    unitInp.placeholder = 'кг';
+    unitInp.maxLength = 10; unitInp.placeholder = 'кг';
     tdUnit.appendChild(unitInp); tr.appendChild(tdUnit);
-    // Удалить
     const tdAct = document.createElement('td');
     const delBtn = document.createElement('button');
     delBtn.textContent = '🗑'; delBtn.className = 'small-btn danger-btn'; delBtn.title = 'Удалить товар';
@@ -595,7 +582,6 @@ function renderOrders() {
 
 function renderAdminOrders() {
   const s = buildSummary();
-  // Матрица заказов
   matrixHead.innerHTML = '';
   const thU = document.createElement('th'); thU.textContent = 'Заказчик'; matrixHead.appendChild(thU);
   s.ordered.forEach(p => { const th = document.createElement('th'); th.className = 'num'; th.textContent = p.name + ' (' + escapeHtml(p.unit || 'кг') + ')'; matrixHead.appendChild(th); });
@@ -615,15 +601,13 @@ function renderAdminOrders() {
   s.ordered.forEach(p => { const r = s.byProduct.find(x => x.product === p.name); fh += '<td class="num">' + (r && r.totalKg > 0 ? fmtKg(r.totalKg) : '') + '</td>'; });
   fh += '<td class="num">' + fmtRub(s.grandTotal) + '</td>';
   ft.innerHTML = fh; matrixFoot.appendChild(ft);
-
-  // Сводка по товарам
   summaryHead.innerHTML = '<th>Товар</th><th class="num">Всего</th><th class="num">Цена</th><th class="num">Стоимость, руб</th>';
   productSummaryBody.innerHTML = '';
   if (s.byProduct.length === 0) productSummaryBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--note);">Нет данных</td></tr>';
   else s.byProduct.forEach(r => {
     const u = r.unit || 'кг';
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + escapeHtml(r.product) + '</td><td class="num">' + fmtKg(r.totalKg) + ' ' + escapeHtml(u) + '</td><td class="num">' + fmtRub(r.price) + ' ' + 'руб/' + escapeHtml(u) + '</td><td class="num">' + fmtRub(r.cost) + '</td>';
+    tr.innerHTML = '<td>' + escapeHtml(r.product) + '</td><td class="num">' + fmtKg(r.totalKg) + ' ' + escapeHtml(u) + '</td><td class="num">' + fmtRub(r.price) + ' руб/' + escapeHtml(u) + '</td><td class="num">' + fmtRub(r.cost) + '</td>';
     productSummaryBody.appendChild(tr);
   });
   const sc = s.byProduct.reduce((a, r) => a + r.cost, 0);
